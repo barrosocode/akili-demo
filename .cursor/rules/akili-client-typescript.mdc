@@ -1,0 +1,14 @@
+---
+description: TypeScript strict e convenções de tipos
+globs: **/*.{ts,tsx}
+alwaysApply: false
+---
+
+# TypeScript
+
+- `strict: true` — sem `any`
+- Tipos de domínio em `types/` e `types/domain/`
+- Tipos de API interna em `types/api.ts`
+- Session sanitizada em `types/session.ts` (sem uuid/tenant)
+- Schemas Zod em `features/*/schemas/`
+- Inferir tipos de formulário com `z.infer<typeof schema>`

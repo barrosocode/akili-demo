@@ -1,0 +1,37 @@
+---
+description: BFF obrigatório, cookies HttpOnly e segurança
+globs: app/api/**,lib/api/**,lib/auth/**,services/bff/**,middleware.ts
+alwaysApply: false
+---
+
+# BFF e Segurança
+
+## Fluxo obrigatório
+
+```
+Browser → /api/* (Route Handler) → Laravel API
+```
+
+## Proibido no browser
+
+- `NEXT_PUBLIC_API_URL`
+- Tokens, refresh tokens, tenant IDs
+- `localStorage` / `sessionStorage` para auth
+
+## Cookies
+
+- HttpOnly, Secure (prod), SameSite
+- Gerenciados em `lib/auth/cookies.ts`
+
+## Route Handlers
+
+1. Validar com Zod
+2. `requireAuth()` quando protegido
+3. Chamar `laravelRequest` (server-only)
+4. Sanitizar resposta (`lib/api/sanitize.ts`)
+5. Retornar `{ data }` sem campos internos
+
+## Perfis
+
+- Apenas `guardian` pode autenticar
+- Login de escola → 403 com link para Admin

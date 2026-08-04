@@ -1,0 +1,27 @@
+---
+description: shadcn/ui, formulários e componentes obrigatórios
+globs: components/**,features/**/components/**,features/**/schemas/**
+alwaysApply: false
+---
+
+# UI e Formulários
+
+## Design System
+
+- Base: shadcn/ui em `components/ui/`
+- Compostos: `components/forms/`, `components/tables/`, `components/feedback/`
+
+## Formulários
+
+- React Hook Form + Zod
+- Validação em tempo real
+- Botão desabilitado durante submit
+- Toast de sucesso/erro (sonner)
+
+## Componentes obrigatórios
+
+Select, Autocomplete, DatePicker, Modal, Drawer, Toast, EmptyState, LoadingSkeleton, DataTable
+
+## Reutilizar
+
+Nunca criar input/button/modal do zero se existir em `components/ui/`.

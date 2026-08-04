@@ -1,0 +1,28 @@
+---
+description: TanStack Query — queries, mutations e commands
+globs: services/queries/**,services/bff/**,features/**/hooks/**
+alwaysApply: false
+---
+
+# Data Fetching
+
+## Camadas
+
+| Camada | Local |
+|--------|-------|
+| BFF client | `services/bff/*.bff.ts` |
+| Query keys | `services/queries/query-keys.ts` |
+| Queries | `services/queries/*.queries.ts` |
+| Mutations | `services/queries/*.mutations.ts` |
+| Commands | `features/*/hooks/use*Command.ts` |
+
+## Proibido
+
+- `fetch` ou `axios` dentro de componentes
+- Cache manual fora do TanStack Query
+
+## Padrões
+
+- Invalidar queries após mutations
+- `staleTime` default em `lib/cache/query-config.ts`
+- Optimistic updates apenas quando fizer sentido

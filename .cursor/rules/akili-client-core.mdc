@@ -1,0 +1,33 @@
+---
+description: Governança central do Portal do Responsável Akili
+alwaysApply: true
+---
+
+# Akili Client — Core
+
+## Escopo
+
+- App exclusivo para **responsáveis** (`guardian`)
+- Escolas usam o **Admin** (`admin/`) — nunca implementar fluxos escolares aqui
+- Browser **nunca** chama Laravel diretamente — sempre via BFF `/api/*`
+
+## Stack
+
+- Next.js 16 (App Router), React 19, TypeScript, Tailwind v4, shadcn/ui
+- TanStack Query, React Hook Form, Zod, Axios (server-only)
+- Estrutura na raiz: `app/`, `components/`, `features/`, `lib/`, `services/`, `types/`
+
+## Feature-first
+
+- Páginas em `app/` são thin shells
+- Lógica em `features/<nome>/` (components, hooks, schemas, types)
+- Nunca duplicar componentes — reutilizar `components/ui` e compostos
+
+## Checklist antes de entregar
+
+- [ ] BFF usado (sem fetch direto ao Laravel no browser)
+- [ ] Sem UUID/ID exposto na UI
+- [ ] `canAddChildren` respeitado (B2C vs convite escola)
+- [ ] Loading, error e empty states
+- [ ] Formulários com RHF + Zod
+- [ ] Tipagem strict, sem `any`

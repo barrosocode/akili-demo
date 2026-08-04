@@ -1,0 +1,29 @@
+---
+description: UX — nunca expor dados técnicos
+globs: app/**,components/**,features/**
+alwaysApply: true
+---
+
+# UX — Portal do Responsável
+
+## Proibido na UI
+
+UUID, ID numérico, slug, FK, tenant_id, hashes, payloads crus
+
+## Exibir sempre
+
+Nome, descrição, avatar, código amigável, labels humanos
+
+## Responsável B2C vs escola
+
+| Origem | Adicionar filhos |
+|--------|------------------|
+| B2C | Sim — CTA e `/children/new` |
+| Convite escola | Não — lista somente leitura |
+
+Usar `user.capabilities.canAddChildren` — nunca inferir só pela UI.
+
+## Empty states
+
+- B2C sem filhos: "Adicionar filho"
+- Escola sem vínculo: "Sua escola ainda não vinculou alunos"
