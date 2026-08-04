@@ -25,6 +25,7 @@ alwaysApply: true
 
 ## Checklist antes de entregar
 
+- [ ] Segui `frontend-product-experience.mdc` (CRO B2C, personas responsável, mobile first)?
 - [ ] BFF usado (sem fetch direto ao Laravel no browser)
 - [ ] Sem UUID/ID exposto na UI
 - [ ] `canAddChildren` respeitado (B2C vs convite escola)

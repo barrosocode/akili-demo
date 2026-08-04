@@ -95,4 +95,5 @@ npm run build
 ## Referências
 
 - [architecture.md](./architecture.md) — visão arquitetural
-- [../.cursor/rules/](../.cursor/rules/) — regras Cursor do projeto
+- [cursor-rules.md](./cursor-rules.md) — divisão das regras Cursor (produto vs implementação)
+- [../.cursor/rules/](../.cursor/rules/) — arquivos de regra do projeto

@@ -6,6 +6,8 @@ alwaysApply: true
 
 # UX — Portal do Responsável
 
+Complementa `frontend-product-experience.mdc` (papéis da IA, processo pré-tela, CRO B2C, personas).
+
 ## Proibido na UI
 
 UUID, ID numérico, slug, FK, tenant_id, hashes, payloads crus
