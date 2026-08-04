@@ -1,0 +1,12 @@
+:root {
+  --akili-brand-50: oklch(0.97 0.02 250);
+  --akili-brand-100: oklch(0.93 0.04 250);
+  --akili-brand-500: oklch(0.55 0.18 250);
+  --akili-brand-600: oklch(0.48 0.18 250);
+  --akili-brand-700: oklch(0.42 0.16 250);
+}
+
+.dark {
+  --akili-brand-500: oklch(0.62 0.16 250);
+  --akili-brand-600: oklch(0.55 0.16 250);
+}

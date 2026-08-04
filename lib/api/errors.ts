@@ -1,0 +1,79 @@
+import { isAxiosError, type AxiosError } from "axios";
+import { ApiError, type ProblemDetails } from "@/types/api";
+
+export function isApiError(error: unknown): error is ApiError {
+  return error instanceof ApiError;
+}
+
+function isProblemDetails(data: unknown): data is ProblemDetails {
+  if (typeof data !== "object" || data === null) return false;
+  const record = data as Record<string, unknown>;
+  return typeof record.title === "string" && typeof record.status === "number";
+}
+
+export function parseAxiosProblem(error: AxiosError): ProblemDetails {
+  const status = error.response?.status ?? 500;
+  const data = error.response?.data;
+
+  if (isProblemDetails(data)) {
+    return { ...data, status: data.status ?? status };
+  }
+
+  return {
+    title: error.response?.statusText || "Erro na requisição",
+    status,
+    detail: error.message || `HTTP ${status}`,
+  };
+}
+
+export function toApiError(error: unknown): ApiError {
+  if (error instanceof ApiError) return error;
+
+  if (isAxiosError(error)) {
+    return new ApiError(parseAxiosProblem(error));
+  }
+
+  if (error instanceof Error) {
+    return new ApiError({
+      title: "Erro na requisição",
+      status: 500,
+      detail: error.message,
+    });
+  }
+
+  return new ApiError({
+    title: "Erro na requisição",
+    status: 500,
+    detail: "Erro desconhecido",
+  });
+}
+
+export function getFieldErrors(
+  errors?: Record<string, string[]>
+): Record<string, string> {
+  if (!errors) return {};
+  return Object.fromEntries(
+    Object.entries(errors).map(([field, messages]) => [field, messages[0] ?? ""])
+  );
+}
+
+const STATUS_FALLBACKS: Record<number, string> = {
+  400: "Não foi possível processar a solicitação.",
+  401: "Sua sessão expirou. Faça login novamente.",
+  403: "Você não tem permissão para esta ação.",
+  404: "Registro não encontrado.",
+  422: "Verifique os campos destacados e tente novamente.",
+  429: "Muitas tentativas. Aguarde um momento.",
+  500: "Ocorreu um erro inesperado. Tente novamente.",
+  501: "Funcionalidade em breve.",
+};
+
+export function getUserFacingApiMessage(
+  error: unknown,
+  fallback = "Não foi possível concluir a operação."
+): string {
+  if (!isApiError(error)) return fallback;
+  const detail = error.detail?.trim();
+  if (detail) return detail;
+  return STATUS_FALLBACKS[error.status] ?? fallback;
+}
