@@ -11,6 +11,7 @@ import type { NavItem } from "@/types/marketing";
 
 type MobileMenuProps = {
   items?: NavItem[];
+  showLoginCta?: boolean;
 };
 
 /**
@@ -38,7 +39,7 @@ export function MobileMenuToggle() {
 /**
  * Off-canvas mobile (SPEC-003 / MARKETING-023). Substitui jQuery `vsmobilemenu`.
  */
-export function MobileMenu({ items }: MobileMenuProps) {
+export function MobileMenu({ items, showLoginCta = true }: MobileMenuProps) {
   const { isOpen, close, menuToggleRef } = useMarketingChrome();
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const wasOpenRef = useRef(false);
@@ -86,13 +87,15 @@ export function MobileMenu({ items }: MobileMenuProps) {
         </div>
         <MainNav variant="mobile" items={items} onNavigate={close} />
         <div className="header-btn d-flex flex-column gap-2 px-3 pb-4">
-          <Link
-            href={authLinks.login.href}
-            className="vs-btn"
-            onClick={close}
-          >
-            {authLinks.login.label}
-          </Link>
+          {showLoginCta ? (
+            <Link
+              href={authLinks.login.href}
+              className="vs-btn"
+              onClick={close}
+            >
+              {authLinks.login.label}
+            </Link>
+          ) : null}
           <Link
             href={authLinks.register.href}
             className="vs-btn v4"

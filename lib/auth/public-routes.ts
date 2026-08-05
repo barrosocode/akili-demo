@@ -19,6 +19,7 @@ const PUBLIC_PREFIXES = [
   "/api/auth/login",
   "/api/auth/signup",
   "/api/auth/invite",
+  "/api/auth/otp",
   "/blog/",
 ] as const;
 
@@ -30,6 +31,7 @@ export function isPublicPath(pathname: string): boolean {
   if (pathname.startsWith("/api/auth/login")) return true;
   if (pathname.startsWith("/api/auth/signup")) return true;
   if (pathname.startsWith("/api/auth/invite")) return true;
+  if (pathname.startsWith("/api/auth/otp")) return true;
   if (pathname.startsWith("/api/checkout")) return true;
 
   return PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix));

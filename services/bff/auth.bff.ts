@@ -31,4 +31,23 @@ export const authBff = {
       body: payload,
     });
   },
+
+  requestFirstAccessOtp(payload: { email: string }) {
+    return bffClient<{ message: string }>("/api/auth/otp/request", {
+      method: "POST",
+      body: payload,
+    });
+  },
+
+  verifyFirstAccessOtp(payload: {
+    email: string;
+    code: string;
+    password: string;
+    password_confirmation: string;
+  }) {
+    return bffClient<{ message: string }>("/api/auth/otp/verify", {
+      method: "POST",
+      body: payload,
+    });
+  },
 };

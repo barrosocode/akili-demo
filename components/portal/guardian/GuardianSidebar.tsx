@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { ChildSwitcher } from "@/components/portal/guardian/ChildSwitcher";
 import type { NavItem } from "@/types/marketing";
 
 const guardianNav: NavItem[] = [
@@ -20,6 +21,7 @@ type GuardianSidebarProps = {
 export function GuardianSidebar({ activeHref }: GuardianSidebarProps) {
   return (
     <aside className="sidebar-area">
+      <ChildSwitcher />
       <div className="widget widget_categories">
         <h3 className="widget_title">Menu</h3>
         <ul>

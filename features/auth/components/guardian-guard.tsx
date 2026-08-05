@@ -10,16 +10,19 @@ import { getRoutePermission } from "@/lib/permissions/route-permissions";
 
 /**
  * Garante sessão autenticada com permissão da rota.
+ * Interrompe o fluxo quando há termos obrigatórios pendentes.
  */
 export function GuardianGuard({ children }: { children: ReactNode }) {
   const { user, isLoading } = useSession();
   const router = useRouter();
   const pathname = usePathname();
+  const isTermsPath = pathname === "/terms" || pathname.startsWith("/terms/");
 
   const permission = getRoutePermission(pathname);
   const hasAccess = Boolean(
-    user && checkAccess(user.permissions, permission),
+    user && checkAccess(user.permissions, permission)
   );
+  const termsPending = Boolean(user && !user.terms.allAccepted);
 
   useEffect(() => {
     if (isLoading) return;
@@ -29,12 +32,45 @@ export function GuardianGuard({ children }: { children: ReactNode }) {
       return;
     }
 
-    if (!hasAccess) {
+    if (termsPending && !isTermsPath) {
+      router.replace("/terms");
+      return;
+    }
+
+    if (!termsPending && isTermsPath) {
+      router.replace("/");
+      return;
+    }
+
+    if (!hasAccess && !isTermsPath) {
       router.replace("/signin?error=access-denied");
     }
-  }, [user, isLoading, router, hasAccess]);
+  }, [
+    user,
+    isLoading,
+    router,
+    hasAccess,
+    termsPending,
+    isTermsPath,
+  ]);
 
-  if (isLoading || !user || !hasAccess) {
+  if (isLoading || !user) {
+    return (
+      <div className="container space-top" role="status">
+        <p>Carregando...</p>
+      </div>
+    );
+  }
+
+  if (termsPending && !isTermsPath) {
+    return (
+      <div className="container space-top" role="status">
+        <p>Redirecionando para o aceite dos termos...</p>
+      </div>
+    );
+  }
+
+  if (!hasAccess && !isTermsPath) {
     return (
       <div className="container space-top" role="status">
         <p>Carregando...</p>

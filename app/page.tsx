@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 import { getServerSession } from "@/lib/auth/session";
 import { GuardianDashboardShell } from "@/components/portal/guardian/GuardianDashboardShell";
@@ -27,6 +28,10 @@ export default async function HomePage() {
       "@/components/marketing/home/PublicMarketingHome"
     );
     return <PublicMarketingHome />;
+  }
+
+  if (!session.terms.allAccepted) {
+    redirect("/terms");
   }
 
   return (

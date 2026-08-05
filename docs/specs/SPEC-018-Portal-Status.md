@@ -18,10 +18,12 @@ Portal auth e dashboards migrados para visual Kiddino (mesmo pipeline CSS do mar
 
 | URL | Esperado |
 | --- | --- |
-| `/signin` | Login form-style3 + **MarketingShell** (header/footer); acessível mesmo com cookie residual |
-| Pós-login | Full navigation para `/` (dashboard responsável) ou `?next=` seguro |
+| `/signin` | Login form-style3 + **MarketingShell**; CTA LOGIN oculto no header; acessível com cookie residual |
+| Pós-login | Full navigation para `/` (dashboard) ou `?next=` seguro; se termos pendentes → `/terms` |
+| `/first-access` | OTP first-access (request + verify + senha) |
+| `/terms` | Aceite com geo obrigatória (prompt no clique “Permitir localização”) |
 | `/forgot-password` | Pedido de e-mail (feedback honesto) |
-| `/` logado | Shell responsável + filhos |
+| `/` logado | Shell responsável + filhos + switcher de filho ativo |
 | `/profile`, `/purchases`, `/relatorios` | Páginas Kiddino |
 | `/aluno` | Shell aluno + placeholders API |
 
@@ -38,8 +40,10 @@ Portal auth e dashboards migrados para visual Kiddino (mesmo pipeline CSS do mar
 ## Follow-ups
 
 - [x] Auth sempre acessível no middleware + limpeza de cookie em `/api/auth/me` (2026-08-05)
-- [x] `(auth)` via `MarketingShell`; LOGIN no header e menu mobile
+- [x] `(auth)` via `MarketingShell`; LOGIN oculto nas páginas auth
 - [x] Pós-login → dashboard `/` com full navigation; `/api/auth/me` não limpa cookie em 5xx
+- [x] Sessão agregada `/client/auth/me` + gate de termos + OTP first-access (2026-08-05)
+- [x] Aceite LGPD com evidências forenses (geo obrigatória no portal)
 - [ ] BFF forgot-password / reset real
 - [ ] Form adicionar filho + detalhe progresso
 - [ ] Checkout B2C completo

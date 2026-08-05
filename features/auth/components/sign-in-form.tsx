@@ -37,6 +37,15 @@ export function SignInForm() {
       const destination = resolvePostLoginPath(searchParams.get("next"));
       window.location.assign(destination);
     } catch (error) {
+      if (error instanceof BffClientError && error.status === 422) {
+        const detail = `${error.detail ?? ""} ${error.errors?.email ?? ""}`.toLowerCase();
+        if (detail.includes("primeiro acesso")) {
+          window.location.assign(
+            `/first-access?email=${encodeURIComponent(values.email)}`
+          );
+          return;
+        }
+      }
       const message =
         error instanceof BffClientError
           ? (error.detail ?? error.title)
@@ -80,6 +89,11 @@ export function SignInForm() {
           </div>
           <div className="col-xl col-xxl-6 align-self-center">
             <h2 className="sec-title mb-3">Login</h2>
+            {searchParams.get("firstAccess") === "1" ? (
+              <p className="alert alert-success" role="status">
+                Senha definida com sucesso. Entre com seu e-mail e a nova senha.
+              </p>
+            ) : null}
             {errors.root ? (
               <p style={{ color: "red" }}>
                 <strong>{errors.root.message}</strong>

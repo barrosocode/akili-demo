@@ -9,6 +9,8 @@ import { SiteHeader } from "@/components/marketing/layout/SiteHeader";
 
 type MarketingShellProps = {
   children: ReactNode;
+  /** Quando false, oculta o CTA LOGIN no header (ex.: páginas de autenticação). */
+  showLoginCta?: boolean;
 };
 
 /**
@@ -16,12 +18,15 @@ type MarketingShellProps = {
  * Ordem legado: mobile menu → header → conteúdo → footer → scroll top.
  * Server Component com islands client (Chrome, MobileMenu, ScrollToTop, Newsletter).
  */
-export function MarketingShell({ children }: MarketingShellProps) {
+export function MarketingShell({
+  children,
+  showLoginCta = true,
+}: MarketingShellProps) {
   return (
     <MarketingChrome>
       <MarketingRoot>
-        <MobileMenu />
-        <SiteHeader />
+        <MobileMenu showLoginCta={showLoginCta} />
+        <SiteHeader showLoginCta={showLoginCta} />
         <main>{children}</main>
         <SiteFooter />
         <ScrollToTop />

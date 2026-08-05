@@ -8,16 +8,20 @@ import type { NavItem } from "@/types/marketing";
 
 type SiteHeaderProps = {
   navItems?: NavItem[];
+  showLoginCta?: boolean;
 };
 
 /**
  * Header institucional (SPEC-003 / MARKETING-022).
  * Server Component — `MobileMenuToggle` é client via MarketingChrome (023/028).
  */
-export function SiteHeader({ navItems = mainNav }: SiteHeaderProps) {
+export function SiteHeader({
+  navItems = mainNav,
+  showLoginCta = true,
+}: SiteHeaderProps) {
   return (
     <header className="vs-header header-layout4">
-      <TopBar />
+      <TopBar showLoginCta={showLoginCta} />
       <div className="sticky-wrap">
         <div className="sticky-active">
           <div className="container-style4">
@@ -32,9 +36,11 @@ export function SiteHeader({ navItems = mainNav }: SiteHeaderProps) {
                   <MainNav variant="desktop" items={navItems} />
                 </div>
                 <div className="col-auto d-none d-lg-flex align-items-center gap-2">
-                  <Button href={authLinks.login.href} variant="v4">
-                    {authLinks.login.label}
-                  </Button>
+                  {showLoginCta ? (
+                    <Button href={authLinks.login.href} variant="v4">
+                      {authLinks.login.label}
+                    </Button>
+                  ) : null}
                   <Button href={authLinks.register.href} variant="v4">
                     {authLinks.register.label}
                   </Button>

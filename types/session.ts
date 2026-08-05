@@ -1,8 +1,15 @@
 import type { AccountOrigin } from "@/types/auth";
+import type { ChildSummary } from "@/types/domain/child";
 
 export interface GuardianCapabilities {
   canAddChildren: boolean;
   canPurchase: boolean;
+}
+
+export interface SessionTerms {
+  allAccepted: boolean;
+  pendingCount: number;
+  pendingKeys: string[];
 }
 
 export interface SessionUser {
@@ -13,4 +20,6 @@ export interface SessionUser {
   permissions: string[];
   accountOrigin: AccountOrigin;
   capabilities: GuardianCapabilities;
+  terms: SessionTerms;
+  children: ChildSummary[];
 }

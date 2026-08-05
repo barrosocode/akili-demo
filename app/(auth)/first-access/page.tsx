@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Suspense } from "react";
+
+import { FirstAccessForm } from "@/features/auth/components/first-access-form";
 
 export const metadata: Metadata = {
   title: "Primeiro acesso",
@@ -8,22 +10,14 @@ export const metadata: Metadata = {
 
 export default function FirstAccessPage() {
   return (
-    <section className="space-top space-extra-bottom">
-      <div className="container">
-        <h2 className="sec-title">Primeiro acesso</h2>
-        <p>
-          Use o link enviado pela escola ou conclua seu cadastro para acessar o
-          portal.
-        </p>
-        <p>
-          <Link href="/signin" className="vs-btn">
-            Ir para o login
-          </Link>{" "}
-          <Link href="/cadastro" className="vs-btn">
-            Cadastre-se
-          </Link>
-        </p>
-      </div>
-    </section>
+    <Suspense
+      fallback={
+        <div className="container space-top" role="status">
+          <p>Carregando...</p>
+        </div>
+      }
+    >
+      <FirstAccessForm />
+    </Suspense>
   );
 }

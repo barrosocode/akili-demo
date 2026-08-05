@@ -11,9 +11,10 @@ import { BffClientError } from "@/services/bff/client";
  * Home dos filhos — visual Kiddino (PORTAL-007).
  */
 export function ChildrenHome() {
-  const { user } = useSession();
+  const { user, activeChildRef, setActiveChildRef } = useSession();
   const { data, isLoading, error } = useChildrenQuery();
   const canAddChildren = user?.capabilities.canAddChildren ?? false;
+  const children = data ?? user?.children ?? [];
 
   return (
     <div className="blog-content">
@@ -33,7 +34,7 @@ export function ChildrenHome() {
         </p>
       ) : null}
 
-      {isLoading ? <p>Carregando...</p> : null}
+      {isLoading && !children.length ? <p>Carregando...</p> : null}
 
       {error ? (
         <p style={{ color: "red" }}>
@@ -43,7 +44,7 @@ export function ChildrenHome() {
         </p>
       ) : null}
 
-      {!isLoading && !error && !data?.length ? (
+      {!isLoading && !error && !children.length ? (
         <div className="alert alert-info" role="status">
           <strong>
             {canAddChildren
@@ -58,21 +59,43 @@ export function ChildrenHome() {
         </div>
       ) : null}
 
-      {!isLoading && !error && data && data.length > 0 ? (
+      {children.length > 0 ? (
         <div className="row">
-          {data.map((child) => (
-            <div key={child.ref} className="col-md-6 mb-4">
-              <div className="widget">
-                <h3 className="widget_title">
-                  <Link href={`/children/${child.ref}`}>{child.name}</Link>
-                </h3>
-                {child.gradeLabel ? <p>{child.gradeLabel}</p> : null}
-                <Link href={`/children/${child.ref}`} className="vs-btn">
-                  Ver detalhes
-                </Link>
+          {children.map((child) => {
+            const isActive = child.ref === activeChildRef;
+            return (
+              <div key={child.ref} className="col-md-6 mb-4">
+                <div
+                  className="widget"
+                  style={
+                    isActive
+                      ? { outline: "2px solid #2d6cdf", outlineOffset: 2 }
+                      : undefined
+                  }
+                >
+                  <h3 className="widget_title">
+                    <Link href={`/children/${child.ref}`}>{child.name}</Link>
+                  </h3>
+                  {child.classroomName ? <p>{child.classroomName}</p> : null}
+                  {child.gradeLabel ? <p>{child.gradeLabel}</p> : null}
+                  {child.schoolName ? <p>{child.schoolName}</p> : null}
+                  <div className="d-flex gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      className="vs-btn"
+                      onClick={() => setActiveChildRef(child.ref)}
+                      disabled={isActive}
+                    >
+                      {isActive ? "Ativo" : "Selecionar"}
+                    </button>
+                    <Link href={`/children/${child.ref}`} className="vs-btn">
+                      Ver detalhes
+                    </Link>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : null}
     </div>

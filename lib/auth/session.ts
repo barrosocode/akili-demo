@@ -1,40 +1,82 @@
 import { laravelRequest } from "@/lib/api/laravel-client";
 import { getAccessToken } from "@/lib/auth/cookies";
 import {
-  isGuardianUser,
-  toSessionUser,
+  isGuardianPortalSession,
+  toSessionUserFromPortal,
 } from "@/lib/permissions/guardian-capabilities";
-import type { AuthUser } from "@/types/auth";
+import type { ClientPortalSession } from "@/types/portal-session";
 import type { SessionUser } from "@/types/session";
+import { ApiError } from "@/types/api";
+
+export type FetchPortalSessionResult =
+  | { ok: true; session: SessionUser }
+  | { ok: false; error: ApiError };
 
 /**
- * Lê o usuário autenticado.
- * Não apaga cookies aqui: Server Components não podem mutar cookies
- * (só Route Handlers / Server Actions). Limpeza fica em logout/refresh.
+ * Lê a sessão agregada do portal (`GET /client/auth/me`).
+ * Propaga 401/403 — não engole erros de negócio.
  */
-export async function fetchAuthUser(): Promise<AuthUser | null> {
+export async function fetchPortalSession(): Promise<FetchPortalSessionResult> {
   const token = await getAccessToken();
-  if (!token) return null;
+  if (!token) {
+    return {
+      ok: false,
+      error: new ApiError({
+        title: "Não autenticado",
+        status: 401,
+        detail: "Sessão ausente.",
+      }),
+    };
+  }
 
   try {
-    return await laravelRequest<AuthUser>("/client/auth/me", {
+    const portal = await laravelRequest<ClientPortalSession>("/client/auth/me", {
       skipUnauthorizedRetry: true,
     });
-  } catch {
-    return null;
+
+    if (!isGuardianPortalSession(portal)) {
+      return {
+        ok: false,
+        error: new ApiError({
+          title: "Acesso negado",
+          status: 403,
+          detail:
+            "Este portal é exclusivo para responsáveis. Escolas devem acessar o painel administrativo.",
+        }),
+      };
+    }
+
+    return { ok: true, session: toSessionUserFromPortal(portal) };
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return { ok: false, error };
+    }
+    return {
+      ok: false,
+      error: new ApiError({
+        title: "Erro na requisição",
+        status: 500,
+        detail: error instanceof Error ? error.message : "Erro desconhecido",
+      }),
+    };
   }
 }
 
+/**
+ * Sessão para Server Components.
+ * Em 401 retorna null. Em 403 consent-required ainda devolve null aqui —
+ * o Route Handler `/api/auth/me` propaga o status para o client.
+ */
 export async function getServerSession(): Promise<SessionUser | null> {
-  const user = await fetchAuthUser();
-  if (!user || !isGuardianUser(user)) return null;
-  return toSessionUser(user);
+  const result = await fetchPortalSession();
+  if (!result.ok) return null;
+  return result.session;
 }
 
 export async function requireAuth(): Promise<SessionUser> {
-  const session = await getServerSession();
-  if (!session) {
-    throw new Error("UNAUTHORIZED");
+  const result = await fetchPortalSession();
+  if (!result.ok) {
+    throw result.error;
   }
-  return session;
+  return result.session;
 }

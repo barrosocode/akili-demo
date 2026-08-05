@@ -8,6 +8,7 @@ export const ROUTE_PERMISSIONS: Record<string, string | string[] | null> = {
   "/profile": null,
   "/relatorios": GUARDIAN_PERMISSION,
   "/aluno": GUARDIAN_PERMISSION,
+  "/terms": null,
 };
 
 export function getRoutePermission(pathname: string): string | string[] | null {

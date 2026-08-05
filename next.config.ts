@@ -14,6 +14,19 @@ const nextConfig: NextConfig = {
       { source: "/index.html", destination: "/", permanent: true },
     ];
   },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Permissions-Policy",
+            value: "geolocation=(self)",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

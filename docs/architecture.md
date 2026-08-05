@@ -33,8 +33,18 @@ middleware.ts  # Proteção de rotas
 
 - Login via `POST /api/auth/login` → Laravel `/client/auth/login`
 - Tokens em cookies **HttpOnly** (`lib/auth/cookies.ts`)
-- Sessão sanitizada via `toSessionUser()` — sem UUID no browser
+- `GET /api/auth/me` → Laravel `GET /client/auth/me` (sessão agregada: user, guardian, children, terms, …)
+- Sessão sanitizada (`SessionUser`) — sem UUID no browser; filhos usam `ref` opaco
 - Apenas perfil `guardian` (`dashboards.guardian.view`)
+- First-access (status `invited`): OTP em `/first-access` → `POST /api/auth/otp/*` → Laravel `/auth/otp/*`
+- Termos pendentes: gate em `GuardianGuard` → `/terms` (aceite com geolocalização **obrigatória**)
+
+### Aceite de termos (forense)
+
+- UI: `features/auth/components/terms-accept-form.tsx`
+- Coletor: `lib/consent/forensics.ts` — prompt só no **clique** (“Permitir localização”)
+- BFF `POST /api/consents/accept` exige lat/long e encaminha `X-Forwarded-For` / `User-Agent` / `Accept-Language`
+- Header `Permissions-Policy: geolocation=(self)` em `next.config.ts`
 
 ## Capabilities
 
@@ -48,8 +58,13 @@ middleware.ts  # Proteção de rotas
 | BFF | Laravel |
 |-----|---------|
 | `POST /api/auth/login` | `POST /client/auth/login` |
-| `GET /api/auth/me` | `GET /client/auth/me` |
+| `GET /api/auth/me` | `GET /client/auth/me` (agregado portal) |
+| `POST /api/auth/otp/request` | `POST /auth/otp/request` |
+| `POST /api/auth/otp/verify` | `POST /auth/otp/verify` |
 | `POST /api/auth/invite/accept` | `POST /guardian/invite/accept` |
+| `GET /api/consents/pending` | `GET /consents/pending` |
+| `GET /api/consents/documents/[key]` | `GET /consents/documents/{key}` |
+| `POST /api/consents/accept` | `POST /consents/accept` |
 | `GET /api/guardian/children` | `GET /guardian/students` |
 | `GET /api/guardian/children/[ref]/progress` | `GET /guardian/students/{uuid}/progress` |
 | `PATCH /api/profile` | `PATCH /client/auth/me` |
