@@ -2,71 +2,87 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Form } from "@/components/forms/form";
-import { FormFieldWrapper } from "@/components/forms/form-field";
-import { PageHeader } from "@/components/layout/page-header";
+import type { z } from "zod";
+
 import { updateProfileSchema } from "@/features/auth/schemas/auth.schema";
 import { useUpdateProfileMutation } from "@/services/queries/profile.mutations";
 import { useSession } from "@/providers/session-provider";
 import { BffClientError } from "@/services/bff/client";
-import type { z } from "zod";
+import { useState } from "react";
 
 type ProfileFormValues = z.infer<typeof updateProfileSchema>;
 
+/**
+ * Perfil do responsável — Kiddino (PORTAL-009).
+ */
 export function ProfilePage() {
   const { user } = useSession();
   const updateProfile = useUpdateProfileMutation();
+  const [success, setSuccess] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const form = useForm<ProfileFormValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProfileFormValues>({
     resolver: zodResolver(updateProfileSchema),
     values: { name: user?.name ?? "" },
   });
 
   async function onSubmit(values: ProfileFormValues) {
+    setSuccess(null);
+    setErrorMsg(null);
     try {
       await updateProfile.mutateAsync(values);
-      toast.success("Perfil atualizado com sucesso");
+      setSuccess("Perfil atualizado com sucesso.");
     } catch (error) {
-      toast.error(
+      setErrorMsg(
         error instanceof BffClientError
-          ? error.detail ?? error.title
-          : "Não foi possível atualizar o perfil."
+          ? (error.detail ?? error.title)
+          : "Não foi possível atualizar o perfil.",
       );
     }
   }
 
   return (
-    <>
-      <PageHeader
-        title="Perfil"
-        description="Atualize suas informações pessoais."
-      />
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-md space-y-4">
-          <FormFieldWrapper control={form.control} name="name" label="Nome">
-            {(field) => (
-              <Input
-                value={String(field.value ?? "")}
-                onChange={(event) => field.onChange(event.target.value)}
-                onBlur={field.onBlur}
-              />
-            )}
-          </FormFieldWrapper>
-
-          <div className="space-y-1">
-            <p className="text-sm font-medium">E-mail</p>
-            <p className="text-sm text-muted-foreground">{user?.email}</p>
+    <div className="blog-content">
+      <h2 className="blog-title">Meus dados</h2>
+      <p>Atualize suas informações pessoais.</p>
+      {success ? (
+        <p style={{ color: "green" }}>
+          <strong>{success}</strong>
+        </p>
+      ) : null}
+      {errorMsg ? (
+        <p style={{ color: "red" }}>
+          <strong>{errorMsg}</strong>
+        </p>
+      ) : null}
+      <form className="form-style3" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <div className="row">
+          <div className="col-md-8 form-group">
+            <label htmlFor="profile-name">Nome</label>
+            <input id="profile-name" type="text" {...register("name")} />
+            {errors.name ? (
+              <span className="text-danger">{errors.name.message}</span>
+            ) : null}
           </div>
-
-          <Button type="submit" disabled={updateProfile.isPending}>
-            {updateProfile.isPending ? "Salvando..." : "Salvar alterações"}
-          </Button>
-        </form>
-      </Form>
-    </>
+          <div className="col-md-8 form-group">
+            <label>E-mail</label>
+            <p>{user?.email}</p>
+          </div>
+          <div className="col-auto form-group">
+            <button
+              className="vs-btn"
+              type="submit"
+              disabled={updateProfile.isPending}
+            >
+              {updateProfile.isPending ? "Salvando..." : "Salvar alterações"}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
   );
 }

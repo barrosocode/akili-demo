@@ -6,6 +6,8 @@ export const ROUTE_PERMISSIONS: Record<string, string | string[] | null> = {
   "/children/new": null,
   "/purchases": "guardian.purchases.read",
   "/profile": null,
+  "/relatorios": GUARDIAN_PERMISSION,
+  "/aluno": GUARDIAN_PERMISSION,
 };
 
 export function getRoutePermission(pathname: string): string | string[] | null {
@@ -17,6 +19,10 @@ export function getRoutePermission(pathname: string): string | string[] | null {
 
   if (normalized.startsWith("/children/")) {
     return "guardian.children.read";
+  }
+
+  if (normalized.startsWith("/aluno")) {
+    return GUARDIAN_PERMISSION;
   }
 
   return GUARDIAN_PERMISSION;

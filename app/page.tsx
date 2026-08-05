@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 
 import { getServerSession } from "@/lib/auth/session";
-import { GuardianShell } from "@/components/layout/guardian-shell";
+import { GuardianDashboardShell } from "@/components/portal/guardian/GuardianDashboardShell";
 import { GuardianGuard } from "@/features/auth";
 import { ChildrenHome } from "@/features/children";
 import { buildPageMetadata, marketingPageSeo } from "@/constants/seo";
+
+import "@/styles/marketing.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const session = await getServerSession();
@@ -12,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
     return buildPageMetadata(marketingPageSeo.home);
   }
   return {
-    title: "Início",
+    title: "Meus filhos",
     robots: { index: false, follow: false },
   };
 }
@@ -29,9 +31,9 @@ export default async function HomePage() {
 
   return (
     <GuardianGuard>
-      <GuardianShell>
+      <GuardianDashboardShell activeHref="/">
         <ChildrenHome />
-      </GuardianShell>
+      </GuardianDashboardShell>
     </GuardianGuard>
   );
 }

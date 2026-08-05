@@ -1,31 +1,28 @@
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { PageHeader } from "@/components/layout/page-header";
 
-export default async function ChildDetailPage({
-  params,
-}: {
+type ChildDetailPageProps = {
   params: Promise<{ ref: string }>;
-}) {
-  const { ref } = await params;
+};
+
+/**
+ * Detalhe do filho — Kiddino (PORTAL-008).
+ * Progresso detalhado via API em follow-up; sem expor ref na UI.
+ */
+export default async function ChildDetailPage({ params }: ChildDetailPageProps) {
+  await params;
 
   return (
-    <>
-      <PageHeader
-        title="Detalhes do aluno"
-        description="Progresso e informações do aluno selecionado."
-        breadcrumbs={[
-          { label: "Meus filhos", href: "/" },
-          { label: "Detalhes" },
-        ]}
-      />
-      <p className="text-sm text-muted-foreground">
-        Referência interna carregada com sucesso.
+    <div className="blog-content">
+      <h2 className="blog-title">Detalhes do aluno</h2>
+      <p>
+        O acompanhamento detalhado de progresso estará disponível em breve nesta
+        tela.
       </p>
-      <Link href="/" className={cn(buttonVariants({ variant: "outline" }), "mt-4 inline-flex")}>
-        Voltar
-      </Link>
-    </>
+      <p>
+        <Link href="/" className="vs-btn">
+          Voltar aos filhos
+        </Link>
+      </p>
+    </div>
   );
 }

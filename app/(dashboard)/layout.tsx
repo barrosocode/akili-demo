@@ -1,14 +1,18 @@
-import { GuardianShell } from "@/components/layout/guardian-shell";
+import type { ReactNode } from "react";
+
+import { GuardianDashboardShell } from "@/components/portal/guardian/GuardianDashboardShell";
 import { GuardianGuard } from "@/features/auth";
+
+import "@/styles/marketing.css";
 
 export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <GuardianGuard>
-      <GuardianShell>{children}</GuardianShell>
+      <GuardianDashboardShell>{children}</GuardianDashboardShell>
     </GuardianGuard>
   );
 }
