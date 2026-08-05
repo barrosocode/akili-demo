@@ -1,25 +1,4 @@
 /**
- * Folhas do tema legado servidas de `public/assets/css`
- * (MARKETING-003 / 004) — não bundlar para preservar urls relativas.
+ * Reexport — marketing usa o tema compartilhado (PORTAL-001).
  */
-export function MarketingThemeStyles() {
-  return (
-    <>
-      <link
-        rel="stylesheet"
-        href="/assets/css/bootstrap.min.css"
-        precedence="medium"
-      />
-      <link
-        rel="stylesheet"
-        href="/assets/css/fontawesome.min.css"
-        precedence="medium"
-      />
-      <link
-        rel="stylesheet"
-        href="/assets/css/style.css"
-        precedence="medium"
-      />
-    </>
-  );
-}
+export { KiddinoThemeStyles as MarketingThemeStyles } from "@/components/theme/KiddinoThemeStyles";
