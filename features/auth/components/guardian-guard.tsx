@@ -1,16 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { LoadingSkeleton } from "@/components/feedback/loading-skeleton";
+import type { ReactNode } from "react";
+import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+
 import { useSession } from "@/providers/session-provider";
 import { checkAccess } from "@/lib/permissions/can";
 import { getRoutePermission } from "@/lib/permissions/route-permissions";
 
-export function GuardianGuard({ children }: { children: React.ReactNode }) {
+/**
+ * Garante sessão autenticada com permissão da rota.
+ */
+export function GuardianGuard({ children }: { children: ReactNode }) {
   const { user, isLoading } = useSession();
   const router = useRouter();
-  const [allowed, setAllowed] = useState(false);
+  const pathname = usePathname();
+
+  const permission = getRoutePermission(pathname);
+  const hasAccess = Boolean(
+    user && checkAccess(user.permissions, permission),
+  );
 
   useEffect(() => {
     if (isLoading) return;
@@ -20,17 +29,17 @@ export function GuardianGuard({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const permission = getRoutePermission(window.location.pathname);
-    if (!checkAccess(user.permissions, permission)) {
+    if (!hasAccess) {
       router.replace("/signin?error=access-denied");
-      return;
     }
+  }, [user, isLoading, router, hasAccess]);
 
-    setAllowed(true);
-  }, [user, isLoading, router]);
-
-  if (isLoading || !allowed) {
-    return <LoadingSkeleton rows={5} />;
+  if (isLoading || !user || !hasAccess) {
+    return (
+      <div className="container space-top" role="status">
+        <p>Carregando...</p>
+      </div>
+    );
   }
 
   return <>{children}</>;

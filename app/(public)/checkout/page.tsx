@@ -1,24 +1,35 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+
+import { AuthShell } from "@/components/portal/auth/AuthShell";
+
+import "@/styles/marketing.css";
 
 export const metadata: Metadata = {
-  title: "Contratar",
+  title: "Checkout",
+  robots: { index: false, follow: false },
 };
 
 export default function CheckoutPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-lg space-y-4 rounded-xl border bg-card p-8 text-center">
-        <h1 className="text-2xl font-semibold">Checkout</h1>
-        <p className="text-sm text-muted-foreground">
-          O fluxo de contratação B2C será implementado na próxima etapa.
-        </p>
-        <Link href="/signin" className={cn(buttonVariants())}>
-          Ir para login
-        </Link>
-      </div>
-    </div>
+    <AuthShell>
+      <section className="space-top space-extra-bottom">
+        <div className="container text-center">
+          <h2 className="sec-title">Checkout</h2>
+          <p>
+            O fluxo de contratação estará disponível em breve. Enquanto isso,
+            conheça os planos ou faça login.
+          </p>
+          <p>
+            <Link href="/preco-e-planos" className="vs-btn">
+              Ver planos
+            </Link>{" "}
+            <Link href="/signin" className="vs-btn">
+              Entrar
+            </Link>
+          </p>
+        </div>
+      </section>
+    </AuthShell>
   );
 }
