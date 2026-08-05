@@ -1,28 +1,21 @@
-import Link from "next/link";
+import type { Metadata } from "next";
+
+import { ChildDetail } from "@/features/children/components/child-detail";
 
 type ChildDetailPageProps = {
   params: Promise<{ ref: string }>;
 };
 
+export const metadata: Metadata = {
+  title: "Relatórios",
+  robots: { index: false, follow: false },
+};
+
 /**
- * Detalhe do filho — Kiddino (PORTAL-008).
- * Progresso detalhado via API em follow-up; sem expor ref na UI.
+ * Detalhe do filho → relatórios mockados (PORTAL-008 / layout_old relatoriosView).
  */
 export default async function ChildDetailPage({ params }: ChildDetailPageProps) {
-  await params;
+  const { ref } = await params;
 
-  return (
-    <div className="blog-content">
-      <h2 className="blog-title">Detalhes do aluno</h2>
-      <p>
-        O acompanhamento detalhado de progresso estará disponível em breve nesta
-        tela.
-      </p>
-      <p>
-        <Link href="/" className="vs-btn">
-          Voltar aos filhos
-        </Link>
-      </p>
-    </div>
-  );
+  return <ChildDetail childRef={ref} />;
 }

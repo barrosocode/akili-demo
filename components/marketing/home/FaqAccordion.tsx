@@ -5,9 +5,16 @@ import { useId, useState } from "react";
 import { faqDefaultOpenId, faqItems } from "@/constants/faq";
 import type { FaqItem } from "@/types/marketing";
 
+type FaqAccordionVariant = "marketing" | "content";
+
 type FaqAccordionProps = {
   items?: FaqItem[];
   defaultOpenId?: string;
+  /**
+   * `marketing` = FAQ da home (`v2`, position absolute).
+   * `content` = colunas de conteúdo / dashboard (fluxo normal).
+   */
+  variant?: FaqAccordionVariant;
 };
 
 /**
@@ -17,6 +24,7 @@ type FaqAccordionProps = {
 export function FaqAccordion({
   items = faqItems,
   defaultOpenId = faqDefaultOpenId,
+  variant = "marketing",
 }: FaqAccordionProps) {
   const baseId = useId();
   const [openId, setOpenId] = useState<string | null>(defaultOpenId ?? null);
@@ -25,8 +33,22 @@ export function FaqAccordion({
     setOpenId((current) => (current === id ? null : id));
   }
 
+  let accordionClassName: string;
+  switch (variant) {
+    case "marketing":
+      accordionClassName = "accordion accordion-style1 v2";
+      break;
+    case "content":
+      accordionClassName = "accordion accordion-style1";
+      break;
+    default: {
+      const _exhaustive: never = variant;
+      accordionClassName = _exhaustive;
+    }
+  }
+
   return (
-    <div className="accordion accordion-style1 v2">
+    <div className={accordionClassName}>
       {items.map((item) => {
         const isOpen = openId === item.id;
         const headerId = `${baseId}-header-${item.id}`;
