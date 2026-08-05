@@ -5,9 +5,22 @@ const PUBLIC_PATHS = [
   "/forgot-password",
   "/first-access",
   "/invite",
+  "/sobre-nos",
+  "/series",
+  "/blog",
+  "/preco-e-planos",
+  "/faq",
+  "/cadastro",
+  "/contato",
+  "/newsletter",
 ] as const;
 
-const PUBLIC_PREFIXES = ["/api/auth/login", "/api/auth/signup", "/api/auth/invite"] as const;
+const PUBLIC_PREFIXES = [
+  "/api/auth/login",
+  "/api/auth/signup",
+  "/api/auth/invite",
+  "/blog/",
+] as const;
 
 export function isPublicPath(pathname: string): boolean {
   if (PUBLIC_PATHS.includes(pathname as (typeof PUBLIC_PATHS)[number])) {

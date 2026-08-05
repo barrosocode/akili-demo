@@ -1,0 +1,8 @@
+/**
+ * Entry CSS do site institucional (SPEC-005 / SPEC-007).
+ * Tema legado (Bootstrap / FA / style.css) entra via <link> em
+ * `MarketingThemeStyles` — assim `url(../img/…)` resolve em `/assets/…`.
+ * Este arquivo só carrega overrides (bundled).
+ */
+
+@import "./marketing-overrides.css";

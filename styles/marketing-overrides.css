@@ -1,0 +1,100 @@
+/**
+ * Overrides pontuais do marketing (SPEC-007 / MARKETING-004 / 005).
+ * Escopo obrigatório: `.marketing-root …`
+ */
+
+.marketing-root {
+  --title-font: var(--font-fredoka), "Fredoka", sans-serif;
+  --body-font: var(--font-jost), "Jost", sans-serif;
+  font-family: var(--body-font);
+  /* Isola reset do Bootstrap vs Preflight do portal */
+  box-sizing: border-box;
+  line-height: 1.5;
+  color: #444;
+}
+
+.marketing-root *,
+.marketing-root *::before,
+.marketing-root *::after {
+  box-sizing: border-box;
+}
+
+.marketing-root img {
+  max-width: 100%;
+  height: auto;
+}
+
+.marketing-root a {
+  text-decoration: none;
+}
+
+.marketing-root ul {
+  padding-left: 0;
+}
+
+.marketing-root .container,
+.marketing-root .container-style4 {
+  width: 100%;
+}
+
+/* Carousel blog (MARKETING-037) — scroll-snap, sem Slick */
+.marketing-root .marketing-blog-carousel {
+  position: relative;
+}
+
+.marketing-root .marketing-blog-carousel__track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(280px, 1fr);
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding-bottom: 0.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 768px) {
+  .marketing-root .marketing-blog-carousel__track {
+    grid-auto-columns: calc((100% - 1.5rem) / 2);
+  }
+}
+
+@media (min-width: 1200px) {
+  .marketing-root .marketing-blog-carousel__track {
+    grid-auto-columns: calc((100% - 3rem) / 3);
+  }
+}
+
+.marketing-root .marketing-blog-carousel__slide {
+  scroll-snap-align: start;
+  min-width: 0;
+}
+
+.marketing-root .marketing-blog-carousel__nav {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.marketing-root .marketing-blog-carousel__btn {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  border: 1px solid #d0d0d0;
+  background: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.marketing-root .marketing-blog-carousel__btn:hover {
+  border-color: var(--theme-color, #ff6b00);
+  color: var(--theme-color, #ff6b00);
+}
+
+.marketing-root .marketing-blog-carousel__btn:focus-visible {
+  outline: 2px solid var(--theme-color, #ff6b00);
+  outline-offset: 2px;
+}
