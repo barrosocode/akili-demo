@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 
 import { loginSchema } from "@/features/auth/schemas/auth.schema";
+import { resolvePostLoginPath } from "@/lib/auth/post-login-path";
 import { useLoginMutation } from "@/services/queries/auth.mutations";
 import { BffClientError } from "@/services/bff/client";
 
@@ -15,9 +16,10 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 /**
  * Login Kiddino (PORTAL-003) — form-style3 + BFF.
+ * Pós-sucesso: full navigation para o dashboard (`/` ou `?next=` seguro).
  */
 export function SignInForm() {
-  const router = useRouter();
+  const searchParams = useSearchParams();
   const login = useLoginMutation();
   const {
     register,
@@ -32,8 +34,8 @@ export function SignInForm() {
   async function onSubmit(values: LoginFormValues) {
     try {
       await login.mutateAsync(values);
-      router.push("/");
-      router.refresh();
+      const destination = resolvePostLoginPath(searchParams.get("next"));
+      window.location.assign(destination);
     } catch (error) {
       const message =
         error instanceof BffClientError

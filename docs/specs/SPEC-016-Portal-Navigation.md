@@ -22,6 +22,8 @@ CTAs LOGIN/CADASTRE-SE no chrome marketing: TopBar, barra do `SiteHeader` (deskt
 
 Middleware: rotas auth sempre acessíveis (mesmo com cookie de sessão presente/inválido).
 
+Pós-login: full navigation (`window.location.assign`) para **`/`** (dashboard do responsável — Meus filhos). Query `?next=` honrada se for path relativo interno seguro (ex.: `/signin?next=/profile`).
+
 ## Responsável (sidebar)
 
 | Label | Href |

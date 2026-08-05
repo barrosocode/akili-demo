@@ -19,6 +19,7 @@ Portal auth e dashboards migrados para visual Kiddino (mesmo pipeline CSS do mar
 | URL | Esperado |
 | --- | --- |
 | `/signin` | Login form-style3 + **MarketingShell** (header/footer); acessível mesmo com cookie residual |
+| Pós-login | Full navigation para `/` (dashboard responsável) ou `?next=` seguro |
 | `/forgot-password` | Pedido de e-mail (feedback honesto) |
 | `/` logado | Shell responsável + filhos |
 | `/profile`, `/purchases`, `/relatorios` | Páginas Kiddino |
@@ -38,6 +39,7 @@ Portal auth e dashboards migrados para visual Kiddino (mesmo pipeline CSS do mar
 
 - [x] Auth sempre acessível no middleware + limpeza de cookie em `/api/auth/me` (2026-08-05)
 - [x] `(auth)` via `MarketingShell`; LOGIN no header e menu mobile
+- [x] Pós-login → dashboard `/` com full navigation; `/api/auth/me` não limpa cookie em 5xx
 - [ ] BFF forgot-password / reset real
 - [ ] Form adicionar filho + detalhe progresso
 - [ ] Checkout B2C completo

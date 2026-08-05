@@ -102,7 +102,8 @@ components/
 ### Sessão e middleware (auth)
 
 - Rotas `isAuthPath` (`/signin`, `/forgot-password`, `/first-access`, `/invite`) **nunca** são redirecionadas pelo middleware com base só na presença de cookie.
-- Cookie inválido: limpeza em Route Handler (`GET /api/auth/me`, logout) — **não** em Server Components (`fetchAuthUser`).
+- Cookie inválido: limpeza em Route Handler (`GET /api/auth/me` em **401**/sessão null, logout) — **não** em Server Components (`fetchAuthUser`) nem em 5xx do `/me`.
+- Pós-login: full navigation para `/` (dashboard) ou `?next=` seguro.
 - `hasSessionCookie` só bloqueia rotas **privadas** sem cookie → redirect para `/signin?next=…`.
 
 ---
