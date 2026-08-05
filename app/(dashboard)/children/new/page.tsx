@@ -47,7 +47,7 @@ export default async function NewChildPage() {
       )}
 
       <p>
-        <Link href="/" className="vs-btn">
+        <Link href="/children" className="vs-btn">
           Voltar aos filhos
         </Link>
       </p>

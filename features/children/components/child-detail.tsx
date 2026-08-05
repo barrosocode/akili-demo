@@ -72,7 +72,7 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
         <h2 className="blog-title">Filho</h2>
         <p>Não foi possível carregar os dados deste aluno.</p>
         <p>
-          <Link href="/" className="vs-btn">
+          <Link href="/children" className="vs-btn">
             Voltar aos filhos
           </Link>
         </p>
@@ -86,7 +86,7 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
         <h2 className="blog-title">Filho</h2>
         <p>Filho não encontrado na sua conta.</p>
         <p>
-          <Link href="/" className="vs-btn">
+          <Link href="/children" className="vs-btn">
             Voltar aos filhos
           </Link>
         </p>
@@ -99,10 +99,10 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
 
   return (
     <div className="blog-content">
-      <div className="blog-meta d-flex flex-wrap justify-content-between align-items-center gap-2">
-        <h2 className="blog-title mb-0">{child.name}</h2>
+      <div className="portal-page-header">
+        <h2 className="blog-title">{child.name}</h2>
         {isDemo ? (
-          <span className="badge bg-secondary">Demonstração</span>
+          <span className="portal-chip portal-chip--muted">Demonstração</span>
         ) : null}
       </div>
 
@@ -112,29 +112,33 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
           .join(" · ") || "Acompanhe o progresso e as conquistas."}
       </p>
 
-      <div className="mb-4 d-flex flex-wrap gap-2">
+      <div
+        className="mb-4 d-flex flex-wrap gap-2 portal-child-tabs"
+        role="tablist"
+        aria-label="Seções do acompanhamento"
+      >
         {(
           [
             ["overview", "Visão geral"],
             ["reports", "Relatórios"],
             ["achievements", "Conquistas"],
           ] as const
-        ).map(([id, label]) => (
-          <button
-            key={id}
-            type="button"
-            className="vs-btn"
-            style={
-              tab === id
-                ? undefined
-                : { opacity: 0.7, background: "transparent", border: "1px solid currentColor" }
-            }
-            onClick={() => setTab(id)}
-            aria-current={tab === id ? "true" : undefined}
-          >
-            {label}
-          </button>
-        ))}
+        ).map(([id, label]) => {
+          const isActive = tab === id;
+          return (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              className={isActive ? "vs-btn" : "vs-btn style3"}
+              onClick={() => setTab(id)}
+              aria-current={isActive ? "true" : undefined}
+              aria-selected={isActive}
+            >
+              {label}
+            </button>
+          );
+        })}
       </div>
 
       {!canViewProgress ? (
@@ -264,8 +268,8 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
 
               {selectedReport ? (
                 <div className="widget mb-4">
-                  <div className="d-flex justify-content-between align-items-start gap-2 mb-2">
-                    <h3 className="widget_title mb-0">
+                  <div className="portal-block-heading">
+                    <h3 className="portal-block-heading__title">
                       {selectedReport.subject ?? "Relatório"} —{" "}
                       {selectedReport.periodLabel}
                     </h3>
@@ -317,7 +321,7 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
       ) : null}
 
       <p className="mt-3">
-        <Link href="/" className="vs-btn">
+        <Link href="/children" className="vs-btn">
           Voltar aos filhos
         </Link>
       </p>

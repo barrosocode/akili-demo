@@ -7,8 +7,6 @@ type PerformanceBadgeProps = {
 
 export function PerformanceBadge({ level }: PerformanceBadgeProps) {
   return (
-    <span className="badge bg-theme" style={{ fontWeight: 600 }}>
-      {performanceLabel(level)}
-    </span>
+    <span className="portal-chip portal-chip--theme">{performanceLabel(level)}</span>
   );
 }

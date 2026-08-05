@@ -98,3 +98,149 @@
   outline: 2px solid var(--theme-color, #ff6b00);
   outline-offset: 2px;
 }
+
+/* Portal — CTAs sempre legíveis (sem depender de hover) */
+.marketing-root a.vs-btn,
+.marketing-root button.vs-btn {
+  cursor: pointer;
+  text-decoration: none;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marketing-root button.vs-btn:disabled,
+.marketing-root a.vs-btn[aria-disabled="true"] {
+  opacity: 0.65;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Outline (style3) permanece com contraste estável no dashboard */
+.marketing-root .vs-btn.style3 {
+  background-color: #fff;
+  border: 2px solid var(--theme-color, #ff6b00);
+  color: var(--theme-color, #ff6b00);
+}
+
+.marketing-root .vs-btn.style3:hover,
+.marketing-root .vs-btn.style3:focus-visible {
+  background-color: var(--theme-color, #ff6b00);
+  color: #fff;
+}
+
+.marketing-root .vs-btn.style3:disabled {
+  background-color: #fff;
+  border-color: var(--theme-color, #ff6b00);
+  color: var(--theme-color, #ff6b00);
+  opacity: 0.7;
+}
+
+.marketing-root .portal-child-tabs .vs-btn {
+  padding: 14px 28px;
+}
+
+/* Portal — chips de status (não usar .badge do Kiddino: position absolute) */
+.marketing-root .portal-chip {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  max-width: 100%;
+  padding: 0.35em 0.75em;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.marketing-root .portal-chip--muted {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.marketing-root .portal-chip--theme {
+  background-color: var(--theme-color, #ff6b00);
+  color: #fff;
+}
+
+/* Portal — cabeçalho de página (título + chip) */
+.marketing-root .portal-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.marketing-root .portal-page-header .blog-title {
+  margin-bottom: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Portal — cards de filho na lista */
+.marketing-root .portal-child-card {
+  --widget-padding-y: 24px;
+  --widget-padding-x: 24px;
+  margin-bottom: 0;
+}
+
+.marketing-root .portal-child-card .widget_title {
+  font-size: 1.35rem;
+  line-height: 1.25;
+  margin: 0 0 12px 0;
+  padding: 0 0 10px 0;
+}
+
+.marketing-root .portal-child-card .widget_title a {
+  color: inherit;
+}
+
+.marketing-root .portal-child-card .widget_title a:hover {
+  color: var(--theme-color, #ff6b00);
+}
+
+/* Portal — barras de progresso estáveis */
+.marketing-root .progress {
+  display: flex;
+  height: 0.75rem;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+}
+
+.marketing-root .progress-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  background-color: var(--theme-color, #ff6b00);
+  transition: width 0.3s ease;
+}
+
+/* Portal — título de bloco com chip ao lado (ex.: relatório) */
+.marketing-root .portal-block-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.marketing-root .portal-block-heading__title {
+  margin: 0;
+  font-family: var(--title-font);
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.25;
+  flex: 1 1 12rem;
+  min-width: 0;
+}

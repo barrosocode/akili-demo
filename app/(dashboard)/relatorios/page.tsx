@@ -50,7 +50,7 @@ export default function RelatoriosPage() {
         </p>
       ) : (
         <p>
-          <Link href="/" className="vs-btn">
+          <Link href="/children" className="vs-btn">
             Voltar
           </Link>
         </p>

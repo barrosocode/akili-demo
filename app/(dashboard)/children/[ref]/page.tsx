@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * Detalhe do filho → relatórios mockados (PORTAL-008 / layout_old relatoriosView).
+ * Detalhe do filho — progresso, relatórios e conquistas (API demo).
  */
 export default async function ChildDetailPage({ params }: ChildDetailPageProps) {
   const { ref } = await params;

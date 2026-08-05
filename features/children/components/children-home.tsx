@@ -92,7 +92,7 @@ export function ChildrenHome() {
             return (
               <div key={child.ref} className="col-md-6 mb-4">
                 <div
-                  className="widget h-100"
+                  className="widget portal-child-card h-100"
                   style={
                     isActive
                       ? { outline: "2px solid #2d6cdf", outlineOffset: 2 }
@@ -114,18 +114,19 @@ export function ChildrenHome() {
                     </p>
                   )}
 
-                  <div className="d-flex gap-2 flex-wrap mt-3">
-                    <button
-                      type="button"
-                      className="vs-btn"
-                      onClick={() => setActiveChildRef(child.ref)}
-                      disabled={isActive}
-                    >
-                      {isActive ? "Ativo" : "Selecionar"}
-                    </button>
+                  <div className="d-flex gap-2 flex-wrap mt-3 align-items-center">
                     <Link href={`/children/${child.ref}`} className="vs-btn">
                       Ver detalhes
                     </Link>
+                    <button
+                      type="button"
+                      className="vs-btn style3"
+                      onClick={() => setActiveChildRef(child.ref)}
+                      disabled={isActive}
+                      aria-pressed={isActive}
+                    >
+                      {isActive ? "Ativo" : "Selecionar"}
+                    </button>
                   </div>
                 </div>
               </div>

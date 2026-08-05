@@ -30,7 +30,7 @@ export function ChildHomeProgressCard({ childRef }: ChildHomeProgressCardProps) 
   return (
     <div className="mt-2 mb-2">
       {data.status === "demo" ? (
-        <span className="badge bg-secondary mb-2">Demonstração</span>
+        <span className="portal-chip portal-chip--muted mb-2">Demonstração</span>
       ) : null}
       {percent != null ? (
         <>
