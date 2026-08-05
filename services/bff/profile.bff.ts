@@ -1,9 +1,14 @@
+import type { UpdateGuardianProfileValues } from "@/features/profile/schemas/profile.schema";
 import { bffClient } from "@/services/bff/client";
-import type { SessionUser } from "@/types/session";
+import type { GuardianProfile } from "@/types/guardian-profile";
 
 export const profileBff = {
-  update(payload: { name: string }) {
-    return bffClient<SessionUser>("/api/profile", {
+  get() {
+    return bffClient<GuardianProfile>("/api/profile");
+  },
+
+  update(payload: UpdateGuardianProfileValues) {
+    return bffClient<GuardianProfile>("/api/profile", {
       method: "PATCH",
       body: payload,
     });

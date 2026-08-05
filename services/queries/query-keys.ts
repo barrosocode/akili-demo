@@ -2,6 +2,10 @@ export const queryKeys = {
   auth: {
     me: ["auth", "me"] as const,
   },
+  profile: {
+    all: ["profile"] as const,
+    me: () => [...queryKeys.profile.all, "me"] as const,
+  },
   children: {
     all: ["children"] as const,
     list: () => [...queryKeys.children.all, "list"] as const,

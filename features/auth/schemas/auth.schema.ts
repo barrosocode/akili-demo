@@ -42,10 +42,6 @@ export const acceptInviteSchema = z
     path: ["password_confirmation"],
   });
 
-export const updateProfileSchema = z.object({
-  name: z.string().min(2, "Informe seu nome"),
-});
-
 export const firstAccessRequestSchema = z.object({
   email: z.string().email("Informe um e-mail válido"),
 });

@@ -67,7 +67,8 @@ middleware.ts  # Proteção de rotas
 | `POST /api/consents/accept` | `POST /consents/accept` |
 | `GET /api/guardian/children` | `GET /guardian/students` |
 | `GET /api/guardian/children/[ref]/progress` | `GET /guardian/students/{uuid}/progress` |
-| `PATCH /api/profile` | `PATCH /client/auth/me` |
+| `GET /api/profile` | `GET /guardian/me` |
+| `PATCH /api/profile` | `PATCH /guardian/me` |
 | `GET /api/guardian/purchases` | stub 501 |
 
 ## Como adicionar uma feature

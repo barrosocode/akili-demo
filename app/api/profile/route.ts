@@ -1,16 +1,39 @@
-import { z } from "zod";
 import { laravelRequest } from "@/lib/api/laravel-client";
 import { jsonError, jsonSuccess, validationError } from "@/lib/api/response";
 import { requireAuth } from "@/lib/auth/session";
-import { toSessionUser } from "@/lib/permissions/guardian-capabilities";
-import { updateProfileSchema } from "@/features/auth/schemas/auth.schema";
-import type { AuthUser } from "@/types/auth";
+import {
+  toGuardianProfilePayload,
+  updateGuardianProfileSchema,
+} from "@/features/profile/schemas/profile.schema";
+import type {
+  GuardianProfile,
+  GuardianResourceApi,
+} from "@/types/guardian-profile";
+
+function mapGuardianProfile(payload: GuardianResourceApi): GuardianProfile {
+  return {
+    name: payload.name?.trim() || "",
+    email: payload.email?.trim() || "",
+    phone: payload.phone?.trim() || null,
+    document: payload.document?.trim() || null,
+  };
+}
+
+export async function GET() {
+  try {
+    await requireAuth();
+    const payload = await laravelRequest<GuardianResourceApi>("/guardian/me");
+    return jsonSuccess(mapGuardianProfile(payload));
+  } catch (error) {
+    return jsonError(error);
+  }
+}
 
 export async function PATCH(request: Request) {
   try {
     await requireAuth();
     const body = await request.json();
-    const parsed = updateProfileSchema.safeParse(body);
+    const parsed = updateGuardianProfileSchema.safeParse(body);
 
     if (!parsed.success) {
       const errors = Object.fromEntries(
@@ -22,12 +45,13 @@ export async function PATCH(request: Request) {
       return validationError(errors);
     }
 
-    const user = await laravelRequest<AuthUser>("/client/auth/me", {
+    const payload = toGuardianProfilePayload(parsed.data);
+    const updated = await laravelRequest<GuardianResourceApi>("/guardian/me", {
       method: "PATCH",
-      data: parsed.data,
+      data: payload,
     });
 
-    return jsonSuccess(toSessionUser(user));
+    return jsonSuccess(mapGuardianProfile(updated));
   } catch (error) {
     return jsonError(error);
   }
