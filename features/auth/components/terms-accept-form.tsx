@@ -259,25 +259,38 @@ export function TermsAcceptForm() {
             <p className="mb-3 text-muted">
               Restam {pending.length} documento(s) para aceitar.
             </p>
-            <label className="d-flex align-items-start gap-2 mb-4">
-              <input
-                type="checkbox"
-                checked={accepted}
-                onChange={(event) => setAccepted(event.target.checked)}
-                disabled={busy || !locationReady}
-                style={{ marginTop: 4 }}
-              />
-              <span>
-                Li e aceito este documento na versão {current.version}.
-              </span>
-            </label>
+            {/*
+              Kiddino esconde input[type=checkbox] e desenha o box em
+              `input ~ label:before` — o input DEVE ser irmão do label, não filho.
+            */}
+            <div className="form-style3 layout2 mb-4">
+              <div className="form-group mb-0">
+                <input
+                  id="terms-accept-checkbox"
+                  type="checkbox"
+                  name="terms-accept"
+                  checked={accepted}
+                  onChange={(event) => setAccepted(event.target.checked)}
+                  disabled={submitting}
+                />
+                <label htmlFor="terms-accept-checkbox">
+                  Li e aceito este documento na versão {current.version}.
+                </label>
+              </div>
+            </div>
             <button
               type="button"
               className="vs-btn"
               onClick={() => void onAccept()}
               disabled={!canSubmit}
             >
-              {submitting ? "Registrando..." : "Li e aceito"}
+              {submitting
+                ? "Registrando..."
+                : !locationReady
+                  ? "Permita a localização para continuar"
+                  : !accepted
+                    ? "Marque o aceite para continuar"
+                    : "Li e aceito"}
             </button>
           </div>
         </div>
