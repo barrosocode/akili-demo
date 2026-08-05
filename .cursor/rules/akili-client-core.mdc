@@ -1,5 +1,5 @@
 ---
-description: Governança central do Portal do Responsável Akili
+description: Governança central do Portal Akili (Kiddino)
 alwaysApply: true
 ---
 
@@ -7,28 +7,29 @@ alwaysApply: true
 
 ## Escopo
 
-- App exclusivo para **responsáveis** (`guardian`)
+- Portal do **responsável** e área do **aluno** (Kiddino) neste repo `site`
 - Escolas usam o **Admin** (`admin/`) — nunca implementar fluxos escolares aqui
 - Browser **nunca** chama Laravel diretamente — sempre via BFF `/api/*`
 
 ## Stack
 
-- Next.js 16 (App Router), React 19, TypeScript, Tailwind v4, shadcn/ui
+- Next.js 16 (App Router), React 19, TypeScript
+- Visual **Kiddino** (Bootstrap + `style.css` via `KiddinoThemeStyles`) — **sem Tailwind/shadcn** nas rotas portal/auth/aluno/marketing
 - TanStack Query, React Hook Form, Zod, Axios (server-only)
-- Estrutura na raiz: `app/`, `components/`, `features/`, `lib/`, `services/`, `types/`
+- Estrutura: `app/`, `components/{marketing,portal,theme}/`, `features/`, `lib/`, `services/`, `types/`
 
 ## Feature-first
 
 - Páginas em `app/` são thin shells
-- Lógica em `features/<nome>/` (components, hooks, schemas, types)
-- Nunca duplicar componentes — reutilizar `components/ui` e compostos
+- Lógica em `features/<nome>/`
+- Reutilizar componentes marketing/portal Kiddino — não `components/ui`
 
 ## Checklist antes de entregar
 
-- [ ] Segui `frontend-product-experience.mdc` (CRO B2C, personas responsável, mobile first)?
+- [ ] Segui `frontend-product-experience.mdc`?
 - [ ] BFF usado (sem fetch direto ao Laravel no browser)
 - [ ] Sem UUID/ID exposto na UI
 - [ ] `canAddChildren` respeitado (B2C vs convite escola)
 - [ ] Loading, error e empty states
-- [ ] Formulários com RHF + Zod
+- [ ] Formulários com RHF + Zod (markup Kiddino)
 - [ ] Tipagem strict, sem `any`

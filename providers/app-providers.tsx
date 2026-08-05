@@ -1,13 +1,14 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+
 import { QueryProvider } from "@/providers/query-provider";
 import { SessionProvider } from "@/providers/session-provider";
-import { ThemeProvider } from "@/providers/theme-provider";
 import type { SessionUser } from "@/types/session";
 
+/**
+ * Providers do site — sem Tooltip/Theme shadcn (PORTAL-014).
+ */
 export function AppProviders({
   children,
   initialUser = null,
@@ -16,15 +17,8 @@ export function AppProviders({
   initialUser?: SessionUser | null;
 }) {
   return (
-    <ThemeProvider>
-      <QueryProvider>
-        <SessionProvider initialUser={initialUser}>
-          <TooltipProvider>
-            {children}
-            <Toaster richColors closeButton position="top-right" />
-          </TooltipProvider>
-        </SessionProvider>
-      </QueryProvider>
-    </ThemeProvider>
+    <QueryProvider>
+      <SessionProvider initialUser={initialUser}>{children}</SessionProvider>
+    </QueryProvider>
   );
 }

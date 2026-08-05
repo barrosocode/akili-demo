@@ -1,27 +1,24 @@
 ---
-description: shadcn/ui, formulários e componentes obrigatórios
+description: Formulários do portal — Kiddino + RHF/Zod
 globs: components/**,features/**/components/**,features/**/schemas/**
 alwaysApply: false
 ---
 
-# UI e Formulários
+# UI e Formulários (Portal Kiddino)
 
 ## Design System
 
-- Base: shadcn/ui em `components/ui/`
-- Compostos: `components/forms/`, `components/tables/`, `components/feedback/`
+- Visual: tema Kiddino (`form-style3`, `vs-btn`, Bootstrap grid)
+- Tema compartilhado: `components/theme/Kiddino*`
+- **Não** usar `components/ui` (shadcn) nas rotas portal/auth/aluno/marketing
 
 ## Formulários
 
 - React Hook Form + Zod
-- Validação em tempo real
+- Markup com classes do tema (`form-style3`, `form-group`)
 - Botão desabilitado durante submit
-- Toast de sucesso/erro (sonner)
-
-## Componentes obrigatórios
-
-Select, Autocomplete, DatePicker, Modal, Drawer, Toast, EmptyState, LoadingSkeleton, DataTable
+- Feedback inline (sucesso/erro) — sem depender de toast shadcn
 
 ## Reutilizar
 
-Nunca criar input/button/modal do zero se existir em `components/ui/`.
+`Button` marketing (`components/marketing/common/Button`) para CTAs `vs-btn`.
