@@ -72,7 +72,7 @@ Lógica em `lib/permissions/guardian-capabilities.ts`.
 | Rota | Descrição |
 |------|-----------|
 | `/children/new` | Cadastrar filho (somente B2C) |
-| `/children/[ref]` | Relatórios do filho (mock Kiddino; `Ver detalhes` em Meus filhos) |
+| `/children/[ref]` | Progresso, relatórios e conquistas via API demo (BFF `/api/guardian/children/[ref]/progress`) |
 | `/purchases` | Compras e assinaturas |
 | `/profile` | Perfil do responsável (nome, telefone, CPF → `GET/PATCH /api/profile` → `/guardian/me`) |
 

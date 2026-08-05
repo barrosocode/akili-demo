@@ -56,7 +56,19 @@ export const faqItems: FaqItem[] = [
     id: "acompanhamento-pais",
     question: "O acompanhamento dos pais é necessário?",
     answer:
-      "Para crianças menores, o acompanhamento parental é recomendado para monitorar o progresso e garantir o melhor uso da plataforma.",
+      "Para crianças menores, o acompanhamento parental é recomendado para monitorar o progresso e garantir o melhor uso da plataforma. O portal do responsável mostra progresso, materiais, relatórios e conquistas em linguagem simples.",
+  },
+  {
+    id: "planos-familia-escola",
+    question: "Qual a diferença entre os planos familiares e o plano Escola?",
+    answer:
+      "Os planos Starter, Essencial e Premium são para famílias (limite de filhos e pacotes). O plano Escola cobre licenças por pacote, turmas e professores — ideal para escolas e redes. Veja detalhes em Preço e Planos.",
+  },
+  {
+    id: "como-comecar",
+    question: "Como começo a usar a Akili?",
+    answer:
+      "Famílias podem escolher um plano e seguir para o cadastro/checkout. Escolas falam conosco pelo Contato para ativação de licenças. Depois do login, o responsável acompanha os filhos no portal.",
   },
 ];
 

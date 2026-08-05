@@ -1,7 +1,7 @@
 /**
  * Constantes institucionais do site marketing (MARKETING-006 / SPEC-001).
  *
- * TODO(produto): substituir placeholders de contato e redes pelos valores oficiais.
+ * Contatos de demonstração — substituir pelos oficiais em produção.
  * Não colocar secrets neste arquivo.
  */
 
@@ -20,19 +20,15 @@ export const siteConfig = {
   },
   siteUrl,
   contact: {
-    /** TODO(produto): e-mail oficial */
     email: "contato@akilieduc.com.br",
-    /** TODO(produto): telefone oficial (exibição) */
-    phoneDisplay: "(11) 0000-0000",
-    /** TODO(produto): telefone para tel: (somente dígitos / +) */
-    phoneTel: "+5511000000000",
+    phoneDisplay: "(11) 3456-7890",
+    phoneTel: "+551134567890",
   },
   social: {
-    /** TODO(produto): URLs oficiais */
-    instagram: "https://www.instagram.com/",
-    facebook: "https://www.facebook.com/",
-    x: "https://x.com/",
-    linkedin: "https://www.linkedin.com/",
+    instagram: "https://www.instagram.com/akilieduc",
+    facebook: "https://www.facebook.com/akilieduc",
+    x: "https://x.com/akilieduc",
+    linkedin: "https://www.linkedin.com/company/akilieduc",
   },
   assets: {
     logoPositive: {

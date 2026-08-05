@@ -64,6 +64,12 @@ export type BlogPostCard = {
   dateLabel?: string;
 };
 
+export type BlogPost = BlogPostCard & {
+  slug: string;
+  dateIso?: string;
+  body: string[];
+};
+
 export type BreadcrumbParent = {
   label: string;
   href: string;

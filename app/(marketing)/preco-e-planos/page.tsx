@@ -8,6 +8,8 @@ export const metadata = buildPageMetadata(marketingPageSeo.precoEPlanos);
 
 export default function PrecoEPlanosPage() {
   const { title, path } = marketingPageSeo.precoEPlanos;
+  const familyPlans = planItems.filter((plan) => plan.audience === "family");
+  const schoolPlans = planItems.filter((plan) => plan.audience === "school");
 
   return (
     <>
@@ -21,9 +23,11 @@ export default function PrecoEPlanosPage() {
               {plansPageMeta.intro}
             </p>
           </div>
+
+          <h3 className="text-center mb-4">Para famílias</h3>
           <div className="row justify-content-center">
-            {planItems.map((plan) => (
-              <div key={plan.id} className="col-lg-5 col-md-6 col-sm-12 mb-4">
+            {familyPlans.map((plan) => (
+              <div key={plan.id} className="col-lg-4 col-md-6 col-sm-12 mb-4">
                 <div
                   className="p-4 h-100"
                   style={{
@@ -42,9 +46,38 @@ export default function PrecoEPlanosPage() {
                       <li key={feature}>{feature}</li>
                     ))}
                   </ul>
-                  <Button href={plan.ctaHref} variant={plan.highlighted ? "v4" : "default"}>
+                  <Button
+                    href={plan.ctaHref}
+                    variant={plan.highlighted ? "v4" : "default"}
+                  >
                     {plan.ctaLabel}
                   </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <h3 className="text-center mb-4 mt-4">Para escolas</h3>
+          <div className="row justify-content-center">
+            {schoolPlans.map((plan) => (
+              <div key={plan.id} className="col-lg-5 col-md-6 col-sm-12 mb-4">
+                <div
+                  className="p-4 h-100"
+                  style={{
+                    border: "1px solid #e5e5e5",
+                    borderRadius: "1rem",
+                    background: "#fff",
+                  }}
+                >
+                  <h3 className="title mb-2">{plan.name}</h3>
+                  <p className="fw-semibold mb-2">{plan.priceLabel}</p>
+                  <p>{plan.description}</p>
+                  <ul className="mb-4">
+                    {plan.features.map((feature) => (
+                      <li key={feature}>{feature}</li>
+                    ))}
+                  </ul>
+                  <Button href={plan.ctaHref}>{plan.ctaLabel}</Button>
                 </div>
               </div>
             ))}

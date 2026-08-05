@@ -55,14 +55,23 @@ PATCH /api/v1/admin/tenants/{uuid}/subscription
 | `/purchases`, `/relatorios` | Purchases stub; relatórios apontam para filhos |
 | `/aluno` | Shell aluno + placeholders API |
 
+## Site institucional (Prioridade 3)
+
+Páginas marketing em `(marketing)` — status em [SPEC-012](./SPEC-012-Implementation-Status.md). Para demo: `/`, `/sobre-nos`, `/series`, `/faq`, `/blog` (+ posts), `/preco-e-planos` (Starter/Essencial/Premium/Escola), `/contato`.
+
+## Ambiente de demo (Prioridade 4)
+
+Roteiro completo (Docker + seeds + personas): `api/docs/akili-platform/16-demo-ambiente.md`.
+
 ## Follow-ups
 
 - [x] Auth + sessão agregada `/client/auth/me`
 - [x] Progresso BFF completo (kpis, materials, reports, classrooms, gamification, notifications)
 - [x] Dashboard sem mocks locais de relatório
 - [x] Planos provisórios (`subscription` na sessão)
+- [x] Blog com posts clicáveis + planos alinhados ao catálogo
 - [ ] BFF forgot-password / reset real
 - [ ] Form adicionar filho real (API ainda 501)
-- [ ] Checkout B2C completo
+- [ ] Checkout B2C completo (billing)
 - [ ] API aluno (disciplinas, conteúdo, quiz)
 - [ ] Domínio Learning/Gamification real (substituir metadata demo)

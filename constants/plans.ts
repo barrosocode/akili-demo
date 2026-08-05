@@ -1,6 +1,6 @@
 /**
- * Planos MVP (MARKETING-050).
- * TODO(produto): preços, benefícios e nomes oficiais.
+ * Planos institucionais alinhados ao catálogo provisório da API
+ * (`config/subscription_plans.php` / doc 14-planos-provisorios-demo).
  */
 
 export type PlanItem = {
@@ -12,41 +12,76 @@ export type PlanItem = {
   highlighted?: boolean;
   ctaLabel: string;
   ctaHref: string;
+  audience: "family" | "school";
 };
 
 export const plansPageMeta = {
   title: "Preço e Planos",
-  subtitle: "Escolha o plano ideal para a sua família",
+  subtitle: "Escolha o plano ideal para a sua família ou escola",
   intro:
-    "Acesso à plataforma Akili Educ com método neurocientífico, acompanhamento de progresso e experiência pensada para alunos típicos e atípicos.",
+    "Planos familiares para estudar em casa e plano Escola para turmas com licenças e acompanhamento pedagógico. Valores comerciais finais entram no checkout; esta página reflete o catálogo provisório da demo.",
 } as const;
 
 export const planItems: PlanItem[] = [
   {
-    id: "mensal",
-    name: "Plano Mensal",
-    priceLabel: "Consulte no checkout",
-    description: "Flexibilidade para experimentar a plataforma mês a mês.",
+    id: "starter",
+    name: "Starter",
+    priceLabel: "A partir de R$ 49/mês",
+    description: "Ideal para começar com um filho e acompanhar o progresso básico.",
+    audience: "family",
     features: [
-      "Acesso completo ao método",
-      "Acompanhamento de progresso",
-      "Conteúdo multimídia e quizzes",
+      "1 filho",
+      "1 pacote de conteúdo",
+      "Progresso básico no portal",
+      "Acesso ao app do aluno",
     ],
-    ctaLabel: "Assinar mensal",
-    ctaHref: "/checkout",
+    ctaLabel: "Começar com Starter",
+    ctaHref: "/checkout?plan=starter",
   },
   {
-    id: "anual",
-    name: "Plano Anual",
-    priceLabel: "Melhor custo-benefício",
-    description: "Ideal para famílias que querem consistência ao longo do ano letivo.",
+    id: "essencial",
+    name: "Essencial",
+    priceLabel: "A partir de R$ 79/mês",
+    description: "Progresso e relatórios simples para até dois filhos.",
+    audience: "family",
     features: [
-      "Tudo do plano mensal",
-      "Economia no período anual",
-      "Prioridade em novidades de conteúdo",
+      "Até 2 filhos",
+      "Até 2 pacotes",
+      "Relatórios pedagógicos",
+      "Acompanhamento semanal",
     ],
+    ctaLabel: "Assinar Essencial",
+    ctaHref: "/checkout?plan=essencial",
+  },
+  {
+    id: "premium",
+    name: "Premium",
+    priceLabel: "A partir de R$ 129/mês",
+    description: "Pacotes familiares, gamificação e acompanhamento completo.",
+    audience: "family",
     highlighted: true,
-    ctaLabel: "Assinar anual",
-    ctaHref: "/checkout",
+    features: [
+      "Até 4 filhos",
+      "Pacotes familiares ilimitados",
+      "Gamificação (XP, missões, medalhas)",
+      "Relatórios e próximos conteúdos",
+    ],
+    ctaLabel: "Assinar Premium",
+    ctaHref: "/checkout?plan=premium",
+  },
+  {
+    id: "escola",
+    name: "Escola",
+    priceLabel: "Sob consulta",
+    description: "Licenças por pacote, turmas, professores e relatórios para a coordenação.",
+    audience: "school",
+    features: [
+      "Licenças escolares com limite por pacote",
+      "Turmas e professores",
+      "Relatórios pedagógicos",
+      "Gamificação no acompanhamento familiar",
+    ],
+    ctaLabel: "Falar com a Akili",
+    ctaHref: "/contato",
   },
 ];

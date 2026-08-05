@@ -35,7 +35,7 @@ cd site && npm run dev
 | `/blogs`, `/login` | Redirect 308 → `/blog`, `/signin` |
 | `/sitemap.xml`, `/robots.txt` | Gerados |
 
-Logado em `/` continua o portal do responsável (sem CSS Bootstrap).
+Logado em `/` continua o portal do responsável (shell Kiddino / Bootstrap do tema — ADR-018).
 
 ## Inventário por épico
 

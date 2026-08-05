@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+import { blogPostDetails } from "@/constants/blog";
 import { siteConfig } from "@/constants/site";
 
 /**
@@ -19,6 +20,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/sobre-nos", priority: 0.8, changeFrequency: "monthly" },
     { path: "/faq", priority: 0.8, changeFrequency: "monthly" },
     { path: "/blog", priority: 0.7, changeFrequency: "weekly" },
+    ...blogPostDetails.map((post) => ({
+      path: post.href,
+      priority: 0.6,
+      changeFrequency: "monthly" as const,
+    })),
     { path: "/series", priority: 0.7, changeFrequency: "monthly" },
     { path: "/contato", priority: 0.5, changeFrequency: "yearly" },
     { path: "/newsletter", priority: 0.5, changeFrequency: "monthly" },
