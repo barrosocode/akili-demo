@@ -1,6 +1,6 @@
-# Índice — SPECs Migração Marketing
+# Índice — SPECs Site Akili
 
-Documentação de contrato para migração do site institucional (`layout_old` → Next.js App Router).
+## Marketing (institucional)
 
 | SPEC | Arquivo | Tema |
 | --- | --- | --- |
@@ -14,9 +14,18 @@ Documentação de contrato para migração do site institucional (`layout_old` �
 | 008 | [SPEC-008-SEO.md](./SPEC-008-SEO.md) | SEO |
 | 009 | [SPEC-009-Performance.md](./SPEC-009-Performance.md) | Performance |
 | 010 | [SPEC-010-Implementation-Plan.md](./SPEC-010-Implementation-Plan.md) | Plano de fases |
-| 011 | [SPEC-011-Implementation-Backlog.md](./SPEC-011-Implementation-Backlog.md) | Backlog técnico (MARKETING-001…061) |
-| 012 | [SPEC-012-Implementation-Status.md](./SPEC-012-Implementation-Status.md) | Status da implementação (MVP) |
+| 011 | [SPEC-011-Implementation-Backlog.md](./SPEC-011-Implementation-Backlog.md) | Backlog MARKETING-* |
+| 012 | [SPEC-012-Implementation-Status.md](./SPEC-012-Implementation-Status.md) | Status marketing MVP |
 
-**Status:** SPEC-001…011 contratos · **SPEC-012** — MVP marketing **entregue** (faltando MARKETING-061 Lighthouse/QA).
+## Portal (auth + dashboards Kiddino)
 
-**Referência de entrega:** ver [SPEC-012](./SPEC-012-Implementation-Status.md) para inventário, smoke test e follow-ups.
+| SPEC | Arquivo | Tema |
+| --- | --- | --- |
+| 013 | [SPEC-013-Portal-Kiddino.md](./SPEC-013-Portal-Kiddino.md) | Visão — revoga dual-DS no site |
+| 014 | [SPEC-014-Portal-Architecture.md](./SPEC-014-Portal-Architecture.md) | Arquitetura shells |
+| 015 | [SPEC-015-Portal-Components.md](./SPEC-015-Portal-Components.md) | Catálogo componentes |
+| 016 | [SPEC-016-Portal-Navigation.md](./SPEC-016-Portal-Navigation.md) | Navegação portal |
+| 017 | [SPEC-017-Portal-Backlog.md](./SPEC-017-Portal-Backlog.md) | Backlog PORTAL-* |
+| 018 | [SPEC-018-Portal-Status.md](./SPEC-018-Portal-Status.md) | Status implementação |
+
+**Status:** Marketing MVP (SPEC-012) · Portal Kiddino MVP (SPEC-018).
