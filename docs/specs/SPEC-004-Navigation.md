@@ -1,10 +1,12 @@
 # SPEC-004 — Navegação
 
+> Vigente. Contrato mono-DS: [ADR-018](../adr/ADR-018-Marketing-Architecture-Reconciliation.md) / [SPEC-019](./SPEC-019-Architectural-Contract.md).
+
 | Campo | Valor |
 | --- | --- |
 | ID | SPEC-004 |
 | Título | Navegação, Rotas e Redirects |
-| Status | Draft |
+| Status | Draft · alinhada ADR-018 |
 | Depende de | SPEC-001, SPEC-002 |
 
 ---

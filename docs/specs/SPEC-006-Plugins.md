@@ -1,10 +1,12 @@
 # SPEC-006 — Estratégia dos Plugins
 
+> Vigente (sem jQuery). [ADR-018](../adr/ADR-018-Marketing-Architecture-Reconciliation.md).
+
 | Campo | Valor |
 | --- | --- |
 | ID | SPEC-006 |
 | Título | Estratégia de Plugins e JavaScript Legado |
-| Status | Draft |
+| Status | Draft · alinhada ADR-018 |
 | Depende de | SPEC-001, SPEC-005 |
 
 ---

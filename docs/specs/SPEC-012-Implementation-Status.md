@@ -1,5 +1,7 @@
 # SPEC-012 — Status de Implementação (Marketing)
 
+> Contrato vigente após reconciliação: [ADR-018](../adr/ADR-018-Marketing-Architecture-Reconciliation.md) + [SPEC-019](./SPEC-019-Architectural-Contract.md). O resumo abaixo descreve o MVP marketing; a menção a “isolamento do portal Tailwind/shadcn” é **Historical** (portal unificado em Kiddino via SPEC-013).
+
 | Campo | Valor |
 | --- | --- |
 | ID | SPEC-012 |
@@ -13,12 +15,12 @@
 
 ## Resumo
 
-Migração do site institucional legado (`layout_old`) para Next.js App Router no monorepo `site`, isolada do portal do responsável (Tailwind/shadcn).
+Migração do site institucional legado (`layout_old`) para Next.js App Router no monorepo `site`, com route group `(marketing)` e shell institucional.
 
-- Route group `(marketing)` + shell (header/footer/mobile)
 - Home pública em `/` (branch `!session`) com seções Hero → CTA
 - Páginas institucionais, SEO (metadata, sitemap, robots, JSON-LD)
 - Rotas públicas no middleware + redirects legado
+- **Pós-MVP portal:** mesmo DS Kiddino no auth/dashboard (ADR-018) — não reabrir dual-DS
 
 ## Como testar localmente
 

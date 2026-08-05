@@ -1,10 +1,12 @@
 # SPEC-005 — Assets
 
+> Vigente. CSS do tema via `<link>` (ADR-018) — inventário de arquivos permanece.
+
 | Campo | Valor |
 | --- | --- |
 | ID | SPEC-005 |
 | Título | Inventário e Estratégia de Assets |
-| Status | Draft |
+| Status | Draft · alinhada ADR-018 |
 | Depende de | SPEC-001 |
 
 ---

@@ -1,10 +1,12 @@
 # SPEC-010 — Plano de Implementação
 
+> Histórico de fases marketing. Continuidade de backlog: [SPEC-011](./SPEC-011-Implementation-Backlog.md) § ADR-018. Contrato: [SPEC-019](./SPEC-019-Architectural-Contract.md).
+
 | Campo | Valor |
 | --- | --- |
 | ID | SPEC-010 |
 | Título | Plano de Implementação da Migração Marketing |
-| Status | Draft |
+| Status | Draft · histórico de fases · alinhada ADR-018 |
 | Depende de | SPEC-001 … SPEC-009 |
 
 ---

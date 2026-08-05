@@ -1,10 +1,12 @@
 # SPEC-003 — Arquitetura de Componentes
 
+> Vigente para o catálogo marketing. Contexto mono-DS: [ADR-018](../adr/ADR-018-Marketing-Architecture-Reconciliation.md). Nota: meta “MainNav Server” pode divergir da implementação Client — dívida menor, não reabre dual-DS.
+
 | Campo | Valor |
 | --- | --- |
 | ID | SPEC-003 |
 | Título | Component Architecture — Marketing |
-| Status | Draft |
+| Status | Draft · contexto ADR-018 |
 | Depende de | SPEC-001, SPEC-002 |
 
 ---

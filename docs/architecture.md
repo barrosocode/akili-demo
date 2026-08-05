@@ -1,8 +1,10 @@
 # Arquitetura — Portal do Responsável (Akili)
 
+> **Atualização (2026-08-05):** o contrato visual e de route groups do repo `site` está em [ADR-018](./adr/ADR-018-Marketing-Architecture-Reconciliation.md) e [SPEC-019](./specs/SPEC-019-Architectural-Contract.md). Este documento permanece útil para BFF/auth/capabilities; trechos que citam shadcn/Tailwind como DS ativo estão **superseded**.
+
 ## Visão geral
 
-Aplicação Next.js 16 para **responsáveis** (B2C e convidados pela escola). Escolas operam no Admin (`../admin/`).
+Aplicação Next.js 16 para **responsáveis** (B2C e convidados pela escola), **marketing institucional** e área **aluno** (UI). Escolas operam no Admin (`../admin/`).
 
 ```
 Browser → /api/* (BFF) → Laravel API (/client/auth/*, /guardian/*)
@@ -10,18 +12,20 @@ Browser → /api/* (BFF) → Laravel API (/client/auth/*, /guardian/*)
 
 O browser **nunca** acessa a API Laravel diretamente.
 
+**Design System oficial do `site`:** Kiddino (não Tailwind/shadcn). Ver SPEC-019.
+
 ## Estrutura de pastas
 
 ```
-app/           # Rotas Next.js (auth, dashboard, api/BFF)
-components/    # UI reutilizável (shadcn + compostos)
+app/           # Rotas: (marketing), (auth), (dashboard), (aluno), (public), api/BFF
+components/    # marketing/, portal/, theme/ (+ residual ui/ = dívida)
 features/      # Domínios feature-first
 services/      # bff/ (browser→/api) + queries/ (TanStack)
 lib/           # api, auth, permissions, utils
 types/         # Tipos compartilhados
 providers/     # React providers
 hooks/         # Hooks transversais
-styles/        # Design tokens
+styles/        # marketing.css / overrides (tema Kiddino)
 middleware.ts  # Proteção de rotas
 ```
 

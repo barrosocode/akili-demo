@@ -1,5 +1,7 @@
 # SPEC-015 — Componentes Portal Kiddino
 
+> Ratificada sob [ADR-018](../adr/ADR-018-Marketing-Architecture-Reconciliation.md) / [SPEC-019](./SPEC-019-Architectural-Contract.md).
+
 | Campo | Valor |
 | --- | --- |
 | ID | SPEC-015 |
@@ -12,7 +14,7 @@
 | --- | --- | --- |
 | `KiddinoThemeStyles` | `components/theme/` | Server |
 | `KiddinoRoot` | `components/theme/` | Server |
-| `AuthShell` | `components/portal/auth/` | Server |
+| `AuthShell` | `components/portal/auth/` | Server — thin wrapper de `MarketingShell` |
 | `LoginForm` | `features/auth/components/` | Client |
 | `ForgotPasswordForm` | `features/auth/components/` | Client |
 | `GuardianDashboardShell` | `components/portal/guardian/` | Server |
@@ -25,6 +27,6 @@
 
 ## Reuso marketing
 
-Header/Footer/MobileMenu/ScrollToTop do marketing em `AuthShell`.
+`(auth)/layout` e `AuthShell` usam **`MarketingShell`** (mesmo chrome: TopBar, SiteHeader, MobileMenu, footer).
 
-Button marketing (`vs-btn`) para CTAs.
+CTAs de auth no chrome: `authLinks.login` / `authLinks.register` no TopBar, barra principal do `SiteHeader` (desktop) e `MobileMenu`.

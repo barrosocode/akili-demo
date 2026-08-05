@@ -1,5 +1,7 @@
 # SPEC-016 — Navegação Portal Kiddino
 
+> Ratificada sob [ADR-018](../adr/ADR-018-Marketing-Architecture-Reconciliation.md) / [SPEC-019](./SPEC-019-Architectural-Contract.md).
+
 | Campo | Valor |
 | --- | --- |
 | ID | SPEC-016 |
@@ -15,6 +17,10 @@
 | Painel escola | `ADMIN_APP_URL` |
 
 Redirects já existentes: `/login`→`/signin`, `/recuperar-senha`→`/forgot-password`.
+
+CTAs LOGIN/CADASTRE-SE no chrome marketing: TopBar, barra do `SiteHeader` (desktop) e `MobileMenu`.
+
+Middleware: rotas auth sempre acessíveis (mesmo com cookie de sessão presente/inválido).
 
 ## Responsável (sidebar)
 

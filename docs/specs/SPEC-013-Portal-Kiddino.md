@@ -1,10 +1,12 @@
 # SPEC-013 — Portal Auth + Dashboard Kiddino
 
+> **Ratificada por [ADR-018](../adr/ADR-018-Marketing-Architecture-Reconciliation.md).** Contrato operacional: [SPEC-019](./SPEC-019-Architectural-Contract.md).
+
 | Campo | Valor |
 | --- | --- |
 | ID | SPEC-013 |
 | Título | Visão — Auth e Dashboards no visual Kiddino |
-| Status | Aprovado |
+| Status | Aprovado · ratificado ADR-018 |
 | Repo | `site` |
 | Revoga | SPEC-001 D-002 (portal shadcn intacto) **no repo `site`** |
 
@@ -22,7 +24,7 @@ O `site` usa **um único design system visual**: tema legado Kiddino (Bootstrap 
 | Superfície | Shell | Rotas |
 | --- | --- | --- |
 | Marketing | `MarketingShell` | `(marketing)/*`, home pública |
-| Auth | `AuthShell` (= chrome marketing) | `/signin`, `/forgot-password`, `/first-access`, `/invite` |
+| Auth | `MarketingShell` (`AuthShell` = alias) | `/signin`, `/forgot-password`, `/first-access`, `/invite` |
 | Responsável | `GuardianDashboardShell` | `/` logado, `/children/*`, `/profile`, `/purchases`, `/checkout`, `/relatorios` |
 | Aluno | `AlunoDashboardShell` | `/aluno/*` |
 

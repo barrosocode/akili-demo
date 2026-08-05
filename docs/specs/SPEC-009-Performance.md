@@ -1,10 +1,12 @@
 # SPEC-009 — Performance
 
+> Vigente. Estratégia CSS vigente em SPEC-019 (não dual-DS de SPEC-007 Historical).
+
 | Campo | Valor |
 | --- | --- |
 | ID | SPEC-009 |
 | Título | Performance e Core Web Vitals — Marketing |
-| Status | Draft |
+| Status | Draft · alinhada ADR-018 |
 | Depende de | SPEC-005, SPEC-006, SPEC-007 |
 
 ---

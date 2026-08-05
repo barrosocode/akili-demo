@@ -1,10 +1,14 @@
 # SPEC-001 — Visão Geral da Migração
 
+> **Status documental:** **Historical** — trechos de dual-DS (D-001, D-002, isolamento CSS, “aluno fora do site”) estão **Superseded by [ADR-018](../adr/ADR-018-Marketing-Architecture-Reconciliation.md)** e [SPEC-019](./SPEC-019-Architectural-Contract.md).  
+> Decisões mantidas: D-003…D-008a (ver inventário no ADR-018).  
+> Contrato vigente: SPEC-019.
+
 | Campo | Valor |
 | --- | --- |
 | ID | SPEC-001 |
 | Título | Visão Geral da Migração do Site Institucional |
-| Status | Draft |
+| Status | **Historical** (parcialmente superseded) |
 | Repo | `site` |
 | Fonte de referência | Auditoria `layout_old` (validada) |
 | Stack alvo | Next.js 16.3 · React 19 · TypeScript |
@@ -84,16 +88,18 @@ O site institucional legado vive em `layout_old/` (63 views PHP), com assets em 
 
 ## Decisões arquiteturais
 
-| ID | Decisão | Rationale |
-| --- | --- | --- |
-| D-001 | Route Group `app/(marketing)/` isolado | Contém CSS Bootstrap/`style.css` sem poluir portal |
-| D-002 | Manter portal shadcn intacto | Evita regressão em auth/dashboard |
-| D-003 | Remover jQuery e plugins mortos | Performance + manutenibilidade; reescrever em React |
-| D-004 | Bootstrap **CSS only** no marketing | Accordion/menu em React; sem `bootstrap.min.js` global |
-| D-005 | Conteúdo MVP em `constants/` | Sem CMS; tipagem e revisão de copy centralizadas |
-| D-006 | Auth legado → rotas Next | `/login` → `/signin`; recuperar senha → `/forgot-password` |
-| D-007 | `layout_old/` permanece como referência | Não servir em produção; deletar só após aceite |
-| D-008 | Home autenticada permanece portal | `app/page.tsx` atual: sessão → ChildrenHome; marketing em rotas públicas dedicadas **ou** home pública substituída (ver alternativas) |
+> **Atenção:** D-001 e D-002 foram **substituídas** por ADR-018 (mono-DS Kiddino). A tabela abaixo permanece como **histórico** do desenho inicial.
+
+| ID | Decisão | Rationale | Status ADR-018 |
+| --- | --- | --- | --- |
+| D-001 | Route Group `app/(marketing)/` isolado | Contém CSS Bootstrap/`style.css` sem poluir portal | **Substituída** — group mantido; isolamento CSS dual-DS não |
+| D-002 | Manter portal shadcn intacto | Evita regressão em auth/dashboard | **Substituída / revogada** (SPEC-013) |
+| D-003 | Remover jQuery e plugins mortos | Performance + manutenibilidade; reescrever em React | **Mantida** |
+| D-004 | Bootstrap **CSS only** no marketing | Accordion/menu em React; sem `bootstrap.min.js` global | **Mantida** (escopo agora = superfícies Kiddino) |
+| D-005 | Conteúdo MVP em `constants/` | Sem CMS; tipagem e revisão de copy centralizadas | **Mantida** |
+| D-006 | Auth legado → rotas Next | `/login` → `/signin`; recuperar senha → `/forgot-password` | **Mantida** |
+| D-007 | `layout_old/` permanece como referência | Não servir em produção; deletar só após aceite | **Mantida** |
+| D-008 | Home autenticada permanece portal | `app/page.tsx`: sessão → ChildrenHome; marketing se deslogado | **Mantida** (D-008a) |
 
 ### Decisão de Home pública (requer validação)
 

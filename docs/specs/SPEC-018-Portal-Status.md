@@ -1,5 +1,7 @@
 # SPEC-018 — Status Portal Kiddino
 
+> Ratificado sob [ADR-018](../adr/ADR-018-Marketing-Architecture-Reconciliation.md). Contrato: [SPEC-019](./SPEC-019-Architectural-Contract.md).
+
 | Campo | Valor |
 | --- | --- |
 | ID | SPEC-018 |
@@ -16,7 +18,7 @@ Portal auth e dashboards migrados para visual Kiddino (mesmo pipeline CSS do mar
 
 | URL | Esperado |
 | --- | --- |
-| `/signin` | Login form-style3 + imagens |
+| `/signin` | Login form-style3 + **MarketingShell** (header/footer); acessível mesmo com cookie residual |
 | `/forgot-password` | Pedido de e-mail (feedback honesto) |
 | `/` logado | Shell responsável + filhos |
 | `/profile`, `/purchases`, `/relatorios` | Páginas Kiddino |
@@ -34,6 +36,8 @@ Portal auth e dashboards migrados para visual Kiddino (mesmo pipeline CSS do mar
 
 ## Follow-ups
 
+- [x] Auth sempre acessível no middleware + limpeza de cookie em `/api/auth/me` (2026-08-05)
+- [x] `(auth)` via `MarketingShell`; LOGIN no header e menu mobile
 - [ ] BFF forgot-password / reset real
 - [ ] Form adicionar filho + detalhe progresso
 - [ ] Checkout B2C completo

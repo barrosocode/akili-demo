@@ -1,11 +1,13 @@
 # SPEC-011 — Backlog Técnico de Implementação
 
+> **Continuidade (ADR-018):** este backlog permanece a fonte das tarefas **MARKETING-***. Não restaurar dual-DS / isolamento shadcn. Contrato vigente: [ADR-018](../adr/ADR-018-Marketing-Architecture-Reconciliation.md) + [SPEC-019](./SPEC-019-Architectural-Contract.md).
+
 | Campo | Valor |
 | --- | --- |
 | ID | SPEC-011 |
 | Título | Backlog Técnico de Implementação — Site Institucional |
-| Status | Executado (MVP) — ver SPEC-012 |
-| Depende de | SPEC-001 … SPEC-010 (aprovadas) |
+| Status | Executado (MVP) — ver SPEC-012 · continuidade sob ADR-018 |
+| Depende de | SPEC-001 … SPEC-010 (aprovadas; trechos dual-DS Historical) |
 | Repo | `site` |
 | Status detalhado | [SPEC-012-Implementation-Status.md](./SPEC-012-Implementation-Status.md) |
 
@@ -17,11 +19,13 @@ Transformar a arquitetura aprovada (SPEC-001–010) em um backlog técnico execu
 
 > **Atualização (2026-08-05):** MARKETING-001…060 implementados no repo `site`. Pendência formal: MARKETING-061 (Lighthouse). Detalhes em SPEC-012.
 
+> **Contexto pós-reconciliação:** a frase “Portal do Responsável permanece intocado” abaixo é **Historical** — o portal passou a Kiddino (SPEC-013 / ADR-018). O backlog MARKETING-* ainda vale para o institucional; checklists do tipo “sem misturar shadcn” permanecem válidos no sentido de não reintroduzir shadcn nas páginas marketing.
+
 ## Contexto
 
 - Fonte de verdade visual/funcional: `layout_old/`
 - Assets: `public/assets/` (já presentes)
-- Portal do Responsável permanece intocado, exceto pontos de integração (public routes, redirects, home pública)
+- ~~Portal do Responsável permanece intocado~~ → **Replaced by ADR-018:** portal visual Kiddino; integração via home D-008a, redirects e middleware
 - **Nenhum código é implementado neste documento** — somente tarefas
 
 ## Escopo
@@ -2157,5 +2161,48 @@ flowchart LR
 ## Referências
 
 - [SPEC-001](./SPEC-001-Marketing-Migration.md) … [SPEC-010](./SPEC-010-Implementation-Plan.md)
+- [ADR-018](../adr/ADR-018-Marketing-Architecture-Reconciliation.md) · [SPEC-019](./SPEC-019-Architectural-Contract.md)
 - `layout_old/` — referência visual
 - `public/assets/` — assets
+
+---
+
+## Etapa 5 — Plano de continuidade (pós ADR-018)
+
+Documento apenas — **não implementa** alterações de código nem reescreve tarefas.
+
+### O backlog continua válido?
+
+**Sim**, para o escopo marketing institucional (MARKETING-001…061). O MVP (001–060) está entregue; a pendência formal é **MARKETING-061** (Lighthouse).
+
+### Tarefas a remover?
+
+**Nenhuma** do backlog MARKETING-* precisa ser removida por causa da reconciliação. Itens já feitos permanecem como histórico de execução.
+
+### Tarefas a reordenar?
+
+**Não.** A ordem histórica (épicos 1–6) já foi executada. A única pendência aberta (**061**) permanece por último, após SEO/perf — coerente com SPEC-010.
+
+### Tarefas a criar? (somente documentação de intenção)
+
+Não criar IDs novos neste checkpoint. Intenções pós-reconciliação (fora do escopo MARKETING-* ou follow-up):
+
+| Intenção | Motivo | Onde rastrear |
+| --- | --- | --- |
+| Schema SEO WebSite + FAQPage na home | Auditoria técnica marketing | SPEC-008 / follow-up SEO (não novo ID aqui) |
+| StudentGuard dedicado em `/aluno` | Fronteira authz (ADR-018) | SPEC-017 / PORTAL follow-up |
+| Limpeza residual `components/ui` shadcn | Dívida mono-DS | SPEC-017 |
+| Renomear `marketing.css` / `marketing-root` | Semântica ampliada | Backlog futuro opcional |
+
+### Tarefas que perderam sentido?
+
+| Item / premissa | Status pós ADR-018 |
+| --- | --- |
+| Premissa “portal shadcn intacto / intocado” | **Perdeu sentido** — não usar como critério de aceite futuro |
+| Tarefas cujo aceite exige “CSS só no `(marketing)`” / dual-DS | **Reinterpretar** sob SPEC-019: CSS Kiddino compartilhado; isolamento = rota/shell, não segundo DS |
+| “Sem misturar shadcn” nas páginas marketing | **Mantém sentido** (não reintroduzir shadcn) |
+| MARKETING-061 Lighthouse | **Mantém sentido** — próxima recomendada do backlog marketing |
+
+### Próxima tarefa recomendada (backlog marketing)
+
+**MARKETING-061** — Lighthouse em staging + relatório, sob contrato ADR-018 / SPEC-019 (sem restaurar dual-DS).

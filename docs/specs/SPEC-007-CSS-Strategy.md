@@ -1,10 +1,14 @@
 # SPEC-007 — Estratégia CSS
 
+> **Status documental:** **Historical (parcial)** — **Superseded by [ADR-018](../adr/ADR-018-Marketing-Architecture-Reconciliation.md)** nos itens CSS-002, CSS-003 e CSS-008 (dual-DS / isolamento por route group / Preflight portal).  
+> Mantidos: CSS-001, CSS-004 (consolidada em `KiddinoRoot`), CSS-005…007.  
+> Estratégia vigente: [SPEC-019 § CSS](./SPEC-019-Architectural-Contract.md).
+
 | Campo | Valor |
 | --- | --- |
 | ID | SPEC-007 |
 | Título | Estratégia CSS — Marketing × Portal |
-| Status | Draft |
+| Status | **Historical** (parcialmente superseded) |
 | Depende de | SPEC-001, SPEC-002, SPEC-005 |
 
 ---
@@ -44,14 +48,14 @@ Conflitos potenciais: reset/reboot Bootstrap vs Preflight Tailwind; `container`;
 
 | ID | Decisão |
 | --- | --- |
-| CSS-001 | CSS do tema **não** entra em `globals.css` globalmente |
-| CSS-002 | Entry único `styles/marketing.css` com `@import` dos assets aprovados |
-| CSS-003 | Import de `marketing.css` **somente** em `app/(marketing)/layout.tsx` e, se necessário, no branch público de home via wrapper `MarketingRoot` |
-| CSS-004 | Body class `layout4` aplicada no layout marketing |
-| CSS-005 | Não usar CSS Modules para reescrever o tema inteiro no MVP |
-| CSS-006 | Preferir classes existentes do tema nos componentes marketing |
-| CSS-007 | Overrides pontuais em `styles/marketing-overrides.css` (após tema) |
-| CSS-008 | Portal continua Preflight Tailwind; aceitar que páginas marketing carregam ambos se root já tem Tailwind |
+| CSS-001 | CSS do tema **não** entra em `globals.css` globalmente | **Mantida** |
+| CSS-002 | Entry único `styles/marketing.css` com `@import` dos assets aprovados | **Substituída** — `<link>` via `KiddinoThemeStyles` (ADR-018) |
+| CSS-003 | Import de `marketing.css` **somente** em `app/(marketing)/layout.tsx` … | **Substituída** — tema no root via `KiddinoRoot` |
+| CSS-004 | Body class `layout4` aplicada no layout marketing | **Consolidada** — `KiddinoRoot` no body |
+| CSS-005 | Não usar CSS Modules para reescrever o tema inteiro no MVP | **Mantida** |
+| CSS-006 | Preferir classes existentes do tema nos componentes marketing | **Mantida** (agora também portal) |
+| CSS-007 | Overrides pontuais em `styles/marketing-overrides.css` (após tema) | **Mantida** (`styles/marketing.css`) |
+| CSS-008 | Portal continua Preflight Tailwind… | **Obsoleta** — Tailwind/shadcn removidos do `site` |
 
 ### Tensão root layout × marketing
 

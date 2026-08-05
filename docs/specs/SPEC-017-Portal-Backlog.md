@@ -1,9 +1,11 @@
 # SPEC-017 — Backlog Portal Kiddino
 
+> Continuidade sob [ADR-018](../adr/ADR-018-Marketing-Architecture-Reconciliation.md) / [SPEC-019](./SPEC-019-Architectural-Contract.md). MVP entregue (SPEC-018); follow-ups (StudentGuard, BFF forgot-password, limpeza `components/ui`) permanecem válidos.
+
 | Campo | Valor |
 | --- | --- |
 | ID | SPEC-017 |
-| Status | Em execução |
+| Status | MVP entregue — follow-ups abertos |
 | Prefixo | `PORTAL-NNN` |
 
 ## Tarefas

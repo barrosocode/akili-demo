@@ -1,10 +1,12 @@
 # SPEC-008 — SEO
 
+> Vigente. Contrato: [SPEC-019](./SPEC-019-Architectural-Contract.md). Follow-up auditoria: schema WebSite / FAQPage na home (não bloqueia ADR-018).
+
 | Campo | Valor |
 | --- | --- |
 | ID | SPEC-008 |
 | Título | SEO do Site Institucional |
-| Status | Draft |
+| Status | Draft · alinhada ADR-018 |
 | Depende de | SPEC-001, SPEC-002, SPEC-004 |
 
 ---

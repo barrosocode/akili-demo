@@ -1,10 +1,13 @@
 # SPEC-002 — Arquitetura Front-end
 
+> **Status documental:** **Historical (parcial)**. A-002 (CSS só no layout marketing + root Tailwind) está **Superseded by [ADR-018](../adr/ADR-018-Marketing-Architecture-Reconciliation.md)**.  
+> Mantidos: A-001, A-003…A-009. Contrato vigente: [SPEC-019](./SPEC-019-Architectural-Contract.md).
+
 | Campo | Valor |
 | --- | --- |
 | ID | SPEC-002 |
 | Título | Arquitetura Front-end do Site Institucional |
-| Status | Draft |
+| Status | **Historical** (A-002 superseded) |
 | Depende de | SPEC-001 |
 
 ---
@@ -54,7 +57,7 @@ O marketing **não** introduz um segundo app; introduz um **bounded context** vi
 | ID | Decisão |
 | --- | --- |
 | A-001 | Route group `(marketing)` para páginas institucionais |
-| A-002 | Layout marketing carrega CSS do tema; root layout permanece Tailwind/portal |
+| A-002 | Layout marketing carrega CSS do tema; root layout permanece Tailwind/portal | **Superseded by ADR-018** — CSS via `KiddinoRoot` no root; Tailwind removido |
 | A-003 | Componentes marketing sob `components/marketing/{layout,home,common,forms}` |
 | A-004 | Feature folder opcional `features/marketing/` apenas se houver domínio (newsletter submit, blog fetch futuro) |
 | A-005 | Constants em `constants/` (novo) — site, navigation, faq, home-content |
