@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 
 import { Logo } from "@/components/marketing/common/Logo";
 import { useMarketingChrome } from "@/components/marketing/layout/MarketingChrome";
 import { MainNav } from "@/components/marketing/layout/MainNav";
+import { authLinks } from "@/constants/navigation";
 import type { NavItem } from "@/types/marketing";
 
 type MobileMenuProps = {
@@ -83,6 +85,22 @@ export function MobileMenu({ items }: MobileMenuProps) {
           <Logo variant="positive" />
         </div>
         <MainNav variant="mobile" items={items} onNavigate={close} />
+        <div className="header-btn d-flex flex-column gap-2 px-3 pb-4">
+          <Link
+            href={authLinks.login.href}
+            className="vs-btn"
+            onClick={close}
+          >
+            {authLinks.login.label}
+          </Link>
+          <Link
+            href={authLinks.register.href}
+            className="vs-btn v4"
+            onClick={close}
+          >
+            {authLinks.register.label}
+          </Link>
+        </div>
       </div>
     </div>
   );

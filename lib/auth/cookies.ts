@@ -42,10 +42,18 @@ export async function getRefreshToken(): Promise<string | null> {
   return store.get(authConfig.refreshCookieName)?.value ?? null;
 }
 
+/**
+ * Apaga cookies de sessão. Só funciona em Route Handler / Server Action.
+ * Em Server Component a mutação falha — engolimos o erro para não quebrar RSC.
+ */
 export async function clearAuthCookies(): Promise<void> {
-  const store = await cookies();
-  store.delete(authConfig.cookieName);
-  store.delete(authConfig.refreshCookieName);
+  try {
+    const store = await cookies();
+    store.delete(authConfig.cookieName);
+    store.delete(authConfig.refreshCookieName);
+  } catch {
+    // Next.js: cookies().delete() fora de Route Handler / Server Action.
+  }
 }
 
 export async function hasSessionCookie(): Promise<boolean> {

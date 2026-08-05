@@ -31,7 +31,10 @@ export function SiteHeader({ navItems = mainNav }: SiteHeaderProps) {
                 <div className="col">
                   <MainNav variant="desktop" items={navItems} />
                 </div>
-                <div className="col-auto">
+                <div className="col-auto d-none d-lg-flex align-items-center gap-2">
+                  <Button href={authLinks.login.href} variant="v4">
+                    {authLinks.login.label}
+                  </Button>
                   <Button href={authLinks.register.href} variant="v4">
                     {authLinks.register.label}
                   </Button>

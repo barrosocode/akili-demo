@@ -17,17 +17,18 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const hasSession = await hasSessionCookie();
-
-  if (isPublicPath(pathname) && !hasSession) {
+  // Auth pages always reachable (avoids bounce with stale session cookies).
+  if (isAuthPath(pathname)) {
     return NextResponse.next();
   }
 
-  if (isAuthPath(pathname) && hasSession) {
-    return NextResponse.redirect(new URL("/", request.url));
+  const hasSession = await hasSessionCookie();
+
+  if (isPublicPath(pathname)) {
+    return NextResponse.next();
   }
 
-  if (!isPublicPath(pathname) && !hasSession) {
+  if (!hasSession) {
     const signInUrl = new URL("/signin", request.url);
     signInUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(signInUrl);

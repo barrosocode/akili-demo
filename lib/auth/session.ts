@@ -1,5 +1,5 @@
 import { laravelRequest } from "@/lib/api/laravel-client";
-import { clearAuthCookies, getAccessToken } from "@/lib/auth/cookies";
+import { getAccessToken } from "@/lib/auth/cookies";
 import {
   isGuardianUser,
   toSessionUser,
@@ -7,14 +7,20 @@ import {
 import type { AuthUser } from "@/types/auth";
 import type { SessionUser } from "@/types/session";
 
+/**
+ * Lê o usuário autenticado.
+ * Não apaga cookies aqui: Server Components não podem mutar cookies
+ * (só Route Handlers / Server Actions). Limpeza fica em logout/refresh.
+ */
 export async function fetchAuthUser(): Promise<AuthUser | null> {
   const token = await getAccessToken();
   if (!token) return null;
 
   try {
-    return await laravelRequest<AuthUser>("/client/auth/me");
+    return await laravelRequest<AuthUser>("/client/auth/me", {
+      skipUnauthorizedRetry: true,
+    });
   } catch {
-    await clearAuthCookies();
     return null;
   }
 }

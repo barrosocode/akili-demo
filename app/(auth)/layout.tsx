@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 
-import { AuthShell } from "@/components/portal/auth/AuthShell";
+import { MarketingShell } from "@/components/marketing/layout/MarketingShell";
 
 import "@/styles/marketing.css";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
-  return <AuthShell>{children}</AuthShell>;
+  return <MarketingShell>{children}</MarketingShell>;
 }
