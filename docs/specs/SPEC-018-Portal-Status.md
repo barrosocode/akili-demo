@@ -14,6 +14,21 @@
 
 Portal auth e dashboards migrados para visual Kiddino. Dashboard do responsável consome progresso demo da API (KPIs, materiais, relatórios, gamificação, notificações) via BFF.
 
+## Layout do dashboard (UX Kiddino)
+
+O tema legado redefine `.badge` com `position: absolute` (selo sobre imagem). No portal **não** usar `className="badge"`.
+
+| Classe | Uso |
+| --- | --- |
+| `portal-chip` + `portal-chip--muted` / `--theme` | Status (“Demonstração”, desempenho) |
+| `vs-btn` / `vs-btn style3` | CTA primário / outline (sempre legível, sem depender de hover) |
+| `portal-page-header` | Título da página + chip |
+| `portal-child-card` | Card da lista de filhos (tipografia/padding compactos) |
+| `portal-child-tabs` | Abas Visão geral / Relatórios / Conquistas |
+| `portal-block-heading` | Título de bloco + chip (ex.: relatório) |
+
+Overrides em `styles/marketing-overrides.css` (escopo `.marketing-root`). Lista canônica: `/children` (sidebar “Meus filhos”); `/` logado continua mostrando a mesma lista.
+
 ## Smoke test — demo Prioridade 1
 
 ### Persona escola
@@ -21,9 +36,11 @@ Portal auth e dashboards migrados para visual Kiddino. Dashboard do responsável
 | Passo | Esperado |
 | --- | --- |
 | Login `responsavel@escola-exemplo.dev` / `password` | Dashboard com 3 filhos (João, Ana, Pedro) |
-| Card do filho | Progresso %, streak, resumo; badge “Demonstração” |
+| `/children` ou `/` logado | Lista de filhos; sidebar “Meus filhos” ativo |
+| Card do filho | Progresso %, streak, resumo; chip “Demonstração” **ao lado do fluxo** (não sobre o nome); CTAs “Ver detalhes” / “Selecionar” legíveis sem hover |
 | Plano na home | Plano Escola ativo |
 | `/children/[ref]` → Visão geral | Escola, turma, professor, KPIs, evolução semanal, materiais, próximos conteúdos, notificações |
+| Abas | Visão geral / Relatórios / Conquistas legíveis sem hover (ativa sólida, inativa `style3`) |
 | Aba Relatórios | Relatório pedagógico do seeder (sem mock local) |
 | Aba Conquistas | XP, nível, medalhas, missões, streak, recompensas |
 
@@ -52,6 +69,7 @@ PATCH /api/v1/admin/tenants/{uuid}/subscription
 | `/first-access` | OTP first-access |
 | `/terms` | Aceite com geo obrigatória |
 | `/profile` | Cadastro rico via `GET/PATCH /guardian/me` |
+| `/children` | Lista de filhos (mesma UX da home logada) |
 | `/purchases`, `/relatorios` | Purchases stub; relatórios apontam para filhos |
 | `/aluno` | Shell aluno + placeholders API |
 
@@ -70,6 +88,8 @@ Roteiro completo (Docker + seeds + personas): `api/docs/akili-platform/16-demo-a
 - [x] Dashboard sem mocks locais de relatório
 - [x] Planos provisórios (`subscription` na sessão)
 - [x] Blog com posts clicáveis + planos alinhados ao catálogo
+- [x] UX dashboard: CTAs/abas legíveis + chips `portal-chip` (evitar `.badge` Kiddino)
+- [x] Rota explícita `/children` + sidebar alinhada
 - [ ] BFF forgot-password / reset real
 - [ ] Form adicionar filho real (API ainda 501)
 - [ ] Checkout B2C completo (billing)

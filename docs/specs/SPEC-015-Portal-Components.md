@@ -19,11 +19,17 @@
 | `ForgotPasswordForm` | `features/auth/components/` | Client |
 | `GuardianDashboardShell` | `components/portal/guardian/` | Server |
 | `GuardianHeader` | `components/portal/guardian/` | Server/Client (logout) |
-| `GuardianSidebar` | `components/portal/guardian/` | Server |
+| `GuardianSidebar` | `components/portal/guardian/` | Client (pathname → item ativo; “Meus filhos” → `/children`) |
 | `FooterClean` | `components/portal/shared/` | Server |
-| `ChildrenHomeKiddino` | `features/children/` | Client/Server |
+| `ChildrenHome` | `features/children/` | Client — lista em `/` e `/children` |
+| `ChildDetail` | `features/children/` | Client — detalhe `/children/[ref]` |
+| `PerformanceBadge` | `features/progress/` | Server — chip `portal-chip` (não `.badge`) |
 | `AlunoDashboardShell` | `components/portal/aluno/` | Server |
 | `AlunoHeader` / `AlunoSidebar` | `components/portal/aluno/` | Server |
+
+## Tokens de UI do portal
+
+Em `styles/marketing-overrides.css` (escopo `.marketing-root`): `portal-chip`, `portal-page-header`, `portal-child-card`, `portal-child-tabs`, `portal-block-heading`, contraste de `vs-btn` / `style3`. Detalhe e smoke: [SPEC-018](./SPEC-018-Portal-Status.md).
 
 ## Reuso marketing
 

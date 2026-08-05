@@ -71,10 +71,14 @@ Lógica em `lib/permissions/guardian-capabilities.ts`.
 
 | Rota | Descrição |
 |------|-----------|
+| `/children` | Lista de filhos (mesma experiência da home logada em `/`) |
 | `/children/new` | Cadastrar filho (somente B2C) |
 | `/children/[ref]` | Progresso, relatórios e conquistas via API demo (BFF `/api/guardian/children/[ref]/progress`) |
 | `/purchases` | Compras e assinaturas |
 | `/profile` | Perfil do responsável (nome, telefone, CPF → `GET/PATCH /api/profile` → `/guardian/me`) |
+| `/relatorios` | Atalho para relatórios do filho ativo / lista |
+
+**Layout Kiddino no portal:** não usar a classe `.badge` do tema (é `position: absolute`). Preferir `portal-chip` e CTAs `vs-btn` / `vs-btn style3` — ver [SPEC-018](./specs/SPEC-018-Portal-Status.md).
 
 ## Adicionar uma feature
 
