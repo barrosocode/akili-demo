@@ -46,10 +46,28 @@ export interface PortalTerms {
   all_accepted: boolean;
 }
 
+export interface PortalSubscriptionRaw {
+  plan_key: string;
+  plan_name: string;
+  status: string;
+  audience: string;
+  starts_at: string | null;
+  ends_at: string | null;
+  description: string | null;
+  limits: {
+    max_students: number | null;
+    students_used: number;
+    max_packages: number | null;
+  };
+  features: Record<string, boolean>;
+  upgrade_targets: string[];
+  downgrade_targets: string[];
+}
+
 export interface ClientPortalSession {
   user: PortalSessionUser;
   guardian: PortalGuardian | null;
-  subscription: null;
+  subscription: PortalSubscriptionRaw | null;
   roles: string[];
   permissions: string[];
   children: PortalChild[];

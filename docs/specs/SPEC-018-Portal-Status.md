@@ -6,51 +6,63 @@
 | --- | --- |
 | ID | SPEC-018 |
 | Título | Status de Implementação — Auth + Dashboards Kiddino |
-| Status | Entregue (MVP) |
+| Status | Entregue (MVP demo) |
 | Data | 2026-08-05 |
 | Depende de | SPEC-013…017 |
 
 ## Resumo
 
-Portal auth e dashboards migrados para visual Kiddino (mesmo pipeline CSS do marketing). Tailwind/shadcn removidos das rotas ativas do portal.
+Portal auth e dashboards migrados para visual Kiddino. Dashboard do responsável consome progresso demo da API (KPIs, materiais, relatórios, gamificação, notificações) via BFF.
 
-## Smoke test
+## Smoke test — demo Prioridade 1
+
+### Persona escola
+
+| Passo | Esperado |
+| --- | --- |
+| Login `responsavel@escola-exemplo.dev` / `password` | Dashboard com 3 filhos (João, Ana, Pedro) |
+| Card do filho | Progresso %, streak, resumo; badge “Demonstração” |
+| Plano na home | Plano Escola ativo |
+| `/children/[ref]` → Visão geral | Escola, turma, professor, KPIs, evolução semanal, materiais, próximos conteúdos, notificações |
+| Aba Relatórios | Relatório pedagógico do seeder (sem mock local) |
+| Aba Conquistas | XP, nível, medalhas, missões, streak, recompensas |
+
+### Persona B2C
+
+| Passo | Esperado |
+| --- | --- |
+| Login `responsavel@familia.dev` / `password` | Dashboard com Luiza e Miguel |
+| Plano na home | Premium · limite de filhos · CTA upgrade se aplicável |
+| `canAddChildren` | true · `/children/new` acessível (CTA honesto se API 501) |
+| Detalhe do filho | Progresso + gamificação familiar (sem turma escolar obrigatória) |
+
+### Admin — upgrade de plano
+
+```bash
+PATCH /api/v1/admin/tenants/{uuid}/subscription
+{ "plan_key": "premium" }
+```
+
+## Smoke test — auth (base)
 
 | URL | Esperado |
 | --- | --- |
-| `/signin` | Login form-style3 + **MarketingShell**; CTA LOGIN oculto no header; acessível com cookie residual |
+| `/signin` | Login form-style3 + **MarketingShell** |
 | Pós-login | Full navigation para `/` (dashboard) ou `?next=` seguro; se termos pendentes → `/terms` |
-| `/first-access` | OTP first-access (request + verify + senha) |
-| `/terms` | Aceite com geo obrigatória (prompt no clique “Permitir localização”) |
-| `/forgot-password` | Pedido de e-mail (feedback honesto) |
-| `/` logado | Shell responsável + filhos + switcher de filho ativo |
-| `/children/[ref]` | Relatórios mockados do filho (accordion Kiddino + seletor de mês) |
-| `/profile` | Cadastro rico (nome, telefone, CPF via `GET/PATCH /guardian/me`); e-mail só leitura |
-| `/purchases`, `/relatorios` | Páginas Kiddino (stubs honestos) |
+| `/first-access` | OTP first-access |
+| `/terms` | Aceite com geo obrigatória |
+| `/profile` | Cadastro rico via `GET/PATCH /guardian/me` |
+| `/purchases`, `/relatorios` | Purchases stub; relatórios apontam para filhos |
 | `/aluno` | Shell aluno + placeholders API |
-
-## Backlog PORTAL-*
-
-| ID | Status |
-| --- | --- |
-| 001–006 | Feito |
-| 007–011 | Feito (stubs honestos onde API ausente) |
-| 012–013 | Feito (placeholders aluno) |
-| 014 | Feito (globals sem Tailwind; ui legado no disco não usado nas rotas) |
-| 015 | Este documento |
 
 ## Follow-ups
 
-- [x] Auth sempre acessível no middleware + limpeza de cookie em `/api/auth/me` (2026-08-05)
-- [x] `(auth)` via `MarketingShell`; LOGIN oculto nas páginas auth
-- [x] Pós-login → dashboard `/` com full navigation; `/api/auth/me` não limpa cookie em 5xx
-- [x] Sessão agregada `/client/auth/me` + gate de termos + OTP first-access (2026-08-05)
-- [x] Aceite LGPD com evidências forenses (geo obrigatória no portal)
-- [x] Relatórios mockados em `/children/[ref]` (2026-08-05)
-- [x] Perfil rico do responsável via `/guardian/me` (nome, telefone, CPF) (2026-08-05)
+- [x] Auth + sessão agregada `/client/auth/me`
+- [x] Progresso BFF completo (kpis, materials, reports, classrooms, gamification, notifications)
+- [x] Dashboard sem mocks locais de relatório
+- [x] Planos provisórios (`subscription` na sessão)
 - [ ] BFF forgot-password / reset real
-- [ ] Form adicionar filho + progresso real (substituir mock de relatórios)
+- [ ] Form adicionar filho real (API ainda 501)
 - [ ] Checkout B2C completo
 - [ ] API aluno (disciplinas, conteúdo, quiz)
-- [ ] Remover pasta `components/ui` órfã quando seguro
-- [ ] Guard de sessão por tipo aluno vs responsável
+- [ ] Domínio Learning/Gamification real (substituir metadata demo)

@@ -1,7 +1,12 @@
 import type { AccountOrigin, AuthUser } from "@/types/auth";
-import type { ClientPortalSession, PortalChild } from "@/types/portal-session";
+import type {
+  ClientPortalSession,
+  PortalChild,
+  PortalSubscriptionRaw,
+} from "@/types/portal-session";
 import type { GuardianCapabilities, SessionUser } from "@/types/session";
 import type { ChildSummary } from "@/types/domain/child";
+import type { PortalSubscription } from "@/types/domain/subscription";
 import { GUARDIAN_PERMISSION } from "@/lib/auth/config";
 import { can } from "@/lib/permissions/can";
 import { toRef } from "@/lib/api/sanitize";
@@ -13,6 +18,30 @@ export function resolveAccountOrigin(
   if (accountOrigin) return accountOrigin;
   if (can(permissions, "guardian.purchases.create")) return "b2c";
   return "school";
+}
+
+export function mapPortalSubscription(
+  subscription: PortalSubscriptionRaw | null | undefined
+): PortalSubscription | null {
+  if (!subscription) return null;
+
+  return {
+    planKey: subscription.plan_key,
+    planName: subscription.plan_name,
+    status: subscription.status,
+    audience: subscription.audience,
+    startsAt: subscription.starts_at,
+    endsAt: subscription.ends_at,
+    description: subscription.description,
+    limits: {
+      maxStudents: subscription.limits.max_students,
+      studentsUsed: subscription.limits.students_used,
+      maxPackages: subscription.limits.max_packages,
+    },
+    features: subscription.features ?? {},
+    upgradeTargets: subscription.upgrade_targets ?? [],
+    downgradeTargets: subscription.downgrade_targets ?? [],
+  };
 }
 
 export function resolveGuardianCapabilities(
@@ -67,6 +96,7 @@ export function toSessionUserFromPortal(
       pendingKeys: session.terms.pending.map((item) => item.key),
     },
     children: session.children.map(mapPortalChild),
+    subscription: mapPortalSubscription(session.subscription),
   };
 }
 
@@ -91,6 +121,7 @@ export function toSessionUser(user: AuthUser): SessionUser {
       pendingKeys: [],
     },
     children: [],
+    subscription: null,
   };
 }
 

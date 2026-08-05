@@ -1,24 +1,42 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { ChildReports } from "@/features/children/components/child-reports";
+import { GamificationPanel } from "@/features/gamification";
+import {
+  PendingMaterials,
+  ProgressBySubject,
+  ProgressOverview,
+  WeeklyEvolution,
+  PerformanceBadge,
+} from "@/features/progress";
+import { getUserFacingApiMessage } from "@/lib/api/errors";
 import { useSession } from "@/providers/session-provider";
-import { useChildrenQuery } from "@/services/queries/children.queries";
+import { BffClientError } from "@/services/bff/client";
+import {
+  useChildProgressQuery,
+  useChildrenQuery,
+} from "@/services/queries/children.queries";
 
 type ChildDetailProps = {
   childRef: string;
 };
 
+type TabId = "overview" | "reports" | "achievements";
+
 /**
- * Resolve o filho pelo ref opaco e exibe relatórios mockados.
+ * Detalhe do filho — progresso, materiais, relatórios e conquistas via API.
  */
 export function ChildDetail({ childRef }: ChildDetailProps) {
   const { user, setActiveChildRef } = useSession();
   const { data, isLoading, error } = useChildrenQuery();
   const children = data ?? user?.children ?? [];
   const child = children.find((item) => item.ref === childRef);
+  const canViewProgress = child?.canViewProgress ?? false;
+
+  const progressQuery = useChildProgressQuery(childRef, Boolean(child) && canViewProgress);
+  const [tab, setTab] = useState<TabId>("overview");
 
   useEffect(() => {
     if (child?.ref) {
@@ -26,10 +44,24 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
     }
   }, [child?.ref, setActiveChildRef]);
 
+  const reports = progressQuery.data?.reports ?? [];
+  const [period, setPeriod] = useState("");
+
+  useEffect(() => {
+    if (reports.length && !period) {
+      setPeriod(reports[0]?.period ?? "");
+    }
+  }, [reports, period]);
+
+  const selectedReport = useMemo(
+    () => reports.find((item) => item.period === period) ?? reports[0],
+    [reports, period]
+  );
+
   if (isLoading && !child) {
     return (
       <div className="blog-content" role="status">
-        <p>Carregando relatórios...</p>
+        <p>Carregando...</p>
       </div>
     );
   }
@@ -37,7 +69,7 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
   if (error && !child) {
     return (
       <div className="blog-content">
-        <h2 className="blog-title">Relatórios</h2>
+        <h2 className="blog-title">Filho</h2>
         <p>Não foi possível carregar os dados deste aluno.</p>
         <p>
           <Link href="/" className="vs-btn">
@@ -51,7 +83,7 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
   if (!child) {
     return (
       <div className="blog-content">
-        <h2 className="blog-title">Relatórios</h2>
+        <h2 className="blog-title">Filho</h2>
         <p>Filho não encontrado na sua conta.</p>
         <p>
           <Link href="/" className="vs-btn">
@@ -62,5 +94,233 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
     );
   }
 
-  return <ChildReports childName={child.name} />;
+  const progress = progressQuery.data;
+  const isDemo = progress?.status === "demo";
+
+  return (
+    <div className="blog-content">
+      <div className="blog-meta d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <h2 className="blog-title mb-0">{child.name}</h2>
+        {isDemo ? (
+          <span className="badge bg-secondary">Demonstração</span>
+        ) : null}
+      </div>
+
+      <p className="mb-3">
+        {[child.gradeLabel, child.classroomName, child.schoolName]
+          .filter(Boolean)
+          .join(" · ") || "Acompanhe o progresso e as conquistas."}
+      </p>
+
+      <div className="mb-4 d-flex flex-wrap gap-2">
+        {(
+          [
+            ["overview", "Visão geral"],
+            ["reports", "Relatórios"],
+            ["achievements", "Conquistas"],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            className="vs-btn"
+            style={
+              tab === id
+                ? undefined
+                : { opacity: 0.7, background: "transparent", border: "1px solid currentColor" }
+            }
+            onClick={() => setTab(id)}
+            aria-current={tab === id ? "true" : undefined}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {!canViewProgress ? (
+        <div className="alert alert-warning" role="status">
+          Você ainda não tem permissão para ver o progresso deste aluno.
+        </div>
+      ) : null}
+
+      {progressQuery.isLoading && canViewProgress ? (
+        <p role="status">Carregando progresso...</p>
+      ) : null}
+
+      {progressQuery.error && canViewProgress ? (
+        <p style={{ color: "red" }}>
+          {progressQuery.error instanceof BffClientError
+            ? (progressQuery.error.detail ?? progressQuery.error.title)
+            : getUserFacingApiMessage(progressQuery.error)}
+        </p>
+      ) : null}
+
+      {progress && tab === "overview" ? (
+        <>
+          {progress.school || progress.classrooms.length ? (
+            <div className="widget mb-4">
+              <h3 className="widget_title">Escola e turma</h3>
+              {progress.school ? (
+                <p className="mb-2">
+                  <strong>
+                    {progress.school.kind === "family_household"
+                      ? "Acompanhamento familiar"
+                      : progress.school.name}
+                  </strong>
+                  {progress.school.city
+                    ? ` · ${progress.school.city}${progress.school.state ? `/${progress.school.state}` : ""}`
+                    : null}
+                  {progress.school.gradeLabel
+                    ? ` · ${progress.school.gradeLabel}`
+                    : null}
+                </p>
+              ) : null}
+              {progress.classrooms.map((classroom) => (
+                <div key={classroom.name} className="mb-2">
+                  <strong>{classroom.name}</strong>
+                  {classroom.teacher?.name ? (
+                    <div>
+                      Professor(a): {classroom.teacher.name}
+                      {classroom.teacher.specialty
+                        ? ` · ${classroom.teacher.specialty}`
+                        : null}
+                    </div>
+                  ) : (
+                    <div>Estudo acompanhado em casa</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          <ProgressOverview kpis={progress.kpis} summary={progress.summary} />
+          <WeeklyEvolution values={progress.kpis.weeklyEvolution ?? []} />
+          <ProgressBySubject materials={progress.materials} />
+          <PendingMaterials materials={progress.materials} />
+
+          {progress.upcomingContent.length ? (
+            <div className="widget mb-4">
+              <h3 className="widget_title">Próximos conteúdos</h3>
+              <ul className="mb-0">
+                {progress.upcomingContent.map((item) => (
+                  <li key={item.title}>
+                    <strong>{item.title}</strong>
+                    {item.subject ? ` · ${item.subject}` : null}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {progress.notifications.length ? (
+            <div className="widget mb-4">
+              <h3 className="widget_title">Notificações</h3>
+              <ul className="list-unstyled mb-0">
+                {progress.notifications.map((item) => (
+                  <li key={`${item.title}-${item.createdAt}`} className="mb-2">
+                    <strong>{item.title}</strong>
+                    <div>{item.body}</div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </>
+      ) : null}
+
+      {progress && tab === "reports" ? (
+        <div>
+          {!reports.length ? (
+            <div className="alert alert-info" role="status">
+              Ainda não há relatórios pedagógicos para este período.
+            </div>
+          ) : (
+            <>
+              <div className="widget widget_categories mb-4">
+                <h3 className="widget_title">Períodos</h3>
+                <ul>
+                  {reports.map((report) => (
+                    <li
+                      key={report.period}
+                      className={
+                        report.period === selectedReport?.period
+                          ? "current-menu-item"
+                          : undefined
+                      }
+                    >
+                      <a
+                        href={`#relatorio-${report.period}`}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          setPeriod(report.period);
+                        }}
+                      >
+                        {report.periodLabel}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {selectedReport ? (
+                <div className="widget mb-4">
+                  <div className="d-flex justify-content-between align-items-start gap-2 mb-2">
+                    <h3 className="widget_title mb-0">
+                      {selectedReport.subject ?? "Relatório"} —{" "}
+                      {selectedReport.periodLabel}
+                    </h3>
+                    <PerformanceBadge level={selectedReport.performanceLevel} />
+                  </div>
+                  {selectedReport.teacherName ? (
+                    <p>Professor(a): {selectedReport.teacherName}</p>
+                  ) : null}
+                  <p>{selectedReport.summary}</p>
+                  {selectedReport.skillsDeveloped.length ? (
+                    <>
+                      <h4>Habilidades desenvolvidas</h4>
+                      <ul>
+                        {selectedReport.skillsDeveloped.map((skill) => (
+                          <li key={skill}>{skill}</li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : null}
+                  {selectedReport.skillsInDevelopment.length ? (
+                    <>
+                      <h4>Em desenvolvimento</h4>
+                      <ul>
+                        {selectedReport.skillsInDevelopment.map((skill) => (
+                          <li key={skill}>{skill}</li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : null}
+                  {selectedReport.recommendations.length ? (
+                    <>
+                      <h4>Recomendações</h4>
+                      <ul>
+                        {selectedReport.recommendations.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : null}
+                </div>
+              ) : null}
+            </>
+          )}
+        </div>
+      ) : null}
+
+      {progress && tab === "achievements" ? (
+        <GamificationPanel gamification={progress.gamification} />
+      ) : null}
+
+      <p className="mt-3">
+        <Link href="/" className="vs-btn">
+          Voltar aos filhos
+        </Link>
+      </p>
+    </div>
+  );
 }

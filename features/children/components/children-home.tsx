@@ -6,15 +6,17 @@ import { useChildrenQuery } from "@/services/queries/children.queries";
 import { useSession } from "@/providers/session-provider";
 import { getUserFacingApiMessage } from "@/lib/api/errors";
 import { BffClientError } from "@/services/bff/client";
+import { ChildHomeProgressCard } from "@/features/children/components/child-home-progress-card";
 
 /**
- * Home dos filhos — visual Kiddino (PORTAL-007).
+ * Home dos filhos — visual Kiddino (PORTAL-007) + plano e resumo de progresso.
  */
 export function ChildrenHome() {
   const { user, activeChildRef, setActiveChildRef } = useSession();
   const { data, isLoading, error } = useChildrenQuery();
   const canAddChildren = user?.capabilities.canAddChildren ?? false;
   const children = data ?? user?.children ?? [];
+  const subscription = user?.subscription ?? null;
 
   return (
     <div className="blog-content">
@@ -25,6 +27,30 @@ export function ChildrenHome() {
         Acompanhe o progresso e as informações dos alunos vinculados à sua
         conta.
       </p>
+
+      {subscription ? (
+        <div className="widget mb-4">
+          <h3 className="widget_title">Seu plano</h3>
+          <p className="mb-1">
+            <strong>{subscription.planName}</strong>
+            {subscription.status === "active" ? " · Ativo" : ` · ${subscription.status}`}
+          </p>
+          {subscription.description ? <p>{subscription.description}</p> : null}
+          <p className="mb-2">
+            Filhos: {subscription.limits.studentsUsed}
+            {subscription.limits.maxStudents != null
+              ? ` de ${subscription.limits.maxStudents}`
+              : " (sem limite global)"}
+          </p>
+          {subscription.upgradeTargets.length ? (
+            <p className="mb-0">
+              <Link href="/purchases" className="vs-btn">
+                Fazer upgrade
+              </Link>
+            </p>
+          ) : null}
+        </div>
+      ) : null}
 
       {canAddChildren ? (
         <p className="mb-4">
@@ -66,7 +92,7 @@ export function ChildrenHome() {
             return (
               <div key={child.ref} className="col-md-6 mb-4">
                 <div
-                  className="widget"
+                  className="widget h-100"
                   style={
                     isActive
                       ? { outline: "2px solid #2d6cdf", outlineOffset: 2 }
@@ -79,7 +105,16 @@ export function ChildrenHome() {
                   {child.classroomName ? <p>{child.classroomName}</p> : null}
                   {child.gradeLabel ? <p>{child.gradeLabel}</p> : null}
                   {child.schoolName ? <p>{child.schoolName}</p> : null}
-                  <div className="d-flex gap-2 flex-wrap">
+
+                  {child.canViewProgress && child.accessible ? (
+                    <ChildHomeProgressCard childRef={child.ref} />
+                  ) : (
+                    <p className="small text-muted">
+                      Progresso indisponível para este vínculo.
+                    </p>
+                  )}
+
+                  <div className="d-flex gap-2 flex-wrap mt-3">
                     <button
                       type="button"
                       className="vs-btn"

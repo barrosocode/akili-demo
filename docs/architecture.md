@@ -33,8 +33,10 @@ middleware.ts  # Proteção de rotas
 
 - Login via `POST /api/auth/login` → Laravel `/client/auth/login`
 - Tokens em cookies **HttpOnly** (`lib/auth/cookies.ts`)
-- `GET /api/auth/me` → Laravel `GET /client/auth/me` (sessão agregada: user, guardian, children, terms, …)
+- `GET /api/auth/me` → Laravel `GET /client/auth/me` (sessão agregada: user, guardian, children, terms, subscription, account_origin, …)
 - Sessão sanitizada (`SessionUser`) — sem UUID no browser; filhos usam `ref` opaco
+- `account_origin`: `b2c` (tenant family) ou `school` (convidado pela escola) — define `canAddChildren`
+- `subscription`: plano provisório (nome, limites, features) quando seedado na API
 - Apenas perfil `guardian` (`dashboards.guardian.view`)
 - First-access (status `invited`): OTP em `/first-access` → `POST /api/auth/otp/*` → Laravel `/auth/otp/*`
 - Termos pendentes: gate em `GuardianGuard` → `/terms` (aceite com geolocalização **obrigatória**)
@@ -66,10 +68,20 @@ middleware.ts  # Proteção de rotas
 | `GET /api/consents/documents/[key]` | `GET /consents/documents/{key}` |
 | `POST /api/consents/accept` | `POST /consents/accept` |
 | `GET /api/guardian/children` | `GET /guardian/students` |
-| `GET /api/guardian/children/[ref]/progress` | `GET /guardian/students/{uuid}/progress` |
+| `GET /api/guardian/children/[ref]/progress` | `GET /guardian/students/{uuid}/progress` (kpis, materials, reports, school, classrooms, gamification, notifications, upcoming_content) |
 | `GET /api/profile` | `GET /guardian/me` |
 | `PATCH /api/profile` | `PATCH /guardian/me` |
 | `GET /api/guardian/purchases` | stub 501 |
+
+### Features do dashboard (demo MVP)
+
+| Feature | Pasta |
+|---------|-------|
+| Lista de filhos + plano | `features/children/` |
+| Progresso (KPIs, disciplinas, evolução) | `features/progress/` |
+| Gamificação (XP, medalhas, missões) | `features/gamification/` |
+
+Status e roteiro de smoke test: [SPEC-018](./specs/SPEC-018-Portal-Status.md).
 
 ## Como adicionar uma feature
 
@@ -97,4 +109,4 @@ O BFF de autenticação depende do prefixo Laravel `/client/auth/*` (`auth_devic
 | Escola, professor, admin | Somente responsável |
 | Bearer em sessionStorage | Cookies HttpOnly via BFF |
 | Axios direto ao Laravel | BFF obrigatório |
-| TailAdmin | shadcn/ui |
+| TailAdmin | Kiddino (Bootstrap) |

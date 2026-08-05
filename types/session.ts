@@ -1,5 +1,6 @@
 import type { AccountOrigin } from "@/types/auth";
 import type { ChildSummary } from "@/types/domain/child";
+import type { PortalSubscription } from "@/types/domain/subscription";
 
 export interface GuardianCapabilities {
   canAddChildren: boolean;
@@ -22,4 +23,5 @@ export interface SessionUser {
   capabilities: GuardianCapabilities;
   terms: SessionTerms;
   children: ChildSummary[];
+  subscription: PortalSubscription | null;
 }
