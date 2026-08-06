@@ -1,29 +1,42 @@
 import type { LoginSuccessPayload } from "@/types/auth-login";
-import { STUDENT_DEFAULT_PATH } from "@/lib/auth/portal-destination";
+import {
+  GUARDIAN_HOME_PATH,
+  resolveGuardianPostLoginPath,
+  STUDENT_HOME_PATH,
+  STUDENT_LEGACY_DASHBOARD_PATH,
+} from "@/lib/auth/portal-paths";
 
 /**
- * Destino pós-login: path relativo interno seguro, ou dashboard `/`.
- * Rejeita URLs absolutas, protocol-relative (`//`) e vazios.
+ * Destino pós-login do responsável (paths relativos internos seguros).
+ * Bloqueia `/aluno` fora de supervisão.
  */
 export function resolvePostLoginPath(next: string | null | undefined): string {
-  if (!next || typeof next !== "string") return "/";
-
-  const trimmed = next.trim();
-  if (!trimmed.startsWith("/")) return "/";
-  if (trimmed.startsWith("//")) return "/";
-  if (trimmed.includes("://")) return "/";
-
-  return trimmed;
+  return resolveGuardianPostLoginPath(next);
 }
 
 function resolveStudentPostLoginPath(next: string | null | undefined): string {
-  const safeNext = resolvePostLoginPath(next);
-  if (safeNext.startsWith("/aluno") || safeNext.startsWith("/student")) {
-    return safeNext.startsWith("/student/dashboard")
-      ? STUDENT_DEFAULT_PATH
-      : safeNext;
+  if (!next || typeof next !== "string") return STUDENT_HOME_PATH;
+
+  const trimmed = next.trim();
+  if (!trimmed.startsWith("/") || trimmed.startsWith("//") || trimmed.includes("://")) {
+    return STUDENT_HOME_PATH;
   }
-  return STUDENT_DEFAULT_PATH;
+
+  if (trimmed.startsWith("/aluno") || trimmed.startsWith("/student")) {
+    if (
+      trimmed === STUDENT_LEGACY_DASHBOARD_PATH ||
+      trimmed.startsWith(`${STUDENT_LEGACY_DASHBOARD_PATH}/`)
+    ) {
+      return STUDENT_HOME_PATH;
+    }
+    // Supervisão é rota do responsável — aluno não deve cair nela após login.
+    if (trimmed.startsWith("/aluno/supervisao")) {
+      return STUDENT_HOME_PATH;
+    }
+    return trimmed;
+  }
+
+  return STUDENT_HOME_PATH;
 }
 
 /**
@@ -41,5 +54,5 @@ export function resolveUnifiedLoginRedirect(
     return resolveStudentPostLoginPath(next);
   }
 
-  return resolvePostLoginPath(next);
+  return resolveGuardianPostLoginPath(next) || GUARDIAN_HOME_PATH;
 }

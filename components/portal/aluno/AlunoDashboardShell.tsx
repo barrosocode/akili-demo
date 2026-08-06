@@ -5,11 +5,14 @@ import { AlunoSidebar } from "@/components/portal/aluno/AlunoSidebar";
 import { FooterClean } from "@/components/portal/shared/FooterClean";
 import { ScrollToTop } from "@/components/marketing/layout/ScrollToTop";
 import { KiddinoRoot } from "@/components/theme/KiddinoRoot";
+import { STUDENT_HOME_PATH } from "@/lib/auth/portal-paths";
 
 type AlunoDashboardShellProps = {
   children: ReactNode;
   activeHref?: string;
   fullBleed?: boolean;
+  homeHref?: string;
+  footerHomeHref?: string;
 };
 
 /**
@@ -19,10 +22,12 @@ export function AlunoDashboardShell({
   children,
   activeHref,
   fullBleed = false,
+  homeHref = STUDENT_HOME_PATH,
+  footerHomeHref = STUDENT_HOME_PATH,
 }: AlunoDashboardShellProps) {
   return (
     <KiddinoRoot>
-      <AlunoHeader />
+      <AlunoHeader homeHref={homeHref} />
       <section className="vs-blog-wrapper blog-details space-top space-extra-bottom">
         <div className="container">
           {fullBleed ? (
@@ -39,7 +44,7 @@ export function AlunoDashboardShell({
           )}
         </div>
       </section>
-      <FooterClean />
+      <FooterClean homeHref={footerHomeHref} />
       <ScrollToTop />
     </KiddinoRoot>
   );

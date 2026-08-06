@@ -36,7 +36,7 @@ export default async function HomePage() {
 
   return (
     <GuardianGuard>
-      <GuardianDashboardShell activeHref="/children">
+      <GuardianDashboardShell activeHref="/">
         <ChildrenHome />
       </GuardianDashboardShell>
     </GuardianGuard>

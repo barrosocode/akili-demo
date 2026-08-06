@@ -1,11 +1,16 @@
 import Link from "next/link";
 
 import { siteConfig } from "@/constants/site";
+import { GUARDIAN_HOME_PATH } from "@/lib/auth/portal-paths";
+
+type FooterCleanProps = {
+  homeHref?: string;
+};
 
 /**
  * Footer limpo do dashboard (PORTAL-006 / footerCleanView.php).
  */
-export function FooterClean() {
+export function FooterClean({ homeHref = GUARDIAN_HOME_PATH }: FooterCleanProps) {
   const year = new Date().getFullYear();
 
   return (
@@ -15,7 +20,7 @@ export function FooterClean() {
           <div className="copyright-wrap-five">
             <p className="copyright-text text-white">
               Copyright &copy; {year}{" "}
-              <Link href="/">{siteConfig.brand.name}</Link>. Todos os Direitos
+              <Link href={homeHref}>{siteConfig.brand.name}</Link>. Todos os Direitos
               Reservados
             </p>
           </div>

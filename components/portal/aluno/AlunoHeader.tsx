@@ -7,18 +7,29 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { siteConfig } from "@/constants/site";
 import { useStudentSession } from "@/features/student/hooks/use-student-session";
+import {
+  GUARDIAN_HOME_PATH,
+  GUARDIAN_LOGIN_PATH,
+  isSupervisionPath,
+  STUDENT_HOME_PATH,
+  STUDENT_LOGIN_PATH,
+} from "@/lib/auth/portal-paths";
 import { useSession } from "@/providers/session-provider";
 import { bffClient } from "@/services/bff/client";
 import { useLogoutMutation } from "@/services/queries/auth.mutations";
+
+type AlunoHeaderProps = {
+  homeHref?: string;
+};
 
 /**
  * Header clean do aluno (PORTAL-012).
  * Mantém `header-top4` para o offset negativo do `.header-lower4` do Kiddino.
  */
-export function AlunoHeader() {
+export function AlunoHeader({ homeHref }: AlunoHeaderProps) {
   const pathname = usePathname() ?? "";
-  const isSupervision = pathname.startsWith("/aluno/supervisao");
-  const isLoginPath = pathname.startsWith("/aluno/entrar");
+  const isSupervision = isSupervisionPath(pathname);
+  const isLoginPath = pathname.startsWith(STUDENT_LOGIN_PATH);
 
   const { session: studentSession } = useStudentSession();
   const { user: guardianUser } = useSession();
@@ -39,7 +50,8 @@ export function AlunoHeader() {
     ? (guardianUser?.name ?? "Responsável")
     : (studentSession?.user.name ?? studentSession?.student.name ?? "Aluno");
 
-  const homeHref = isSupervision ? "/" : "/aluno";
+  const resolvedHomeHref =
+    homeHref ?? (isSupervision ? GUARDIAN_HOME_PATH : STUDENT_HOME_PATH);
   const greeting = isSupervision ? "Acompanhando como" : "Olá,";
   const canLogout = isSupervision
     ? Boolean(guardianUser)
@@ -58,7 +70,7 @@ export function AlunoHeader() {
     } catch {
       // Redireciona mesmo se a API falhar.
     }
-    router.push("/signin");
+    router.push(isSupervision ? GUARDIAN_LOGIN_PATH : STUDENT_LOGIN_PATH);
     router.refresh();
   }
 
@@ -72,7 +84,7 @@ export function AlunoHeader() {
               <div className="row gx-3 align-items-center justify-content-between">
                 <div className="col-8 col-sm-auto">
                   <div className="header-logo2">
-                    <Link href={homeHref}>
+                    <Link href={resolvedHomeHref}>
                       <Image
                         src={siteConfig.assets.logoPositive.src}
                         alt={siteConfig.brand.name}

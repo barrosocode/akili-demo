@@ -1,29 +1,37 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-import type { NavItem } from "@/types/marketing";
-
-const alunoNav: NavItem[] = [
-  { label: "Início", href: "/aluno" },
-  { label: "Materiais", href: "/aluno/materiais" },
-];
+import {
+  resolveStudentShellActiveHref,
+  resolveStudentShellNav,
+} from "@/lib/auth/portal-paths";
 
 type AlunoSidebarProps = {
   activeHref?: string;
 };
 
 /**
- * Sidebar do aluno (PORTAL-012).
+ * Sidebar do aluno / supervisão (PORTAL-012).
+ * Em supervisão, "Início" volta ao portal do responsável — nunca para `/aluno`.
  */
 export function AlunoSidebar({ activeHref }: AlunoSidebarProps) {
+  const pathname = usePathname() ?? "";
+  const nav = resolveStudentShellNav(pathname);
+  const resolvedActive = activeHref ?? resolveStudentShellActiveHref(pathname);
+
   return (
     <aside className="sidebar-area">
       <div className="widget widget_categories">
         <h3 className="widget_title">Estudos</h3>
         <ul>
-          {alunoNav.map((item) => (
+          {nav.map((item) => (
             <li
-              key={item.href}
-              className={activeHref === item.href ? "current-menu-item" : undefined}
+              key={item.key}
+              className={
+                resolvedActive === item.href ? "current-menu-item" : undefined
+              }
             >
               <Link href={item.href}>{item.label}</Link>
             </li>

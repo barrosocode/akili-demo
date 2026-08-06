@@ -4,34 +4,35 @@ import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
 import { AlunoDashboardShell } from "@/components/portal/aluno/AlunoDashboardShell";
+import {
+  GUARDIAN_HOME_PATH,
+  isSupervisionPath,
+  resolveStudentShellActiveHref,
+  STUDENT_HOME_PATH,
+} from "@/lib/auth/portal-paths";
 
 function isImmersiveLessonPath(pathname: string): boolean {
-  // /aluno/materiais/{uuid}
   if (/^\/aluno\/materiais\/[^/]+$/.test(pathname)) return true;
-  // /aluno/supervisao/{ref}/materiais/{uuid}
   if (/^\/aluno\/supervisao\/[^/]+\/materiais\/[^/]+$/.test(pathname)) {
     return true;
   }
   return false;
 }
 
-function resolveActiveHref(pathname: string): string | undefined {
-  if (pathname.startsWith("/aluno/materiais")) return "/aluno/materiais";
-  if (pathname === "/aluno" || pathname === "/aluno/") return "/aluno";
-  return undefined;
-}
-
 /**
- * Shell Kiddino do aluno com fullBleed automático na rota da lição.
+ * Shell Kiddino do aluno (sessão student) ou supervisão (sessão guardian).
  */
 export function AlunoRouteShell({ children }: { children: ReactNode }) {
   const pathname = usePathname() ?? "";
   const fullBleed = isImmersiveLessonPath(pathname);
+  const supervision = isSupervisionPath(pathname);
 
   return (
     <AlunoDashboardShell
       fullBleed={fullBleed}
-      activeHref={resolveActiveHref(pathname)}
+      activeHref={resolveStudentShellActiveHref(pathname)}
+      homeHref={supervision ? GUARDIAN_HOME_PATH : STUDENT_HOME_PATH}
+      footerHomeHref={supervision ? GUARDIAN_HOME_PATH : STUDENT_HOME_PATH}
     >
       {children}
     </AlunoDashboardShell>

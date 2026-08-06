@@ -8,10 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 
 import { loginSchema } from "@/features/auth/schemas/auth.schema";
-import {
-  resolvePostLoginPath,
-  resolveUnifiedLoginRedirect,
-} from "@/lib/auth/post-login-path";
+import { resolveUnifiedLoginRedirect } from "@/lib/auth/post-login-path";
 import { useLoginMutation } from "@/services/queries/auth.mutations";
 import { BffClientError } from "@/services/bff/client";
 

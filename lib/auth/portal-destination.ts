@@ -1,11 +1,15 @@
 import { authConfig, GUARDIAN_PERMISSION } from "@/lib/auth/config";
+import {
+  GUARDIAN_HOME_PATH,
+  STUDENT_HOME_PATH,
+} from "@/lib/auth/portal-paths";
 import { can } from "@/lib/permissions/can";
 import type { AuthUser } from "@/types/auth";
 
 export type PortalKind = "guardian" | "student" | "admin";
 
-export const STUDENT_DEFAULT_PATH = "/aluno";
-export const GUARDIAN_DEFAULT_PATH = "/";
+export const STUDENT_DEFAULT_PATH = STUDENT_HOME_PATH;
+export const GUARDIAN_DEFAULT_PATH = GUARDIAN_HOME_PATH;
 
 const INSTITUTIONAL_USER_TYPES = new Set<AuthUser["type"]>([
   "akili_admin",

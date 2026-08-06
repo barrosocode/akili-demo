@@ -1,5 +1,9 @@
 import { GUARDIAN_PERMISSION } from "@/lib/auth/config";
 
+/**
+ * Permissões do portal do responsável.
+ * `/aluno` (exceto supervisão) não é rota guardian — sessão student.
+ */
 export const ROUTE_PERMISSIONS: Record<string, string | string[] | null> = {
   "/": GUARDIAN_PERMISSION,
   "/children": "guardian.children.read",
@@ -7,7 +11,6 @@ export const ROUTE_PERMISSIONS: Record<string, string | string[] | null> = {
   "/purchases": "guardian.purchases.read",
   "/profile": null,
   "/relatorios": GUARDIAN_PERMISSION,
-  "/aluno": GUARDIAN_PERMISSION,
   "/terms": null,
 };
 
