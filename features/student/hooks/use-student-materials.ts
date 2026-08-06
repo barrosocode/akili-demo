@@ -2,7 +2,12 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import type { ContentPlayback, StudentMaterial, StudentProgressUpdate } from "@/types/student-learning";
+import type {
+  ContentPlayback,
+  StudentMaterial,
+  StudentProgressUpdate,
+  StudentProgressUpdateRequest,
+} from "@/types/student-learning";
 import { bffClient } from "@/services/bff/client";
 
 export function useStudentMaterialsQuery(enabled = true) {
@@ -40,7 +45,7 @@ export function useSaveStudentProgressMutation(contentUuid: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (body: Record<string, unknown>) =>
+    mutationFn: (body: StudentProgressUpdateRequest) =>
       bffClient<StudentProgressUpdate>(
         `/api/student/contents/${contentUuid}/progress`,
         { method: "POST", body }

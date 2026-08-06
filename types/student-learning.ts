@@ -108,6 +108,12 @@ export type StudentDashboard = {
   student?: { uuid: string; name: string };
 };
 
+export type PlaybackAction = {
+  uuid: string;
+  name: string;
+  path: string;
+};
+
 export type ContentPlayback = {
   read_only: boolean;
   content: {
@@ -116,7 +122,7 @@ export type ContentPlayback = {
     activity_type: string;
     subject: { uuid: string; name: string } | null;
     series: { uuid: string; name: string } | null;
-    topic: { uuid: string; name: string } | null;
+    topic: { uuid: string; name: string; code?: string | null } | null;
   };
   version: {
     uuid: string;
@@ -125,7 +131,17 @@ export type ContentPlayback = {
     questions: ContentQuestion[];
     metadata: Record<string, unknown>;
   };
+  actions?: Record<string, PlaybackAction>;
   material: StudentMaterial | null;
+};
+
+export type StudentProgressUpdateRequest = {
+  content_version_uuid: string;
+  percent_complete?: number;
+  last_page_index?: number;
+  time_studied_seconds_delta?: number;
+  mark_completed?: boolean;
+  metadata?: Record<string, unknown>;
 };
 
 export type StudentProgressUpdate = {

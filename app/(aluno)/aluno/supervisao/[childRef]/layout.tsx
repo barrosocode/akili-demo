@@ -1,7 +1,12 @@
 import type { ReactNode } from "react";
 
+import { AlunoRouteShell } from "@/components/portal/aluno/AlunoRouteShell";
 import { GuardianGuard } from "@/features/auth";
 
 export default function SupervisionLayout({ children }: { children: ReactNode }) {
-  return <GuardianGuard>{children}</GuardianGuard>;
+  return (
+    <GuardianGuard>
+      <AlunoRouteShell>{children}</AlunoRouteShell>
+    </GuardianGuard>
+  );
 }
