@@ -22,8 +22,12 @@ export function getRoutePermission(pathname: string): string | string[] | null {
     return "guardian.children.read";
   }
 
-  if (normalized.startsWith("/aluno")) {
+  if (normalized.startsWith("/aluno/supervisao")) {
     return GUARDIAN_PERMISSION;
+  }
+
+  if (normalized.startsWith("/aluno")) {
+    return null;
   }
 
   return GUARDIAN_PERMISSION;

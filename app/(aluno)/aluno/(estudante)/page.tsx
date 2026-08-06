@@ -1,0 +1,5 @@
+import { StudentDashboardView } from "@/features/student/components/student-dashboard-view";
+
+export default function StudentHomePage() {
+  return <StudentDashboardView />;
+}

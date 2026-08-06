@@ -112,6 +112,14 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
           .join(" · ") || "Acompanhe o progresso e as conquistas."}
       </p>
 
+      {canViewProgress ? (
+        <p className="mb-4">
+          <Link href={`/aluno/supervisao/${childRef}`} className="vs-btn style3">
+            Acessar Ambiente do Aluno
+          </Link>
+        </p>
+      ) : null}
+
       <div
         className="mb-4 d-flex flex-wrap gap-2 portal-child-tabs"
         role="tablist"

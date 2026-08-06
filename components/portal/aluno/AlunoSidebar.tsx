@@ -4,9 +4,7 @@ import type { NavItem } from "@/types/marketing";
 
 const alunoNav: NavItem[] = [
   { label: "Início", href: "/aluno" },
-  { label: "Disciplinas", href: "/aluno/disciplinas" },
-  { label: "Cadernos", href: "/aluno/cadernos" },
-  { label: "Conteúdos recentes", href: "/aluno/recentes" },
+  { label: "Materiais", href: "/aluno/materiais" },
 ];
 
 type AlunoSidebarProps = {

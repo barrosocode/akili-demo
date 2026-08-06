@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { hasSessionCookie } from "@/lib/auth/cookies";
+import { hasStudentSessionCookie } from "@/lib/auth/student-cookies";
 import { isAuthPath, isPublicPath } from "@/lib/auth/public-routes";
 
 export async function middleware(request: NextRequest) {
@@ -14,6 +15,30 @@ export async function middleware(request: NextRequest) {
   }
 
   if (pathname.startsWith("/api")) {
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith("/aluno/entrar")) {
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith("/aluno/supervisao")) {
+    const hasGuardianSession = await hasSessionCookie();
+    if (!hasGuardianSession) {
+      const signInUrl = new URL("/signin", request.url);
+      signInUrl.searchParams.set("next", pathname);
+      return NextResponse.redirect(signInUrl);
+    }
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith("/aluno")) {
+    const hasStudentSession = await hasStudentSessionCookie();
+    if (!hasStudentSession) {
+      const loginUrl = new URL("/aluno/entrar", request.url);
+      loginUrl.searchParams.set("next", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
     return NextResponse.next();
   }
 

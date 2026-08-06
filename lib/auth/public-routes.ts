@@ -32,6 +32,7 @@ export function isPublicPath(pathname: string): boolean {
   if (pathname.startsWith("/api/auth/signup")) return true;
   if (pathname.startsWith("/api/auth/invite")) return true;
   if (pathname.startsWith("/api/auth/otp")) return true;
+  if (pathname.startsWith("/api/student/auth/login")) return true;
   if (pathname.startsWith("/api/checkout")) return true;
 
   return PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix));
