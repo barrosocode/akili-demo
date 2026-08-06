@@ -86,8 +86,11 @@ Lógica em `lib/permissions/guardian-capabilities.ts`.
 | `/aluno` | Dashboard — KPIs, continuar estudando, materiais |
 | `/aluno/materiais` | Lista de materiais via entitlements |
 | `/aluno/materiais/[contentUuid]` | Player em abas (Conteúdo / Conferência / Revisões / Desafio), fullBleed |
-| `/aluno/supervisao/[childRef]` | Guardian — ambiente do filho (somente leitura) |
+| `/aluno/supervisao/[childRef]` | Guardian — ambiente do filho (somente leitura; sessão responsável) |
+| `/aluno/supervisao/[childRef]/materiais` | Materiais do filho na supervisão |
 | `/aluno/supervisao/[childRef]/materiais/[contentUuid]` | Player read-only na supervisão |
+
+Navegação por portal: `lib/auth/portal-paths.ts`. Na supervisão, **Início** volta ao dashboard do responsável (`/`), não para `/aluno`.
 
 Credenciais demo: `luiza@familia.dev` / `123123` (Ciências) ou `aluno@escola-exemplo.dev` / `123123`. Ver [SPEC-021](./specs/SPEC-021-Student-Web-Portal.md).
 

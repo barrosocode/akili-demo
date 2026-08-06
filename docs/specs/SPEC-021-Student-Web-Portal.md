@@ -49,7 +49,14 @@ Alunos **não** passam pelo fluxo de termos LGPD.
 ## Guardian
 
 Botão **Acessar Ambiente do Aluno** em lista e detalhe do filho → `/aluno/supervisao/[ref]`.  
-Supervisão: mesmo player, banner read-only, sem mutação de progresso.
+Supervisão: reutiliza sessão do responsável (não login de aluno); player read-only; sem mutação de progresso.
+
+Na supervisão, a sidebar **não** aponta para `/aluno`:
+- **Início** → dashboard do responsável (`/`)
+- **Ambiente do aluno** → `/aluno/supervisao/{ref}`
+- **Materiais** → `/aluno/supervisao/{ref}/materiais`
+
+Fonte única de paths: `lib/auth/portal-paths.ts`.
 
 ## Smoke test
 

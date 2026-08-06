@@ -94,6 +94,7 @@ middleware.ts  # Proteção de rotas
 | Gamificação (XP, medalhas, missões) | `features/gamification/` |
 | Portal do aluno (dashboard, materiais, player em abas) | `features/student/`, `features/content-player/` (`StudentLessonPlayer`) |
 | Redirect pós-login por perfil | `lib/auth/portal-destination.ts`, `lib/auth/establish-session.ts` |
+| Paths canônicos e nav por portal | `lib/auth/portal-paths.ts` (guardian `/`, aluno `/aluno`, supervisão `/aluno/supervisao/{ref}`) |
 
 Status guardian: [SPEC-018](./specs/SPEC-018-Portal-Status.md). Portal aluno: [SPEC-021](./specs/SPEC-021-Student-Web-Portal.md).
 
