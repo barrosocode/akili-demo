@@ -62,7 +62,7 @@ Lógica em `lib/permissions/guardian-capabilities.ts`.
 |------|-----------|
 | `/` | Landing (visitante) ou home dos filhos (logado) |
 | `/checkout` | Contratação B2C (stub) |
-| `/signin` | Login |
+| `/signin` | Login unificado (redirect por perfil: aluno → `/aluno`, responsável → `/`, escola → admin) |
 | `/forgot-password` | Recuperação de senha (stub) |
 | `/first-access` | Primeiro acesso (stub) |
 | `/invite` | Aceitar convite da escola (stub) |
@@ -85,10 +85,11 @@ Lógica em `lib/permissions/guardian-capabilities.ts`.
 | `/aluno/entrar` | Login do aluno (cookies separados do responsável) |
 | `/aluno` | Dashboard — KPIs, continuar estudando, materiais |
 | `/aluno/materiais` | Lista de materiais via entitlements |
-| `/aluno/materiais/[contentUuid]` | Player Kiddino (contrato `pages`/`questions` da API) |
+| `/aluno/materiais/[contentUuid]` | Player em abas (Conteúdo / Conferência / Revisões / Desafio), fullBleed |
 | `/aluno/supervisao/[childRef]` | Guardian — ambiente do filho (somente leitura) |
+| `/aluno/supervisao/[childRef]/materiais/[contentUuid]` | Player read-only na supervisão |
 
-Credenciais demo: `aluno@escola-exemplo.dev` / `123123` (e demais alunos do seed). Ver [SPEC-021](./specs/SPEC-021-Student-Web-Portal.md).
+Credenciais demo: `luiza@familia.dev` / `123123` (Ciências) ou `aluno@escola-exemplo.dev` / `123123`. Ver [SPEC-021](./specs/SPEC-021-Student-Web-Portal.md).
 
 **Layout Kiddino no portal:** não usar a classe `.badge` do tema (é `position: absolute`). Preferir `portal-chip` e CTAs `vs-btn` / `vs-btn style3` — ver [SPEC-018](./specs/SPEC-018-Portal-Status.md).
 

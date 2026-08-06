@@ -31,15 +31,19 @@ middleware.ts  # Proteção de rotas
 
 ## Autenticação
 
-- Login via `POST /api/auth/login` → Laravel `/client/auth/login`
-- Tokens em cookies **HttpOnly** (`lib/auth/cookies.ts`)
-- `GET /api/auth/me` → Laravel `GET /client/auth/me` (sessão agregada: user, guardian, children, terms, subscription, account_origin, …)
+- Login unificado via `POST /api/auth/login` → Laravel `/client/auth/login`
+- Destino por perfil (`lib/auth/portal-destination.ts`):
+  - **Student** → cookies aluno + `/aluno`
+  - **Guardian** → cookies portal + `/`
+  - **Teacher / School / Admin / Coordinator** → `ADMIN_APP_URL` (sem cookies no site)
+- Tokens em cookies **HttpOnly** (`lib/auth/cookies.ts` / `student-cookies.ts`)
+- Guardian: `GET /api/auth/me` → Laravel `GET /client/auth/me` (sessão agregada)
+- Aluno: `GET /api/student/auth/me` → Laravel `GET /mobile/auth/session`
 - Sessão sanitizada (`SessionUser`) — sem UUID no browser; filhos usam `ref` opaco
 - `account_origin`: `b2c` (tenant family) ou `school` (convidado pela escola) — define `canAddChildren`
 - `subscription`: plano provisório (nome, limites, features) quando seedado na API
-- Apenas perfil `guardian` (`dashboards.guardian.view`)
 - First-access (status `invited`): OTP em `/first-access` → `POST /api/auth/otp/*` → Laravel `/auth/otp/*`
-- Termos pendentes: gate em `GuardianGuard` → `/terms` (aceite com geolocalização **obrigatória**)
+- Termos pendentes: gate em `GuardianGuard` → `/terms` (geolocalização **obrigatória**). **Alunos isentos** na API.
 
 ### Aceite de termos (forense)
 
@@ -88,7 +92,8 @@ middleware.ts  # Proteção de rotas
 | Lista de filhos + plano | `features/children/` |
 | Progresso (KPIs, disciplinas, evolução) | `features/progress/` |
 | Gamificação (XP, medalhas, missões) | `features/gamification/` |
-| Portal do aluno (dashboard, materiais, player) | `features/student/`, `features/content-player/` |
+| Portal do aluno (dashboard, materiais, player em abas) | `features/student/`, `features/content-player/` (`StudentLessonPlayer`) |
+| Redirect pós-login por perfil | `lib/auth/portal-destination.ts`, `lib/auth/establish-session.ts` |
 
 Status guardian: [SPEC-018](./specs/SPEC-018-Portal-Status.md). Portal aluno: [SPEC-021](./specs/SPEC-021-Student-Web-Portal.md).
 
