@@ -26,7 +26,7 @@ export function StudentGuard({ children }: { children: ReactNode }) {
 
   if (isLoading || !session) {
     return (
-      <div className="container space-top" role="status">
+      <div role="status" aria-live="polite">
         <p>Carregando...</p>
       </div>
     );

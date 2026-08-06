@@ -5,8 +5,8 @@ import { GuardianGuard } from "@/features/auth";
 
 export default function SupervisionLayout({ children }: { children: ReactNode }) {
   return (
-    <GuardianGuard>
-      <AlunoRouteShell>{children}</AlunoRouteShell>
-    </GuardianGuard>
+    <AlunoRouteShell>
+      <GuardianGuard>{children}</GuardianGuard>
+    </AlunoRouteShell>
   );
 }
