@@ -1,10 +1,11 @@
 import { bffClient } from "@/services/bff/client";
 import type { SessionUser } from "@/types/session";
+import type { LoginSuccessPayload } from "@/types/auth-login";
 import type { AcceptInviteRequest, LoginRequest, SignupRequest } from "@/types/auth";
 
 export const authBff = {
   login(payload: LoginRequest) {
-    return bffClient<SessionUser>("/api/auth/login", {
+    return bffClient<LoginSuccessPayload>("/api/auth/login", {
       method: "POST",
       body: payload,
     });

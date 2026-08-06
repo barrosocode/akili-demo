@@ -1,16 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 import { loginSchema } from "@/features/auth/schemas/auth.schema";
+import { resolveUnifiedLoginRedirect } from "@/lib/auth/post-login-path";
 import { getUserFacingApiMessage } from "@/lib/api/errors";
-import { BffClientError } from "@/services/bff/client";
+import { BffClientError, bffClient } from "@/services/bff/client";
+import type { LoginSuccessPayload } from "@/types/auth-login";
 
 export function StudentLoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") ?? "/aluno";
+  const next = searchParams.get("next");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -28,23 +29,16 @@ export function StudentLoginForm() {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch("/api/student/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(parsed.data),
-      });
+      const result = await bffClient<LoginSuccessPayload>(
+        "/api/student/auth/login",
+        {
+          method: "POST",
+          body: parsed.data,
+        }
+      );
 
-      if (!response.ok) {
-        const payload = await response.json().catch(() => null);
-        throw new BffClientError({
-          title: payload?.title ?? "Erro no login",
-          status: response.status,
-          detail: payload?.detail ?? payload?.message,
-        });
-      }
-
-      router.replace(next.startsWith("/aluno") ? next : "/aluno");
-      router.refresh();
+      const destination = resolveUnifiedLoginRedirect(result, next);
+      window.location.assign(destination);
     } catch (err) {
       setError(
         err instanceof BffClientError

@@ -4,14 +4,24 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authBff } from "@/services/bff/auth.bff";
 import { queryKeys } from "@/services/queries/query-keys";
 import type { AcceptInviteRequest, LoginRequest, SignupRequest } from "@/types/auth";
+import type { LoginSuccessPayload } from "@/types/auth-login";
+import type { SessionUser } from "@/types/session";
+
+function isGuardianSession(
+  payload: LoginSuccessPayload
+): payload is LoginSuccessPayload & { session: SessionUser } {
+  return payload.portal === "guardian";
+}
 
 export function useLoginMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: LoginRequest) => authBff.login(payload),
-    onSuccess: (user) => {
-      queryClient.setQueryData(queryKeys.auth.me, user);
+    onSuccess: (result) => {
+      if (isGuardianSession(result)) {
+        queryClient.setQueryData(queryKeys.auth.me, result.session);
+      }
     },
   });
 }

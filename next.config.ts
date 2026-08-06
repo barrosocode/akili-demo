@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/login", destination: "/signin", permanent: true },
+      { source: "/student/dashboard", destination: "/aluno", permanent: false },
+      { source: "/student", destination: "/aluno", permanent: false },
       {
         source: "/recuperar-senha",
         destination: "/forgot-password",

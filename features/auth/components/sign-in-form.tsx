@@ -8,7 +8,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 
 import { loginSchema } from "@/features/auth/schemas/auth.schema";
-import { resolvePostLoginPath } from "@/lib/auth/post-login-path";
+import {
+  resolvePostLoginPath,
+  resolveUnifiedLoginRedirect,
+} from "@/lib/auth/post-login-path";
 import { useLoginMutation } from "@/services/queries/auth.mutations";
 import { BffClientError } from "@/services/bff/client";
 
@@ -33,8 +36,11 @@ export function SignInForm() {
 
   async function onSubmit(values: LoginFormValues) {
     try {
-      await login.mutateAsync(values);
-      const destination = resolvePostLoginPath(searchParams.get("next"));
+      const result = await login.mutateAsync(values);
+      const destination = resolveUnifiedLoginRedirect(
+        result,
+        searchParams.get("next")
+      );
       window.location.assign(destination);
     } catch (error) {
       if (error instanceof BffClientError && error.status === 422) {
@@ -89,6 +95,11 @@ export function SignInForm() {
           </div>
           <div className="col-xl col-xxl-6 align-self-center">
             <h2 className="sec-title mb-3">Login</h2>
+            {searchParams.get("error") === "access-denied" ? (
+              <p className="alert alert-warning" role="alert">
+                Você não tem permissão para acessar esta área do portal.
+              </p>
+            ) : null}
             {searchParams.get("firstAccess") === "1" ? (
               <p className="alert alert-success" role="status">
                 Senha definida com sucesso. Entre com seu e-mail e a nova senha.

@@ -1,37 +1,25 @@
 import type { NextRequest } from "next/server";
-import { laravelRequest } from "@/lib/api/laravel-client";
+
+import {
+  authenticateWithLaravel,
+  establishGuardianSession,
+  establishStudentSession,
+} from "@/lib/auth/establish-session";
+import { clearAuthCookies } from "@/lib/auth/cookies";
+import { clearStudentAuthCookies } from "@/lib/auth/student-cookies";
+import {
+  institutionalPortalMessage,
+  resolvePortalDestination,
+} from "@/lib/auth/portal-destination";
 import {
   forbidden,
   jsonError,
   jsonSuccess,
   validationError,
 } from "@/lib/api/response";
-import { setAuthCookies } from "@/lib/auth/cookies";
-import {
-  isGuardianUser,
-  toSessionUser,
-} from "@/lib/permissions/guardian-capabilities";
+import { isGuardianUser } from "@/lib/permissions/guardian-capabilities";
 import { loginSchema } from "@/features/auth/schemas/auth.schema";
-import type { LoginResponse, AuthUser } from "@/types/auth";
-
-async function persistAuth(response: LoginResponse) {
-  await setAuthCookies({
-    accessToken: response.token,
-    refreshToken: response.refresh_token,
-    expiresAt: response.expires_in
-      ? Date.now() + response.expires_in * 1000
-      : undefined,
-  });
-}
-
-function ensureGuardian(user: AuthUser) {
-  if (!isGuardianUser(user)) {
-    return forbidden(
-      "Este portal é exclusivo para responsáveis. Escolas devem acessar o painel administrativo."
-    );
-  }
-  return null;
-}
+import type { LoginSuccessPayload } from "@/types/auth-login";
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,21 +36,46 @@ export async function POST(request: NextRequest) {
       return validationError(errors);
     }
 
-    const response = await laravelRequest<LoginResponse>("/client/auth/login", {
-      method: "POST",
-      data: {
-        ...parsed.data,
-        device_name: "client-portal",
-      },
-      skipAuth: true,
-      skipUnauthorizedRetry: true,
-    });
+    const response = await authenticateWithLaravel(
+      parsed.data.email,
+      parsed.data.password,
+      "client-portal"
+    );
 
-    const denied = ensureGuardian(response.user);
-    if (denied) return denied;
+    const destination = resolvePortalDestination(response.user);
 
-    await persistAuth(response);
-    return jsonSuccess(toSessionUser(response.user));
+    if (destination.portal === "student") {
+      const session = await establishStudentSession(response);
+      const payload: LoginSuccessPayload = {
+        portal: "student",
+        redirectTo: destination.redirectTo,
+        session,
+      };
+      return jsonSuccess(payload);
+    }
+
+    if (destination.portal === "admin") {
+      await clearAuthCookies();
+      await clearStudentAuthCookies();
+      const payload: LoginSuccessPayload = {
+        portal: "admin",
+        redirectTo: destination.redirectTo,
+        session: {},
+      };
+      return jsonSuccess(payload);
+    }
+
+    if (!isGuardianUser(response.user)) {
+      return forbidden(institutionalPortalMessage());
+    }
+
+    const session = await establishGuardianSession(response);
+    const payload: LoginSuccessPayload = {
+      portal: "guardian",
+      redirectTo: destination.redirectTo,
+      session,
+    };
+    return jsonSuccess(payload);
   } catch (error) {
     return jsonError(error);
   }

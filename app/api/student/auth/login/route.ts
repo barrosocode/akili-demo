@@ -1,20 +1,21 @@
 import type { NextRequest } from "next/server";
 
-import { laravelRequest } from "@/lib/api/laravel-client";
-import { studentLaravelRequest } from "@/lib/api/student-laravel-client";
+import {
+  authenticateWithLaravel,
+  establishStudentSession,
+} from "@/lib/auth/establish-session";
+import {
+  resolvePortalDestination,
+  STUDENT_DEFAULT_PATH,
+} from "@/lib/auth/portal-destination";
 import {
   forbidden,
   jsonError,
   jsonSuccess,
   validationError,
 } from "@/lib/api/response";
-import { setStudentAuthCookies } from "@/lib/auth/student-cookies";
 import { loginSchema } from "@/features/auth/schemas/auth.schema";
-import type { LoginResponse } from "@/types/auth";
-
-function isStudentUser(user: LoginResponse["user"]): boolean {
-  return user.type === "student";
-}
+import type { LoginSuccessPayload } from "@/types/auth-login";
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,36 +32,36 @@ export async function POST(request: NextRequest) {
       return validationError(errors);
     }
 
-    const response = await laravelRequest<LoginResponse>("/mobile/auth/login", {
-      method: "POST",
-      data: {
-        ...parsed.data,
-        device_name: "student-web",
-      },
-      skipAuth: true,
-      skipUnauthorizedRetry: true,
-    });
+    const response = await authenticateWithLaravel(
+      parsed.data.email,
+      parsed.data.password,
+      "student-web"
+    );
 
-    if (!isStudentUser(response.user)) {
+    const destination = resolvePortalDestination(response.user);
+
+    if (destination.portal === "student") {
+      const session = await establishStudentSession(response);
+      const payload: LoginSuccessPayload = {
+        portal: "student",
+        redirectTo: STUDENT_DEFAULT_PATH,
+        session,
+      };
+      return jsonSuccess(payload);
+    }
+
+    if (destination.portal === "guardian") {
       return forbidden(
         "Esta área é exclusiva para alunos. Responsáveis devem acessar pelo login principal."
       );
     }
 
-    await setStudentAuthCookies({
-      accessToken: response.token,
-      refreshToken: response.refresh_token,
-      expiresAt: response.expires_in
-        ? Date.now() + response.expires_in * 1000
-        : undefined,
-    });
-
-    const session = await studentLaravelRequest<Record<string, unknown>>(
-      "/mobile/auth/session",
-      { skipUnauthorizedRetry: true }
-    );
-
-    return jsonSuccess(session);
+    const payload: LoginSuccessPayload = {
+      portal: "admin",
+      redirectTo: destination.redirectTo,
+      session: {},
+    };
+    return jsonSuccess(payload);
   } catch (error) {
     return jsonError(error);
   }

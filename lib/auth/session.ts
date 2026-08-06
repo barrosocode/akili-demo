@@ -1,5 +1,6 @@
 import { laravelRequest } from "@/lib/api/laravel-client";
 import { getAccessToken } from "@/lib/auth/cookies";
+import { institutionalPortalMessage } from "@/lib/auth/portal-destination";
 import {
   isGuardianPortalSession,
   toSessionUserFromPortal,
@@ -40,8 +41,7 @@ export async function fetchPortalSession(): Promise<FetchPortalSessionResult> {
         error: new ApiError({
           title: "Acesso negado",
           status: 403,
-          detail:
-            "Este portal é exclusivo para responsáveis. Escolas devem acessar o painel administrativo.",
+          detail: institutionalPortalMessage(),
         }),
       };
     }
