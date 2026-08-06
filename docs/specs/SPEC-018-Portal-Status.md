@@ -71,7 +71,9 @@ PATCH /api/v1/admin/tenants/{uuid}/subscription
 | `/profile` | Cadastro rico via `GET/PATCH /guardian/me` |
 | `/children` | Lista de filhos (mesma UX da home logada) |
 | `/purchases`, `/relatorios` | Purchases stub; relatórios apontam para filhos |
-| `/aluno` | Shell aluno + placeholders API |
+| `/aluno/entrar` | Login aluno (cookies `akili_student_*`) |
+| `/aluno` | Dashboard aluno com materiais e progresso |
+| `/aluno/supervisao/[ref]` | Guardian — ambiente read-only do filho |
 
 ## Site institucional (Prioridade 3)
 
@@ -90,8 +92,8 @@ Roteiro completo (Docker + seeds + personas): `api/docs/akili-platform/16-demo-a
 - [x] Blog com posts clicáveis + planos alinhados ao catálogo
 - [x] UX dashboard: CTAs/abas legíveis + chips `portal-chip` (evitar `.badge` Kiddino)
 - [x] Rota explícita `/children` + sidebar alinhada
+- [x] Portal web do aluno MVP ([SPEC-021](./SPEC-021-Student-Web-Portal.md))
 - [ ] BFF forgot-password / reset real
 - [ ] Form adicionar filho real (API ainda 501)
 - [ ] Checkout B2C completo (billing)
-- [ ] API aluno (disciplinas, conteúdo, quiz)
-- [ ] Domínio Learning/Gamification real (substituir metadata demo)
+- [ ] Domínio Learning/Gamification formal (ranking, sync offline, sessions avançadas)

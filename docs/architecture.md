@@ -69,6 +69,14 @@ middleware.ts  # Proteção de rotas
 | `POST /api/consents/accept` | `POST /consents/accept` |
 | `GET /api/guardian/children` | `GET /guardian/students` |
 | `GET /api/guardian/children/[ref]/progress` | `GET /guardian/students/{uuid}/progress` (kpis, materials, reports, school, classrooms, gamification, notifications, upcoming_content) |
+| `GET /api/guardian/children/[ref]/learning` | `GET /guardian/students/{uuid}/learning` (ambiente do filho, read-only) |
+| `GET /api/guardian/children/[ref]/contents/[uuid]` | `GET /guardian/students/{uuid}/contents/{uuid}` |
+| `POST /api/student/auth/login` | `POST /mobile/auth/login` |
+| `GET /api/student/auth/me` | `GET /mobile/auth/session` |
+| `GET /api/student/dashboard` | `GET /mobile/student/dashboard` |
+| `GET /api/student/materials` | `GET /mobile/student/materials` |
+| `GET /api/student/contents/[uuid]` | `GET /mobile/contents/{uuid}` |
+| `POST /api/student/contents/[uuid]/progress` | `POST /mobile/student/contents/{uuid}/progress` |
 | `GET /api/profile` | `GET /guardian/me` |
 | `PATCH /api/profile` | `PATCH /guardian/me` |
 | `GET /api/guardian/purchases` | stub 501 |
@@ -80,8 +88,9 @@ middleware.ts  # Proteção de rotas
 | Lista de filhos + plano | `features/children/` |
 | Progresso (KPIs, disciplinas, evolução) | `features/progress/` |
 | Gamificação (XP, medalhas, missões) | `features/gamification/` |
+| Portal do aluno (dashboard, materiais, player) | `features/student/`, `features/content-player/` |
 
-Status e roteiro de smoke test: [SPEC-018](./specs/SPEC-018-Portal-Status.md).
+Status guardian: [SPEC-018](./specs/SPEC-018-Portal-Status.md). Portal aluno: [SPEC-021](./specs/SPEC-021-Student-Web-Portal.md).
 
 ## Como adicionar uma feature
 
