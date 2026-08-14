@@ -40,11 +40,12 @@ export function FaqSection({
                   width={617}
                   height={326}
                   sizes="(max-width: 991px) 100vw, 50vw"
+                  className="faq-style2__image"
                 />
               </div>
             </div>
           </div>
-          <div className="col-lg-6 align-self-center">
+          <div className="col-lg-6 align-self-center faq-style2__accordion-col">
             <FaqAccordion items={items} />
           </div>
         </div>

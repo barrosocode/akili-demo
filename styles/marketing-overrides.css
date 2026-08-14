@@ -32,9 +32,68 @@
   padding-left: 0;
 }
 
+/* Redes sociais (MARKETING-017) — lista no TopBar, cluster no Footer */
+.marketing-root .social-links4 {
+  display: inline-flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.marketing-root .vs-social {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 .marketing-root .container,
 .marketing-root .container-style4 {
   width: 100%;
+}
+
+/* FAQ home (MARKETING-035) — accordion no fluxo da coluna direita */
+.marketing-root .faq-style2__accordion-col {
+  position: relative;
+}
+
+.marketing-root .faq-style2 .accordion-style1.v2 {
+  position: relative;
+  top: auto;
+  transform: none;
+  width: 100%;
+  max-width: 616px;
+  margin-left: 0;
+}
+
+@media (min-width: 1200px) {
+  .marketing-root .faq-style2 .accordion-style1.v2 {
+    margin-left: 14px;
+  }
+}
+
+.marketing-root .faq-style2 .img-box3 .img-1 .faq-style2__image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.marketing-root .faq-style2 .accordion-header {
+  margin: 0;
+}
+
+/* Uma bolinha só: o tema usa ::before; o Bootstrap injeta ::after no mesmo botão */
+.marketing-root .accordion-style1 .accordion-button {
+  position: relative;
+}
+
+.marketing-root .accordion-style1 .accordion-button::after {
+  display: none !important;
+  content: none !important;
+  background-image: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
 }
 
 /* Carousel blog (MARKETING-037) — scroll-snap, sem Slick */
@@ -69,6 +128,27 @@
 .marketing-root .marketing-blog-carousel__slide {
   scroll-snap-align: start;
   min-width: 0;
+}
+
+/* Card de blog (MARKETING-036) — recorte da imagem + moldura fluida */
+.marketing-root .blog-card-five {
+  width: 100%;
+  min-width: 0;
+}
+
+.marketing-root .blog-card-five::before {
+  width: 100%;
+}
+
+.marketing-root .blog-card-five__image-link {
+  display: block;
+}
+
+.marketing-root .blog-img-five img {
+  display: block;
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
 }
 
 .marketing-root .marketing-blog-carousel__nav {

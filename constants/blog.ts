@@ -65,7 +65,7 @@ export const blogPostDetails: BlogPost[] = [
 ];
 
 export const blogPosts: BlogPostCard[] = blogPostDetails.map(
-  ({ body: _body, dateIso: _dateIso, slug: _slug, ...card }) => card
+  ({ body: _body, slug: _slug, ...card }) => card
 );
 
 export function getBlogPostBySlug(slug: string): BlogPost | undefined {

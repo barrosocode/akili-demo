@@ -105,7 +105,7 @@ export function SiteFooter() {
         <div className="container-style4">
           <div className="copyright-wrap-five">
             <Copyright />
-            <SocialLinks className="vs-social social-style1 v2" />
+            <SocialLinks variant="cluster" />
           </div>
         </div>
       </div>

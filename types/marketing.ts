@@ -62,11 +62,11 @@ export type BlogPostCard = {
   imageSrc: string;
   imageAlt: string;
   dateLabel?: string;
+  dateIso?: string;
 };
 
 export type BlogPost = BlogPostCard & {
   slug: string;
-  dateIso?: string;
   body: string[];
 };
 

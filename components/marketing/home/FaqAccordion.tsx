@@ -59,7 +59,7 @@ export function FaqAccordion({
             key={item.id}
             className={isOpen ? "accordion-item active" : "accordion-item"}
           >
-            <h3 className="accordion-header" id={headerId}>
+            <div className="accordion-header" id={headerId}>
               <button
                 type="button"
                 className={
@@ -73,7 +73,7 @@ export function FaqAccordion({
               >
                 {item.question}
               </button>
-            </h3>
+            </div>
             <div
               id={panelId}
               role="region"
@@ -83,7 +83,6 @@ export function FaqAccordion({
                   ? "accordion-collapse collapse show"
                   : "accordion-collapse collapse"
               }
-              hidden={!isOpen}
             >
               <div className="accordion-body">
                 {typeof item.answer === "string" ? (

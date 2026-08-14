@@ -25,7 +25,7 @@ export function MarketingShell({
   return (
     <MarketingChrome>
       <MarketingRoot>
-        <MobileMenu showLoginCta={showLoginCta} />
+        <MobileMenu />
         <SiteHeader showLoginCta={showLoginCta} />
         <main>{children}</main>
         <SiteFooter />

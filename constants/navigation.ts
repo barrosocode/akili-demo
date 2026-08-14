@@ -1,4 +1,4 @@
-import type { NavItem } from "@/types/marketing";
+import type {NavItem} from "@/types/marketing";
 
 /**
  * Navegação institucional — fonte única (SPEC-004 / MARKETING-007).
@@ -9,28 +9,28 @@ import type { NavItem } from "@/types/marketing";
  */
 
 export const mainNav: NavItem[] = [
-  { label: "Home", href: "/" },
-  { label: "Sobre Nós", href: "/sobre-nos" },
-  { label: "Séries", href: "/series" },
-  { label: "Blog", href: "/blog" },
-  { label: "Preço e Planos", href: "/preco-e-planos" },
-  { label: "FAQ", href: "/faq" },
+    {label: "Home", href: "/"},
+    {label: "Sobre Nós", href: "/sobre-nos"},
+    {label: "Séries", href: "/series"},
+    {label: "Blog", href: "/blog"},
+    {label: "Preço e Planos", href: "/preco-e-planos"},
+    {label: "FAQ", href: "/faq"},
 ];
 
 export const footerNav: NavItem[] = [
-  { label: "Home", href: "/" },
-  { label: "Sobre Nós", href: "/sobre-nos" },
-  { label: "Séries", href: "/series" },
-  { label: "Blog", href: "/blog" },
-  { label: "Preços e Planos", href: "/preco-e-planos" },
-  { label: "FAQ", href: "/faq" },
-  { label: "Cadastre-se", href: "/cadastro" },
-  { label: "Contato", href: "/contato" },
-  { label: "Newsletter", href: "/newsletter" },
+    {label: "Home", href: "/"},
+    {label: "Sobre Nós", href: "/sobre-nos"},
+    {label: "Séries", href: "/series"},
+    {label: "Blog", href: "/blog"},
+    {label: "Preços e Planos", href: "/preco-e-planos"},
+    {label: "FAQ", href: "/faq"},
+    {label: "Cadastre-se", href: "/cadastro"},
+    {label: "Contato", href: "/contato"},
+    {label: "Newsletter", href: "/newsletter"},
 ];
 
 export const authLinks = {
-  login: { label: "LOGIN", href: "/signin" },
-  register: { label: "CADASTRE-SE", href: "/cadastro" },
-  forgotPassword: { label: "Esqueceu a Senha?", href: "/forgot-password" },
+    login: {label: "LOGIN", href: "/signin"},
+    register: {label: "CADASTRE-SE", href: "/cadastro"},
+    forgotPassword: {label: "Esqueceu a Senha?", href: "/forgot-password"},
 } as const satisfies Record<string, NavItem>;
