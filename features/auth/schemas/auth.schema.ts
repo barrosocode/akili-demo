@@ -9,6 +9,22 @@ export const forgotPasswordRequestSchema = z.object({
   email: z.string().email("Informe um e-mail válido"),
 });
 
+export const forgotPasswordVerifySchema = z
+  .object({
+    email: z.string().email("Informe um e-mail válido"),
+    code: z
+      .string()
+      .min(6, "Informe o código de 6 dígitos")
+      .max(6, "Informe o código de 6 dígitos"),
+    password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
+    password_confirmation: z.string(),
+  })
+  .refine((data) => data.password === data.password_confirmation, {
+    message: "As senhas não conferem",
+    path: ["password_confirmation"],
+  });
+
+/** @deprecated Prefer forgotPasswordVerifySchema (OTP). Kept for token query legacy. */
 export const forgotPasswordResetSchema = z
   .object({
     password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),

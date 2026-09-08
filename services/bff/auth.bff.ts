@@ -27,7 +27,7 @@ export const authBff = {
   },
 
   acceptInvite(payload: AcceptInviteRequest) {
-    return bffClient<SessionUser>("/api/auth/invite/accept", {
+    return bffClient<{ message: string }>("/api/auth/invite/accept", {
       method: "POST",
       body: payload,
     });
@@ -36,7 +36,7 @@ export const authBff = {
   requestFirstAccessOtp(payload: { email: string }) {
     return bffClient<{ message: string }>("/api/auth/otp/request", {
       method: "POST",
-      body: payload,
+      body: { ...payload, purpose: "first_access" },
     });
   },
 
@@ -48,7 +48,26 @@ export const authBff = {
   }) {
     return bffClient<{ message: string }>("/api/auth/otp/verify", {
       method: "POST",
-      body: payload,
+      body: { ...payload, purpose: "first_access" },
+    });
+  },
+
+  requestPasswordResetOtp(payload: { email: string }) {
+    return bffClient<{ message: string }>("/api/auth/otp/request", {
+      method: "POST",
+      body: { ...payload, purpose: "password_reset" },
+    });
+  },
+
+  verifyPasswordResetOtp(payload: {
+    email: string;
+    code: string;
+    password: string;
+    password_confirmation: string;
+  }) {
+    return bffClient<{ message: string }>("/api/auth/otp/verify", {
+      method: "POST",
+      body: { ...payload, purpose: "password_reset" },
     });
   },
 };

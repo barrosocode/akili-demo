@@ -19,9 +19,12 @@ npm run dev
 
 | Serviço | URL |
 |---------|-----|
-| Portal | http://localhost:3000 |
-| Admin (escolas) | http://localhost:3001 |
+| Portal (site) | http://localhost:3001 |
+| Admin (escolas) | http://localhost:3000 |
 | API Laravel | http://localhost:8000/api/v1 |
+
+Convite de responsável (e-mail): a API usa `AKILI_GUARDIAN_INVITE_URL` apontando para
+`http://localhost:3001/guardian/invite` — o aceite é no **site**, não no admin.
 
 ## Variáveis de ambiente
 

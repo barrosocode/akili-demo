@@ -1,18 +1,15 @@
 import { laravelRequest } from "@/lib/api/laravel-client";
 import {
-  forbidden,
   jsonError,
   jsonSuccess,
   validationError,
 } from "@/lib/api/response";
-import { setAuthCookies } from "@/lib/auth/cookies";
-import {
-  isGuardianUser,
-  toSessionUser,
-} from "@/lib/permissions/guardian-capabilities";
 import { acceptInviteSchema } from "@/features/auth/schemas/auth.schema";
-import type { LoginResponse, AuthUser } from "@/types/auth";
 
+/**
+ * Accepts guardian invite (token + password). API returns GuardianResource only —
+ * no Sanctum token. Client should redirect to /signin after success.
+ */
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -28,29 +25,16 @@ export async function POST(request: Request) {
       return validationError(errors);
     }
 
-    const response = await laravelRequest<LoginResponse & { user: AuthUser }>(
-      "/guardian/invite/accept",
-      {
-        method: "POST",
-        data: parsed.data,
-        skipAuth: true,
-        skipUnauthorizedRetry: true,
-      }
-    );
-
-    if (!isGuardianUser(response.user)) {
-      return forbidden();
-    }
-
-    await setAuthCookies({
-      accessToken: response.token,
-      refreshToken: response.refresh_token,
-      expiresAt: response.expires_in
-        ? Date.now() + response.expires_in * 1000
-        : undefined,
+    await laravelRequest("/guardian/invite/accept", {
+      method: "POST",
+      data: parsed.data,
+      skipAuth: true,
+      skipUnauthorizedRetry: true,
     });
 
-    return jsonSuccess(toSessionUser(response.user));
+    return jsonSuccess({
+      message: "Senha definida com sucesso. Você já pode fazer login.",
+    });
   } catch (error) {
     return jsonError(error);
   }

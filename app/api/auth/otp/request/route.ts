@@ -1,12 +1,17 @@
 import type { NextRequest } from "next/server";
+import { z } from "zod";
 import { laravelRequest } from "@/lib/api/laravel-client";
 import { jsonError, jsonSuccess, validationError } from "@/lib/api/response";
-import { firstAccessRequestSchema } from "@/features/auth/schemas/auth.schema";
+
+const otpRequestSchema = z.object({
+  email: z.string().email("Informe um e-mail válido"),
+  purpose: z.enum(["first_access", "password_reset"]).default("first_access"),
+});
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const parsed = firstAccessRequestSchema.safeParse(body);
+    const parsed = otpRequestSchema.safeParse(body);
 
     if (!parsed.success) {
       const errors = Object.fromEntries(
@@ -24,7 +29,7 @@ export async function POST(request: NextRequest) {
         method: "POST",
         data: {
           email: parsed.data.email,
-          purpose: "first_access",
+          purpose: parsed.data.purpose,
         },
         skipAuth: true,
         skipUnauthorizedRetry: true,
