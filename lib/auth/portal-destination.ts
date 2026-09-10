@@ -15,6 +15,7 @@ const INSTITUTIONAL_USER_TYPES = new Set<AuthUser["type"]>([
   "akili_admin",
   "school_admin",
   "teacher",
+  "coordinator",
 ]);
 
 const INSTITUTIONAL_ROLE_SLUGS = new Set([

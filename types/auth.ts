@@ -13,6 +13,8 @@ export interface AuthUser {
   permissions: string[];
   account_origin?: AccountOrigin;
   last_login_at: string | null;
+  is_demo?: boolean;
+  demo_persona_key?: string;
 }
 
 export interface LoginRequest {
@@ -32,6 +34,7 @@ export interface LoginResponse {
   token_type: "Bearer";
   refresh_token?: string;
   expires_in?: number;
+  expires_at?: string;
   user: AuthUser;
 }
 

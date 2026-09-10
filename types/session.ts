@@ -24,4 +24,6 @@ export interface SessionUser {
   terms: SessionTerms;
   children: ChildSummary[];
   subscription: PortalSubscription | null;
+  isDemo?: boolean;
+  demoPersonaKey?: string;
 }

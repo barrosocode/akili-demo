@@ -97,6 +97,9 @@ export function toSessionUserFromPortal(
     },
     children: session.children.map(mapPortalChild),
     subscription: mapPortalSubscription(session.subscription),
+    isDemo:
+      typeof session.user.is_demo === "boolean" ? session.user.is_demo : undefined,
+    demoPersonaKey: session.user.demo_persona_key,
   };
 }
 
@@ -122,6 +125,8 @@ export function toSessionUser(user: AuthUser): SessionUser {
     },
     children: [],
     subscription: null,
+    isDemo: typeof user.is_demo === "boolean" ? user.is_demo : undefined,
+    demoPersonaKey: user.demo_persona_key,
   };
 }
 
