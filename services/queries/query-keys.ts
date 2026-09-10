@@ -16,4 +16,8 @@ export const queryKeys = {
     all: ["purchases"] as const,
     list: () => [...queryKeys.purchases.all, "list"] as const,
   },
+  demo: {
+    all: ["demo"] as const,
+    personas: ["demo", "personas"] as const,
+  },
 };

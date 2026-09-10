@@ -8,6 +8,8 @@ export interface PortalSessionUser {
   type: string;
   status: UserStatus;
   last_login_at: string | null;
+  is_demo?: boolean;
+  demo_persona_key?: string;
 }
 
 export interface PortalGuardian {

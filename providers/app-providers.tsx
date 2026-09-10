@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 
+import { DemoTokenBootstrap } from "@/features/demo";
 import { QueryProvider } from "@/providers/query-provider";
 import { SessionProvider } from "@/providers/session-provider";
 import type { SessionUser } from "@/types/session";
@@ -18,7 +19,10 @@ export function AppProviders({
 }) {
   return (
     <QueryProvider>
-      <SessionProvider initialUser={initialUser}>{children}</SessionProvider>
+      <SessionProvider initialUser={initialUser}>
+        <DemoTokenBootstrap />
+        {children}
+      </SessionProvider>
     </QueryProvider>
   );
 }

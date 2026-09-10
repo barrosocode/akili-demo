@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { siteConfig } from "@/constants/site";
+import { DemoPersonaSwitcher } from "@/features/demo";
 import { useSession } from "@/providers/session-provider";
 import { useLogoutMutation } from "@/services/queries/auth.mutations";
 
@@ -33,7 +34,11 @@ export function GuardianHeader({ cartTotalLabel = "0,00" }: GuardianHeaderProps)
 
   return (
     <header className="vs-header header-layout4">
-      <div className="header-top4" />
+      <div className="header-top4">
+        <div className="container-style4">
+          <DemoPersonaSwitcher />
+        </div>
+      </div>
       <div className="sticky-wrap">
         <div className="sticky-active">
           <div className="container-style4">
