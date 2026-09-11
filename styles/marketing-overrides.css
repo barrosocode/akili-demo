@@ -11,6 +11,22 @@
   box-sizing: border-box;
   line-height: 1.5;
   color: #444;
+  /* Sticky footer (não fixed): preenche a viewport e empurra o footer para baixo */
+  min-height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.marketing-root > main,
+.marketing-root > .vs-blog-wrapper {
+  flex: 1 0 auto;
+}
+
+.marketing-root > .footer-wrapper {
+  flex-shrink: 0;
+  margin-top: auto;
 }
 
 .marketing-root *,
@@ -807,4 +823,536 @@
   flex: 1 1 100%;
   color: #ffe8e8;
   font-size: 0.8125rem;
+}
+
+/* —— Central de Ajuda (Portal do Responsável) —— */
+
+.marketing-root .akili-support-fab {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 97;
+  width: 56px;
+  height: 56px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--theme-color, #df5c16);
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(6, 10, 57, 0.22);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.marketing-root .akili-support-fab:hover,
+.marketing-root .akili-support-fab:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(6, 10, 57, 0.28);
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.marketing-root .akili-support-fab__icon {
+  font-family: var(--title-font, Fredoka, sans-serif);
+  font-size: 1.65rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.marketing-root .scrollToTop--above-support-fab.show {
+  bottom: 96px;
+}
+
+@media (max-width: 767px) {
+  .marketing-root .akili-support-fab {
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+    width: 52px;
+    height: 52px;
+  }
+
+  .marketing-root .scrollToTop--above-support-fab.show {
+    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+    right: max(16px, env(safe-area-inset-right));
+  }
+}
+
+.marketing-root .akili-support-page {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 0 2rem;
+}
+
+.marketing-root .akili-support-hero {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem 1rem 2rem;
+  border-radius: 16px;
+  background: linear-gradient(
+    180deg,
+    rgba(223, 92, 22, 0.08) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.marketing-root .akili-support-hero__eyebrow {
+  margin: 0 0 0.5rem;
+  color: var(--theme-color, #df5c16);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.8125rem;
+}
+
+.marketing-root .akili-support-hero__title {
+  margin: 0 0 0.75rem;
+  color: var(--title-color, #060a39);
+  font-family: var(--title-font, Fredoka, sans-serif);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 600;
+}
+
+.marketing-root .akili-support-hero__subtitle {
+  margin: 0 auto;
+  max-width: 36rem;
+  color: #555;
+  font-size: 1.05rem;
+}
+
+.marketing-root .akili-support-search {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.marketing-root .akili-support-search__icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  pointer-events: none;
+}
+
+.marketing-root .akili-support-search__input {
+  min-height: 52px;
+  padding-left: 2.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(6, 10, 57, 0.12);
+  box-shadow: 0 4px 16px rgba(6, 10, 57, 0.06);
+  font-size: 1rem;
+}
+
+.marketing-root .akili-support-search__input:focus {
+  border-color: var(--theme-color, #df5c16);
+  box-shadow: 0 0 0 3px rgba(223, 92, 22, 0.15);
+}
+
+.marketing-root .akili-support-panel__heading {
+  margin: 0 0 1rem;
+  color: var(--title-color, #060a39);
+  font-family: var(--title-font, Fredoka, sans-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.marketing-root .akili-support-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 576px) {
+  .marketing-root .akili-support-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 992px) {
+  .marketing-root .akili-support-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.marketing-root .akili-support-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 1.25rem 1.35rem;
+  border-radius: 14px;
+  border: 1px solid rgba(6, 10, 57, 0.1);
+  background: #fff;
+  color: inherit;
+  text-decoration: none;
+  box-shadow: 0 2px 10px rgba(6, 10, 57, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.marketing-root .akili-support-card:hover,
+.marketing-root .akili-support-card:focus-visible {
+  border-color: rgba(223, 92, 22, 0.45);
+  box-shadow: 0 8px 24px rgba(6, 10, 57, 0.1);
+  transform: translateY(-2px);
+  color: inherit;
+  outline: none;
+}
+
+.marketing-root .akili-support-card__title {
+  margin: 0 0 0.5rem;
+  color: var(--title-color, #060a39);
+  font-family: var(--title-font, Fredoka, sans-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.marketing-root .akili-support-card__desc {
+  margin: 0;
+  flex: 1;
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.marketing-root .akili-support-card__desc--muted {
+  color: #999;
+}
+
+.marketing-root .akili-support-card__meta {
+  margin-top: 0.85rem;
+  color: var(--theme-color, #df5c16);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.marketing-root .akili-support-state {
+  margin-top: 0.5rem;
+}
+
+.marketing-root .akili-support-skeleton {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.marketing-root .akili-support-skeleton span {
+  display: block;
+  height: 88px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #f0f0f3 25%, #f7f7f9 50%, #f0f0f3 75%);
+  background-size: 200% 100%;
+  animation: akili-support-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes akili-support-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.marketing-root .akili-support-empty {
+  text-align: center;
+  padding: 1.5rem 1rem;
+}
+
+.marketing-root .akili-support-empty__hint {
+  color: #777;
+  margin-bottom: 1rem;
+}
+
+.marketing-root .akili-support-search-results__label {
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+.marketing-root .akili-support-search-group {
+  margin-bottom: 1.25rem;
+}
+
+.marketing-root .akili-support-search-group__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  color: var(--title-color, #060a39);
+}
+
+.marketing-root .akili-support-search-group__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid rgba(6, 10, 57, 0.08);
+}
+
+.marketing-root .akili-support-search-group__list li {
+  border-bottom: 1px solid rgba(6, 10, 57, 0.08);
+}
+
+.marketing-root .akili-support-search-group__list a {
+  display: block;
+  padding: 0.85rem 0.25rem;
+  color: #234;
+  font-weight: 500;
+}
+
+.marketing-root .akili-support-search-group__list a:hover,
+.marketing-root .akili-support-search-group__list a:focus-visible {
+  color: var(--theme-color, #df5c16);
+}
+
+.marketing-root .akili-support-breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.marketing-root .akili-support-breadcrumb li:not(:last-child)::after {
+  content: "/";
+  margin-left: 0.5rem;
+  color: #bbb;
+}
+
+.marketing-root .akili-support-breadcrumb a {
+  color: var(--theme-color, #df5c16);
+}
+
+.marketing-root .akili-support-article-header {
+  margin-bottom: 1.25rem;
+}
+
+.marketing-root .akili-support-article-header__title {
+  margin: 0 0 0.5rem;
+  color: var(--title-color, #060a39);
+  font-family: var(--title-font, Fredoka, sans-serif);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 600;
+}
+
+.marketing-root .akili-support-article-header__desc {
+  margin: 0;
+  color: #666;
+  font-size: 1.05rem;
+}
+
+.marketing-root .akili-support-divider {
+  border: 0;
+  border-top: 1px solid rgba(6, 10, 57, 0.1);
+  margin: 1.5rem 0;
+}
+
+.marketing-root .akili-support-faq-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.marketing-root .akili-support-faq-list li {
+  border-bottom: 1px solid rgba(6, 10, 57, 0.08);
+}
+
+.marketing-root .akili-support-faq-list a {
+  display: block;
+  padding: 1rem 0.15rem;
+  color: var(--title-color, #060a39);
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.marketing-root .akili-support-faq-list a:hover,
+.marketing-root .akili-support-faq-list a:focus-visible {
+  color: var(--theme-color, #df5c16);
+}
+
+.marketing-root .akili-support-faq-body {
+  color: #444;
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.marketing-root .akili-support-faq-body p {
+  margin-bottom: 1rem;
+}
+
+.marketing-root .akili-support-actions__title {
+  margin: 0 0 0.85rem;
+  font-size: 1.1rem;
+  color: var(--title-color, #060a39);
+  font-family: var(--title-font, Fredoka, sans-serif);
+}
+
+.marketing-root .akili-support-actions__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* Modal — Dialog portal may render outside .marketing-root.
+   Portal does not load Tailwind; position must be explicit (not utility classes). */
+[data-slot="dialog-portal"]:has(.akili-support-modal) [data-slot="dialog-overlay"] {
+  position: fixed;
+  inset: 0;
+  z-index: 1090;
+  background: rgba(6, 10, 57, 0.45);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+.akili-support-modal[data-slot="dialog-content"],
+[data-slot="dialog-content"].akili-support-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1100;
+  /* Não herdar min-height: 100dvh de .marketing-root */
+  min-height: 0;
+  height: min(560px, 82vh);
+  max-height: min(560px, 82vh);
+  width: min(760px, calc(100vw - 2rem));
+  max-width: min(760px, calc(100vw - 2rem));
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #fff;
+  color: #444;
+  box-shadow: 0 24px 64px rgba(6, 10, 57, 0.22);
+  font-family: var(--body-font, Jost, sans-serif);
+}
+
+.akili-support-modal__header {
+  flex-shrink: 0;
+  padding: 1.25rem 1.25rem 0.75rem;
+}
+
+.akili-support-modal__header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.akili-support-modal__title {
+  margin: 0;
+  color: var(--title-color, #060a39);
+  font-family: var(--title-font, Fredoka, sans-serif);
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.akili-support-modal__desc {
+  margin: 0.35rem 0 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.akili-support-modal__close {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(6, 10, 57, 0.06);
+  color: #333;
+  cursor: pointer;
+}
+
+.akili-support-modal__close:hover,
+.akili-support-modal__close:focus-visible {
+  background: rgba(6, 10, 57, 0.12);
+  outline: none;
+}
+
+.akili-support-modal__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0.5rem 1.25rem 1rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.akili-support-modal__footer {
+  flex-shrink: 0;
+  padding: 0.85rem 1.25rem 1.15rem;
+  border-top: 1px solid rgba(6, 10, 57, 0.08);
+  text-align: center;
+}
+
+.akili-support-modal .akili-support-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+}
+
+@media (min-width: 576px) {
+  .akili-support-modal .akili-support-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .akili-support-modal .akili-support-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.akili-support-modal .akili-support-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(6, 10, 57, 0.1);
+  background: #fff;
+  color: inherit;
+  text-decoration: none;
+}
+
+.akili-support-modal .akili-support-card__title {
+  margin: 0 0 0.4rem;
+  color: var(--title-color, #060a39);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.akili-support-modal .akili-support-card__desc {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.akili-support-modal .akili-support-search__input {
+  min-height: 48px;
+  padding-left: 2.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(6, 10, 57, 0.12);
+  width: 100%;
+}
+
+.akili-support-modal .akili-support-search {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.akili-support-modal .akili-support-search__icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+}
+
+.akili-support-modal .akili-support-panel__heading {
+  margin: 0 0 0.85rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--title-color, #060a39);
 }

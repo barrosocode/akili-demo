@@ -2,9 +2,11 @@ import type { ReactNode } from "react";
 
 import { GuardianHeader } from "@/components/portal/guardian/GuardianHeader";
 import { GuardianSidebar } from "@/components/portal/guardian/GuardianSidebar";
+import { GuardianShellBody } from "@/components/portal/guardian/GuardianShellBody";
 import { FooterClean } from "@/components/portal/shared/FooterClean";
 import { ScrollToTop } from "@/components/marketing/layout/ScrollToTop";
 import { KiddinoRoot } from "@/components/theme/KiddinoRoot";
+import { SupportFloatingButton } from "@/features/support";
 
 type GuardianDashboardShellProps = {
   children: ReactNode;
@@ -32,17 +34,15 @@ export function GuardianDashboardShell({
               <div className="col-12">{children}</div>
             </div>
           ) : (
-            <div className="row gx-40">
-              <div className="col-lg-4">
-                <GuardianSidebar activeHref={activeHref} />
-              </div>
-              <div className="col-lg-8">{children}</div>
-            </div>
+            <GuardianShellBody sidebar={<GuardianSidebar activeHref={activeHref} />}>
+              {children}
+            </GuardianShellBody>
           )}
         </div>
       </section>
       <FooterClean />
-      <ScrollToTop />
+      <SupportFloatingButton />
+      <ScrollToTop offsetClassName="scrollToTop--above-support-fab" />
     </KiddinoRoot>
   );
 }

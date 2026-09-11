@@ -13,6 +13,7 @@ const guardianNav: NavItem[] = [
   { label: "Adicionar filho", href: "/children/new" },
   { label: "Compras", href: "/purchases" },
   { label: "Relatórios", href: "/relatorios" },
+  { label: "Central de Ajuda", href: "/ajuda" },
   { label: "Meus dados", href: "/profile" },
 ];
 
@@ -67,10 +68,11 @@ export function GuardianSidebar({ activeHref }: GuardianSidebarProps) {
         </ul>
       </div>
       <div className="widget">
-        <h3 className="widget_title">Tutorial</h3>
+        <h3 className="widget_title">Ajuda</h3>
         <p>
-          Conheça a plataforma e acompanhe o progresso dos seus filhos com o
-          método Akili Educ.
+          Dúvidas sobre o portal? Consulte a{" "}
+          <Link href="/ajuda">Central de Ajuda</Link> ou use o botão{" "}
+          <strong>?</strong> no canto da tela.
         </p>
       </div>
     </aside>
