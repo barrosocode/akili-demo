@@ -39,7 +39,18 @@ O frontend **não** filtra por portal. O BFF/API devolvem só conteúdo publicad
 
 ## Ações do FAQ
 
-`features/support/lib/map-route-target.ts` mapeia `type=route` para paths do portal do responsável / aluno. Targets de professor/escola são omitidos. `external_url` só `https` / `mailto`.
+`features/support/lib/map-route-target.ts` mapeia `type=route` para o portal do responsável / aluno:
+
+- `guardian_signin` → `/signin`
+- `guardian_children` → home do responsável
+- `guardian_profile` → `/profile`
+- `guardian_reports` → `/relatorios`
+- `student_login` → `/aluno/entrar`
+- `student_materials` → `/aluno`
+
+Targets de Admin / professor / escola são omitidos. `external_url` só `https` / `mailto`.
+
+A base de conteúdo (tópicos/FAQs) é seedada na API (`FaqSeeder`) e filtrada por `portal=guardian`.
 
 ## Fora de escopo
 

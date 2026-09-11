@@ -11,6 +11,8 @@ import type {
 const ROUTE_TARGET_HREF: Partial<Record<SupportFaqRouteTarget, string>> = {
   guardian_children: GUARDIAN_HOME_PATH,
   guardian_signin: "/signin",
+  guardian_profile: "/profile",
+  guardian_reports: "/relatorios",
   student_login: STUDENT_LOGIN_PATH,
   student_materials: STUDENT_HOME_PATH,
 };
@@ -30,7 +32,7 @@ function isSafeExternalUrl(target: string): boolean {
 
 /**
  * Maps FAQ actions to navigable links for the guardian portal.
- * Unknown / teacher / school route targets are omitted.
+ * Admin / teacher / school route targets are omitted.
  */
 export function resolveSupportActions(
   actions: SupportFaqAction[]
