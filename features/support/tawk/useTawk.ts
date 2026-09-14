@@ -8,6 +8,7 @@ import type { TawkContextValue } from "@/features/support/tawk/tawk.types";
 const fallback: TawkContextValue = {
   status: "unavailable",
   isReady: false,
+  isConfigured: false,
   isAvailable: false,
   openChat: async () => {
     // Sem provider / Tawk falhou — portal continua.

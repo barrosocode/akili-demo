@@ -13,7 +13,7 @@ type SupportTalkToAgentButtonProps = {
 export function SupportTalkToAgentButton({
   className = "vs-btn style3",
 }: SupportTalkToAgentButtonProps) {
-  const { openChat } = useTawk();
+  const { openChat, isConfigured } = useTawk();
   const [pending, setPending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -28,6 +28,10 @@ export function SupportTalkToAgentButton({
             setPending(true);
             setErrorMessage(null);
             try {
+              if (!isConfigured) {
+                setErrorMessage("Chat não configurado.");
+                return;
+              }
               const opened = await openChat();
               if (!opened) {
                 setErrorMessage("Não foi possível abrir o chat.");

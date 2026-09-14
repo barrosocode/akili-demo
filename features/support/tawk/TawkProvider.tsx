@@ -163,6 +163,7 @@ export function TawkProvider({ children, config }: TawkProviderProps) {
     () => ({
       status,
       isReady: status === "ready",
+      isConfigured: configured,
       isAvailable: configured && status !== "unavailable",
       openChat,
       maximize,

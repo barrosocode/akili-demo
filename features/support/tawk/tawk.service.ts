@@ -14,21 +14,6 @@ function isBrowser(): boolean {
   return typeof window !== "undefined";
 }
 
-/**
- * Lê property/widget do `.env` no server (`TAWK_*`, sem NEXT_PUBLIC_).
- * Não usar no client — lá a config vem via `setTawkPublicConfig`.
- */
-export function readTawkPublicConfigFromEnv(): TawkPublicConfig | null {
-  const propertyId = process.env.TAWK_PROPERTY_ID?.trim() ?? "";
-  const widgetId = process.env.TAWK_WIDGET_ID?.trim() ?? "";
-
-  if (!propertyId || !widgetId) {
-    return null;
-  }
-
-  return { propertyId, widgetId };
-}
-
 /** Registra a config pública no client (chamado pelo TawkProvider). */
 export function setTawkPublicConfig(config: TawkPublicConfig | null): void {
   injectedConfig = config;
@@ -75,6 +60,7 @@ export function ensureTawkLoaded(): Promise<void> {
       try {
         previousOnLoad?.();
       } finally {
+        // Oculta o launcher; maximize só no CTA após identify/login.
         window.Tawk_API?.hideWidget?.();
         resolve();
       }
@@ -111,7 +97,6 @@ export function loginTawk(identity: TawkIdentity): Promise<void> {
       return;
     }
 
-    api.hideWidget?.();
     api.login(
       {
         hash: identity.hash,
@@ -124,6 +109,8 @@ export function loginTawk(identity: TawkIdentity): Promise<void> {
           reject(new Error("Não foi possível identificar o usuário no chat."));
           return;
         }
+        // FAB Akili no lugar do launcher Tawk.
+        api.hideWidget?.();
         resolve();
       }
     );
@@ -135,7 +122,6 @@ export function maximizeTawk(): void {
   if (!api) return;
 
   try {
-    api.hideWidget?.();
     api.maximize?.();
   } catch {
     // Widget ausente ou ainda não pronto.

@@ -8,7 +8,7 @@ import { ScrollToTop } from "@/components/marketing/layout/ScrollToTop";
 import { KiddinoRoot } from "@/components/theme/KiddinoRoot";
 import { SupportFloatingButton } from "@/features/support";
 import { TawkProvider } from "@/features/support/tawk";
-import { readTawkPublicConfigFromEnv } from "@/features/support/tawk/tawk.service";
+import type { TawkPublicConfig } from "@/features/support/tawk/tawk.types";
 
 type GuardianDashboardShellProps = {
   children: ReactNode;
@@ -16,6 +16,14 @@ type GuardianDashboardShellProps = {
   fullBleed?: boolean;
   cartTotalLabel?: string;
 };
+
+/** Lê IDs públicos só neste Server Component — não importar via tawk.service (client). */
+function readTawkPublicConfig(): TawkPublicConfig | null {
+  const propertyId = process.env.TAWK_PROPERTY_ID?.trim() ?? "";
+  const widgetId = process.env.TAWK_WIDGET_ID?.trim() ?? "";
+  if (!propertyId || !widgetId) return null;
+  return { propertyId, widgetId };
+}
 
 /**
  * Shell do dashboard do responsável (PORTAL-006).
@@ -26,7 +34,7 @@ export function GuardianDashboardShell({
   fullBleed = false,
   cartTotalLabel,
 }: GuardianDashboardShellProps) {
-  const tawkConfig = readTawkPublicConfigFromEnv();
+  const tawkConfig = readTawkPublicConfig();
 
   return (
     <KiddinoRoot>

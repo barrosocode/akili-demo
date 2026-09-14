@@ -57,12 +57,18 @@ A base de conteúdo (tópicos/FAQs) é seedada na API (`FaqSeeder`) e filtrada p
 
 Integração centralizada em `features/support/tawk/`:
 
-1. Sessão autenticada no portal → `GuardianDashboardShell` lê `TAWK_PROPERTY_ID` / `TAWK_WIDGET_ID` (server) e passa `config` ao `TawkProvider`
-2. Client registra a config (`setTawkPublicConfig`) e carrega o embed — sem `NEXT_PUBLIC_`
+1. Sessão autenticada no portal → `GuardianDashboardShell` (Server Component) lê `TAWK_PROPERTY_ID` / `TAWK_WIDGET_ID` inline e passa `config` ao `TawkProvider`
+2. Client registra a config (`setTawkPublicConfig`), carrega o embed e só maximiza após identity/login — sem `NEXT_PUBLIC_`
 3. BFF `GET /api/support/tawk/identity` → Laravel (única fonte de `user_id` / `hash`)
 4. `Tawk_API.login` apenas com o payload da Identity API
 5. Logout / troca de usuário / 401 da sessão → `endAuthenticatedTawkSession()` (controller + widget)
 6. `openChat` revalida Identity API (`staleTime: 0` + forceRefresh) para não manter identidade após expiração
+
+No painel Tawk, desative Pre-Chat / Lead Capture Form neste widget autenticado (visitante já vem identificado). Logs internos `[Tawk/Form]` / `getForm` podem aparecer como ruído mesmo com o chat ok.
+
+CTA: `isConfigured` (IDs injetados) ≠ `isAvailable` (sync ok). “Chat não configurado” só sem `TAWK_*`; falha de identity/login → “Não foi possível abrir o chat.”
+
+O Tawk pode responder `INVALID_EMAIL` no Secure Mode para e-mails placeholder (ex. `teste@teste.com`). O valor vem do usuário autenticado na Identity API.
 
 Sem sessão Akili: não chama Identity API nem login autenticado. Falhas de API/Tawk fazem logout do visitante autenticado no widget e degradam sem derrubar o portal.
 

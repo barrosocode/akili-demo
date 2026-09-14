@@ -34,6 +34,8 @@ export type TawkStatus = "idle" | "loading" | "ready" | "unavailable";
 export type TawkContextValue = {
   status: TawkStatus;
   isReady: boolean;
+  /** Property/widget IDs foram injetados pelo server. */
+  isConfigured: boolean;
   isAvailable: boolean;
   /** Abre o chat; `false` se Tawk/sessão indisponíveis (FAQ continua ok). */
   openChat: () => Promise<boolean>;
