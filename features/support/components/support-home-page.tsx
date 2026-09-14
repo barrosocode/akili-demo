@@ -1,5 +1,6 @@
 "use client";
 
+import { SupportTalkToAgentButton } from "@/features/support/components/support-talk-to-agent-button";
 import { SupportTopicsPanel } from "@/features/support/components/support-topics-panel";
 
 export function SupportHomePage() {
@@ -17,9 +18,7 @@ export function SupportHomePage() {
 
       <p className="akili-support-page__hint text-center mt-4">
         Não encontrou o que precisa?{" "}
-        <button type="button" className="btn btn-link p-0" disabled title="Em breve">
-          Falar com suporte (em breve)
-        </button>
+        <SupportTalkToAgentButton className="btn btn-link p-0" />
       </p>
     </div>
   );

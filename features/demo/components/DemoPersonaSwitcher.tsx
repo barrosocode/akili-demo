@@ -2,6 +2,7 @@
 
 import { useState, type ChangeEvent } from "react";
 
+import { endAuthenticatedTawkSession } from "@/features/support/tawk";
 import {
   isDemoPersonaKey,
   personaLabel,
@@ -42,6 +43,7 @@ export function DemoPersonaSwitcher() {
     setError(null);
     try {
       const result = await switchPersona.mutateAsync(key);
+      await endAuthenticatedTawkSession();
       window.location.assign(result.redirectTo);
     } catch (switchError) {
       setError(switcherErrorMessage(switchError));

@@ -21,11 +21,12 @@ Contrato: `GET /api/v1/support/faq/*?portal=guardian` (via BFF Next).
 
 | Camada | Path |
 |--------|------|
-| BFF | `app/api/support/faq/*` — força `portal=guardian` |
+| BFF | `app/api/support/faq/*` — força `portal=guardian`; `app/api/support/tawk/identity` |
 | Client BFF | `services/bff/support.bff.ts` |
 | React Query | `services/queries/support.queries.ts` |
 | UI | `features/support/` |
-| Tipos | `types/domain/support-faq.ts` |
+| Tawk | `features/support/tawk/` (`TawkProvider`, `useTawk`) |
+| Tipos | `types/domain/support-faq.ts`, `features/support/tawk/tawk.types.ts` |
 
 O frontend **não** filtra por portal. O BFF/API devolvem só conteúdo publicado para `guardian`.
 
@@ -35,7 +36,7 @@ O frontend **não** filtra por portal. O BFF/API devolvem só conteúdo publicad
 
 - Formato retangular: largura `min(760px, calc(100vw - 2rem))`, altura `min(560px, 82vh)`
 - Scroll apenas no body; grid de tópicos 1 / 2 / 3 colunas conforme viewport
-- CTA “Falar com suporte” desabilitado (chat/Tawk.to fora de escopo)
+- CTA “Falar com suporte” → `useTawk().openChat()` (identidade já sincronizada pelo `TawkProvider`)
 
 ## Ações do FAQ
 
@@ -52,6 +53,19 @@ Targets de Admin / professor / escola são omitidos. `external_url` só `https` 
 
 A base de conteúdo (tópicos/FAQs) é seedada na API (`FaqSeeder`) e filtrada por `portal=guardian`.
 
+## Chat (Tawk.to)
+
+Integração centralizada em `features/support/tawk/`:
+
+1. Sessão autenticada no portal → `GuardianDashboardShell` lê `TAWK_PROPERTY_ID` / `TAWK_WIDGET_ID` (server) e passa `config` ao `TawkProvider`
+2. Client registra a config (`setTawkPublicConfig`) e carrega o embed — sem `NEXT_PUBLIC_`
+3. BFF `GET /api/support/tawk/identity` → Laravel (única fonte de `user_id` / `hash`)
+4. `Tawk_API.login` apenas com o payload da Identity API
+5. Logout / troca de usuário / 401 da sessão → `endAuthenticatedTawkSession()` (controller + widget)
+6. `openChat` revalida Identity API (`staleTime: 0` + forceRefresh) para não manter identidade após expiração
+
+Sem sessão Akili: não chama Identity API nem login autenticado. Falhas de API/Tawk fazem logout do visitante autenticado no widget e degradam sem derrubar o portal.
+
 ## Fora de escopo
 
-Chat, tickets, impersonation, paginação server-side no consume (lista completa).
+Tickets, impersonation, paginação server-side no consume (lista completa), widget no portal do aluno.

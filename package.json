@@ -7,7 +7,8 @@
     "dev:clean": "rm -rf .next && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:tawk": "node --experimental-strip-types --test features/support/tawk/tawk-session.test.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

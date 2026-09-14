@@ -1,3 +1,4 @@
+import type { TawkIdentity } from "@/features/support/tawk";
 import { bffClient } from "@/services/bff/client";
 import type {
   SupportFaqDetail,
@@ -24,5 +25,9 @@ export const supportBff = {
     return bffClient<SupportFaqSearchHit[]>(
       `/api/support/faq/search?${query.toString()}`
     );
+  },
+
+  tawkIdentity() {
+    return bffClient<TawkIdentity>("/api/support/tawk/identity");
   },
 };

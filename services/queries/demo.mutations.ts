@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { endAuthenticatedTawkSession } from "@/features/support/tawk";
 import { demoBff } from "@/services/bff/demo.bff";
 import { queryKeys } from "@/services/queries/query-keys";
 import type { DemoPersonaKey } from "@/types/demo";
@@ -19,7 +20,9 @@ export function useSwitchDemoPersonaMutation() {
 
   return useMutation({
     mutationFn: (key: DemoPersonaKey) => demoBff.issuePersonaToken(key),
-    onSuccess: (result) => {
+    onSuccess: async (result) => {
+      await endAuthenticatedTawkSession();
+      queryClient.removeQueries({ queryKey: queryKeys.support.tawkIdentityRoot });
       if (isGuardianSession(result)) {
         queryClient.setQueryData(queryKeys.auth.me, result.session);
         void queryClient.invalidateQueries({ queryKey: queryKeys.demo.all });

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { SupportTalkToAgentButton } from "@/features/support/components/support-talk-to-agent-button";
 import { SUPPORT_PATHS } from "@/features/support/lib/paths";
 import type { SupportFaqSearchHit } from "@/types/domain/support-faq";
 
@@ -45,9 +46,7 @@ export function SupportSearchResults({
         <p className="akili-support-empty__hint">
           Tente utilizar outros termos ou fale com o suporte.
         </p>
-        <button type="button" className="vs-btn style3" disabled title="Em breve">
-          Falar com suporte (em breve)
-        </button>
+        <SupportTalkToAgentButton />
       </div>
     );
   }

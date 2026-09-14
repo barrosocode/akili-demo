@@ -7,6 +7,8 @@ import { FooterClean } from "@/components/portal/shared/FooterClean";
 import { ScrollToTop } from "@/components/marketing/layout/ScrollToTop";
 import { KiddinoRoot } from "@/components/theme/KiddinoRoot";
 import { SupportFloatingButton } from "@/features/support";
+import { TawkProvider } from "@/features/support/tawk";
+import { readTawkPublicConfigFromEnv } from "@/features/support/tawk/tawk.service";
 
 type GuardianDashboardShellProps = {
   children: ReactNode;
@@ -24,25 +26,29 @@ export function GuardianDashboardShell({
   fullBleed = false,
   cartTotalLabel,
 }: GuardianDashboardShellProps) {
+  const tawkConfig = readTawkPublicConfigFromEnv();
+
   return (
     <KiddinoRoot>
-      <GuardianHeader cartTotalLabel={cartTotalLabel} />
-      <section className="vs-blog-wrapper blog-details space-top space-extra-bottom">
-        <div className="container">
-          {fullBleed ? (
-            <div className="row gx-40">
-              <div className="col-12">{children}</div>
-            </div>
-          ) : (
-            <GuardianShellBody sidebar={<GuardianSidebar activeHref={activeHref} />}>
-              {children}
-            </GuardianShellBody>
-          )}
-        </div>
-      </section>
-      <FooterClean />
-      <SupportFloatingButton />
-      <ScrollToTop offsetClassName="scrollToTop--above-support-fab" />
+      <TawkProvider config={tawkConfig}>
+        <GuardianHeader cartTotalLabel={cartTotalLabel} />
+        <section className="vs-blog-wrapper blog-details space-top space-extra-bottom">
+          <div className="container">
+            {fullBleed ? (
+              <div className="row gx-40">
+                <div className="col-12">{children}</div>
+              </div>
+            ) : (
+              <GuardianShellBody sidebar={<GuardianSidebar activeHref={activeHref} />}>
+                {children}
+              </GuardianShellBody>
+            )}
+          </div>
+        </section>
+        <FooterClean />
+        <SupportFloatingButton />
+        <ScrollToTop offsetClassName="scrollToTop--above-support-fab" />
+      </TawkProvider>
     </KiddinoRoot>
   );
 }

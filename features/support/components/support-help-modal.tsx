@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { SupportTalkToAgentButton } from "@/features/support/components/support-talk-to-agent-button";
 import { SupportTopicsPanel } from "@/features/support/components/support-topics-panel";
 
 type SupportHelpModalProps = {
@@ -53,9 +54,7 @@ export function SupportHelpModal({ open, onOpenChange }: SupportHelpModalProps) 
         </div>
 
         <div className="akili-support-modal__footer">
-          <button type="button" className="vs-btn style3" disabled title="Em breve">
-            Falar com suporte (em breve)
-          </button>
+          <SupportTalkToAgentButton />
         </div>
       </DialogContent>
     </Dialog>
