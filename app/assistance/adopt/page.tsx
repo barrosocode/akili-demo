@@ -12,9 +12,9 @@ export default function AssistanceAdoptPage() {
   return (
     <Suspense
       fallback={
-        <main className="container space-top" role="status">
+        <div className="container space-top" role="status">
           <p>Abrindo o portal em modo atendimento…</p>
-        </main>
+        </div>
       }
     >
       <AssistanceAdoptClient />

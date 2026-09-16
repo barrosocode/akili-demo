@@ -43,7 +43,9 @@ export function AssistanceAdoptClient() {
         const result = await assistanceBff.adopt({ code });
 
         await queryClient.cancelQueries({ queryKey: queryKeys.auth.me });
-        queryClient.setQueryData(queryKeys.auth.me, result.session);
+        if (result.session) {
+          queryClient.setQueryData(queryKeys.auth.me, result.session);
+        }
         await queryClient.invalidateQueries({ queryKey: queryKeys.auth.me });
 
         router.replace(result.redirectTo || "/");
@@ -60,7 +62,7 @@ export function AssistanceAdoptClient() {
   }, [queryClient, router, searchParams]);
 
   return (
-    <main className="container space-top space-extra-bottom" role="status">
+    <div className="container space-top space-extra-bottom" role="status">
       <div className="row justify-content-center">
         <div className="col-md-8 col-lg-6">
           <h1 className="h4 mb-3">Atendimento</h1>
@@ -72,6 +74,6 @@ export function AssistanceAdoptClient() {
           ) : null}
         </div>
       </div>
-    </main>
+    </div>
   );
 }

@@ -2,7 +2,8 @@ import type { SessionUser } from "@/types/session";
 
 export type AssistanceAdoptResult = {
   redirectTo: string;
-  session: SessionUser;
+  /** Present when /me succeeded after adopt; client invalidates auth.me either way. */
+  session?: SessionUser | null;
 };
 
 export type AssistanceEndResult = {

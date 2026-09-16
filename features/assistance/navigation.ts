@@ -40,7 +40,12 @@ export function normalizeAssistancePath(raw: string): string | null {
 }
 
 export function isAssistanceHandoffPath(path: string): boolean {
-  return path === "/assistance/adopt" || path.startsWith("/assistance/adopt/");
+  return (
+    path === "/assistance/adopt" ||
+    path.startsWith("/assistance/adopt/") ||
+    path === "/assistance/entrar" ||
+    path.startsWith("/assistance/entrar/")
+  );
 }
 
 export function resolveAssistancePageLabel(pathname: string): string {

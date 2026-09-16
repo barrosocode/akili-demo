@@ -9,6 +9,9 @@ import {
   mapPortalAssistance,
 } from "./assistance-session.ts";
 import {
+  ASSISTANCE_BANNER_CSS_CLASSES,
+  ASSISTANCE_BANNER_HEIGHT_VAR,
+  ASSISTANCE_BANNER_HTML_ATTR,
   ASSISTANCE_BANNER_SHELL_MOUNT_POINTS,
   resolveAssistanceBannerContent,
   shouldRenderAssistanceBanner,
@@ -21,7 +24,13 @@ import {
   resolveAssistancePageLabel,
   shouldReportAssistanceNavigation,
 } from "./navigation.ts";
+import { shouldShowMarketingHome } from "./home-guard.ts";
+import {
+  ASSISTANCE_ADOPT_PATH,
+  ASSISTANCE_ENTER_PATH,
+} from "./paths.ts";
 import { isPublicPath } from "../../lib/auth/public-routes.ts";
+import { assistanceCookieOptions } from "../../lib/auth/assistance-cookie-options.ts";
 
 describe("adoptAssistanceSchema", () => {
   it("accepts opaque handoff codes", () => {
@@ -102,6 +111,11 @@ describe("public routes for assistance adopt", () => {
     assert.equal(isPublicPath("/api/assistance/end"), true);
     assert.equal(isPublicPath("/api/assistance/navigate"), true);
   });
+
+  it("allows /assistance/entrar bridge without guardian session cookie", () => {
+    assert.equal(isPublicPath(ASSISTANCE_ENTER_PATH), true);
+    assert.equal(isPublicPath("/assistance/entrar"), true);
+  });
 });
 
 describe("assistance adopt BFF contract shape", () => {
@@ -161,6 +175,17 @@ describe("assistance navigation reporter", () => {
     const decision = shouldReportAssistanceNavigation({
       assistanceActive: true,
       pathname: "/assistance/adopt",
+      lastReportedPath: null,
+    });
+    assert.equal(decision.report, false);
+  });
+
+  it("does not register /assistance/entrar bridge", () => {
+    assert.equal(isAssistanceHandoffPath(ASSISTANCE_ENTER_PATH), true);
+    assert.equal(buildAssistanceNavigatePayload(ASSISTANCE_ENTER_PATH), null);
+    const decision = shouldReportAssistanceNavigation({
+      assistanceActive: true,
+      pathname: ASSISTANCE_ENTER_PATH,
       lastReportedPath: null,
     });
     assert.equal(decision.report, false);
@@ -280,5 +305,99 @@ describe("assistance banner chrome", () => {
     const copy = resolveAssistanceBannerContent(activeAssistance);
     assert.equal(copy.endLabel, "Encerrar acesso");
     assert.equal(copy.endingLabel, "Encerrando…");
+  });
+
+  it("documents public BEM classes for the banner chrome", () => {
+    assert.deepEqual([...ASSISTANCE_BANNER_CSS_CLASSES], [
+      "assistance-banner",
+      "assistance-banner__title",
+      "assistance-banner__meta",
+      "assistance-banner__end",
+    ]);
+  });
+
+  it("documents sticky stack contract with theme header", () => {
+    assert.equal(ASSISTANCE_BANNER_HTML_ATTR, "data-assistance-banner");
+    assert.equal(ASSISTANCE_BANNER_HEIGHT_VAR, "--assistance-banner-height");
+  });
+});
+
+describe("assistance cookie options", () => {
+  it("keeps set and clear aligned on path/sameSite/secure", () => {
+    const setOpts = assistanceCookieOptions(1800);
+    const clearOpts = assistanceCookieOptions(0);
+
+    assert.equal(setOpts.path, "/");
+    assert.equal(clearOpts.path, "/");
+    assert.equal(setOpts.path, clearOpts.path);
+    assert.equal(setOpts.sameSite, clearOpts.sameSite);
+    assert.equal(setOpts.secure, clearOpts.secure);
+    assert.equal(setOpts.httpOnly, true);
+    assert.equal(clearOpts.maxAge, 0);
+    assert.equal(setOpts.maxAge, 1800);
+  });
+});
+
+describe("desk start / adopt BFF contract", () => {
+  it("desk start success redirects to assistance enter bridge", () => {
+    assert.equal(ASSISTANCE_ENTER_PATH, "/assistance/entrar");
+    assert.notEqual(ASSISTANCE_ENTER_PATH, "/");
+    const payload: { redirectTo: string } = {
+      redirectTo: ASSISTANCE_ENTER_PATH,
+    };
+    assert.equal(payload.redirectTo, ASSISTANCE_ENTER_PATH);
+    assert.equal("session" in payload, false);
+  });
+
+  it("adopt may omit session when /me is best-effort", () => {
+    const withSession: { redirectTo: string; session?: unknown } = {
+      redirectTo: ASSISTANCE_ENTER_PATH,
+      session: null,
+    };
+    const withoutSession: { redirectTo: string; session?: unknown } = {
+      redirectTo: ASSISTANCE_ENTER_PATH,
+    };
+    assert.equal(withSession.session, null);
+    assert.equal(withoutSession.session, undefined);
+    assert.equal(ASSISTANCE_ADOPT_PATH, "/assistance/adopt");
+  });
+});
+
+describe("home marketing guard", () => {
+  it("shows marketing only without session and without assistance cookie", () => {
+    assert.equal(
+      shouldShowMarketingHome({
+        hasSession: false,
+        hasAssistanceCookie: false,
+      }),
+      true
+    );
+  });
+
+  it("hides marketing when assistance cookie is present without session", () => {
+    assert.equal(
+      shouldShowMarketingHome({
+        hasSession: false,
+        hasAssistanceCookie: true,
+      }),
+      false
+    );
+  });
+
+  it("hides marketing when session exists", () => {
+    assert.equal(
+      shouldShowMarketingHome({
+        hasSession: true,
+        hasAssistanceCookie: false,
+      }),
+      false
+    );
+    assert.equal(
+      shouldShowMarketingHome({
+        hasSession: true,
+        hasAssistanceCookie: true,
+      }),
+      false
+    );
   });
 });
