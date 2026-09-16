@@ -1,4 +1,4 @@
-import type { SessionAssistance } from "../../types/session.ts";
+import type { SessionAssistance } from "../../types/session";
 
 /**
  * Shells that mount AssistanceBanner once each.

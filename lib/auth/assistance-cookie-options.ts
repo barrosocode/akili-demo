@@ -1,4 +1,4 @@
-import { authConfig } from "./config.ts";
+import { authConfig } from "./config";
 
 /** Shared options for set/delete — must stay aligned or clear fails in browsers. */
 export function assistanceCookieOptions(maxAge?: number): {
