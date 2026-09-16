@@ -4,14 +4,11 @@ import { jsonError, jsonSuccess, validationError } from "@/lib/api/response";
 import { toApiError } from "@/lib/api/errors";
 import { ApiError } from "@/types/api";
 import { laravelRequest } from "@/lib/api/laravel-client";
-import {
-  clearAssistanceAuthCookie,
-  setAssistanceAuthCookie,
-} from "@/lib/auth/assistance-cookies";
+import { setAssistanceAuthCookie } from "@/lib/auth/assistance-cookies";
 import { clearAuthCookies } from "@/lib/auth/cookies";
 import { clearStudentAuthCookies } from "@/lib/auth/student-cookies";
 import { fetchPortalSession } from "@/lib/auth/session";
-import { GUARDIAN_DEFAULT_PATH } from "@/lib/auth/portal-destination";
+import { ASSISTANCE_ENTER_PATH } from "@/features/assistance/paths";
 import { adoptAssistanceSchema } from "@/features/assistance/schemas/assistance.schema";
 import type { AssistanceAdoptResult } from "@/features/assistance/types";
 
@@ -91,19 +88,12 @@ export async function POST(request: NextRequest) {
       expiresAt: Number.isFinite(expiresAt) ? expiresAt : undefined,
     });
 
-    const portal = await fetchPortalSession();
-    if (!portal.ok || !portal.session.assistance?.active) {
-      await clearAssistanceAuthCookie();
-      throw new ApiError({
-        title: "Atendimento indisponível",
-        status: 400,
-        detail: GENERIC_HANDOFF_ERROR,
-      });
-    }
+    // Best-effort /me — adopt + cookie already prove success; never clear cookie on /me flake.
+    const portal = await fetchPortalSession({ accessToken: adopt.token });
 
     const payload: AssistanceAdoptResult = {
-      redirectTo: GUARDIAN_DEFAULT_PATH,
-      session: portal.session,
+      redirectTo: ASSISTANCE_ENTER_PATH,
+      session: portal.ok ? portal.session : null,
     };
 
     // Nunca incluir token/PAT na response JSON.

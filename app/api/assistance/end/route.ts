@@ -5,11 +5,18 @@ import {
   hasAssistanceSessionCookie,
 } from "@/lib/auth/assistance-cookies";
 import { clearAuthCookies } from "@/lib/auth/cookies";
-import { resolveAssistanceAdminReturnUrl } from "@/lib/auth/config";
+import {
+  ASSISTANCE_SUPPORT_DESK_RETURN_PATH,
+  resolveAssistanceAdminReturnUrl,
+} from "@/lib/auth/config";
+import { hasSupportSessionCookie } from "@/lib/auth/support-cookies";
 import type { AssistanceEndResult } from "@/features/assistance/types";
 
 export async function POST() {
-  const redirectTo = resolveAssistanceAdminReturnUrl();
+  const returnToDesk = await hasSupportSessionCookie();
+  const redirectTo = returnToDesk
+    ? ASSISTANCE_SUPPORT_DESK_RETURN_PATH
+    : resolveAssistanceAdminReturnUrl();
 
   try {
     if (await hasAssistanceSessionCookie()) {

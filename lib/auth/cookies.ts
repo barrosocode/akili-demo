@@ -4,6 +4,11 @@ import {
   clearAssistanceAuthCookie,
   getAssistanceAccessToken,
 } from "@/lib/auth/assistance-cookies";
+import {
+  clearSupportAuthCookies,
+  getSupportAccessToken,
+  getSupportRefreshToken,
+} from "@/lib/auth/support-cookies";
 
 export interface AuthCookiePayload {
   accessToken: string;
@@ -37,11 +42,14 @@ export async function setAuthCookies(payload: AuthCookiePayload): Promise<void> 
 }
 
 /**
- * Prefere o PAT de assistência quando presente — identidade Laravel = operator.
+ * Prioridade: assistência → mesa suporte → responsável.
  */
 export async function getAccessToken(): Promise<string | null> {
   const assistance = await getAssistanceAccessToken();
   if (assistance) return assistance;
+
+  const support = await getSupportAccessToken();
+  if (support) return support;
 
   const store = await cookies();
   return store.get(authConfig.cookieName)?.value ?? null;
@@ -59,12 +67,23 @@ export async function getRefreshToken(): Promise<string | null> {
     return null;
   }
 
+  const supportRefresh = await getSupportRefreshToken();
+  if (supportRefresh) return supportRefresh;
+
+  const supportAccess = await getSupportAccessToken();
+  if (supportAccess) return supportAccess;
+
   const store = await cookies();
   return store.get(authConfig.refreshCookieName)?.value ?? null;
 }
 
+export async function isSupportDeskTokenActive(): Promise<boolean> {
+  if (await getAssistanceAccessToken()) return false;
+  return Boolean(await getSupportAccessToken());
+}
+
 /**
- * Apaga cookies de sessão do responsável. Não remove assistência.
+ * Apaga cookies de sessão do responsável. Não remove assistência nem mesa.
  * Só funciona em Route Handler / Server Action.
  */
 export async function clearAuthCookies(): Promise<void> {
@@ -77,10 +96,11 @@ export async function clearAuthCookies(): Promise<void> {
   }
 }
 
-/** Limpa sessão normal + assistência (logout / expiração). */
+/** Limpa sessão normal + assistência + mesa (logout / expiração). */
 export async function clearAllPortalAuthCookies(): Promise<void> {
   await clearAuthCookies();
   await clearAssistanceAuthCookie();
+  await clearSupportAuthCookies();
 }
 
 export async function hasSessionCookie(): Promise<boolean> {

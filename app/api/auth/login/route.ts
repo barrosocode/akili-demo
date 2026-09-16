@@ -1,9 +1,11 @@
 import type { NextRequest } from "next/server";
 
 import {
+  authenticateSupportWithLaravel,
   authenticateWithLaravel,
   establishGuardianSession,
   establishStudentSession,
+  establishSupportSession,
 } from "@/lib/auth/establish-session";
 import { clearAuthCookies } from "@/lib/auth/cookies";
 import { clearStudentAuthCookies } from "@/lib/auth/student-cookies";
@@ -48,6 +50,21 @@ export async function POST(request: NextRequest) {
       const session = await establishStudentSession(response);
       const payload: LoginSuccessPayload = {
         portal: "student",
+        redirectTo: destination.redirectTo,
+        session,
+      };
+      return jsonSuccess(payload);
+    }
+
+    if (destination.portal === "support") {
+      // Emite PAT client-support e cookies da mesa (em vez de bounce para Admin).
+      const supportResponse = await authenticateSupportWithLaravel(
+        parsed.data.email,
+        parsed.data.password
+      );
+      const session = await establishSupportSession(supportResponse);
+      const payload: LoginSuccessPayload = {
+        portal: "support",
         redirectTo: destination.redirectTo,
         session,
       };

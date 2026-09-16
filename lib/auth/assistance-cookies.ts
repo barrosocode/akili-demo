@@ -1,6 +1,9 @@
 import { cookies } from "next/headers";
 
 import { authConfig } from "@/lib/auth/config";
+import { assistanceCookieOptions } from "@/lib/auth/assistance-cookie-options";
+
+export { assistanceCookieOptions } from "@/lib/auth/assistance-cookie-options";
 
 export interface AssistanceCookiePayload {
   accessToken: string;
@@ -15,13 +18,11 @@ export async function setAssistanceAuthCookie(
     ? Math.max(0, Math.floor((payload.expiresAt - Date.now()) / 1000))
     : 60 * 30;
 
-  store.set(authConfig.assistanceCookieName, payload.accessToken, {
-    httpOnly: true,
-    secure: authConfig.secure,
-    sameSite: authConfig.sameSite,
-    path: "/",
-    maxAge,
-  });
+  store.set(
+    authConfig.assistanceCookieName,
+    payload.accessToken,
+    assistanceCookieOptions(maxAge)
+  );
 }
 
 export async function getAssistanceAccessToken(): Promise<string | null> {
@@ -39,8 +40,10 @@ export async function hasAssistanceSessionCookie(): Promise<boolean> {
 export async function clearAssistanceAuthCookie(): Promise<void> {
   try {
     const store = await cookies();
-    store.delete(authConfig.assistanceCookieName);
+    store.set(authConfig.assistanceCookieName, "", {
+      ...assistanceCookieOptions(0),
+    });
   } catch {
-    // Next.js: cookies().delete() fora de Route Handler / Server Action.
+    // Next.js: cookies().set() fora de Route Handler / Server Action.
   }
 }

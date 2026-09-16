@@ -6,9 +6,13 @@ import {
   clearStudentAuthCookies,
   setStudentAuthCookies,
 } from "@/lib/auth/student-cookies";
+import {
+  clearSupportAuthCookies,
+  setSupportAuthCookies,
+} from "@/lib/auth/support-cookies";
 import { fetchPortalSession } from "@/lib/auth/session";
 import { toSessionUser } from "@/lib/permissions/guardian-capabilities";
-import type { LoginResponse } from "@/types/auth";
+import type { AuthUser, LoginResponse } from "@/types/auth";
 import type { SessionUser } from "@/types/session";
 
 function tokenExpiry(expiresIn?: number): number | undefined {
@@ -19,6 +23,7 @@ export async function establishGuardianSession(
   response: LoginResponse
 ): Promise<SessionUser> {
   await clearStudentAuthCookies();
+  await clearSupportAuthCookies();
   await clearAssistanceAuthCookie();
   await setAuthCookies({
     accessToken: response.token,
@@ -38,6 +43,7 @@ export async function establishStudentSession(
   response: LoginResponse
 ): Promise<Record<string, unknown>> {
   await clearAuthCookies();
+  await clearSupportAuthCookies();
   await clearAssistanceAuthCookie();
   await setStudentAuthCookies({
     accessToken: response.token,
@@ -58,6 +64,21 @@ export async function establishStudentSession(
   }
 }
 
+export async function establishSupportSession(
+  response: LoginResponse
+): Promise<AuthUser> {
+  await clearAuthCookies();
+  await clearStudentAuthCookies();
+  await clearAssistanceAuthCookie();
+  await setSupportAuthCookies({
+    accessToken: response.token,
+    refreshToken: response.refresh_token,
+    expiresAt: tokenExpiry(response.expires_in),
+  });
+
+  return response.user;
+}
+
 export async function authenticateWithLaravel(
   email: string,
   password: string,
@@ -66,6 +87,18 @@ export async function authenticateWithLaravel(
   return laravelRequest<LoginResponse>("/client/auth/login", {
     method: "POST",
     data: { email, password, device_name: deviceName },
+    skipAuth: true,
+    skipUnauthorizedRetry: true,
+  });
+}
+
+export async function authenticateSupportWithLaravel(
+  email: string,
+  password: string
+): Promise<LoginResponse> {
+  return laravelRequest<LoginResponse>("/support/auth/login", {
+    method: "POST",
+    data: { email, password },
     skipAuth: true,
     skipUnauthorizedRetry: true,
   });
