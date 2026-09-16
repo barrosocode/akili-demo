@@ -13,6 +13,20 @@ export interface SessionTerms {
   pendingKeys: string[];
 }
 
+export interface SessionAssistanceParty {
+  uuid: string;
+  name: string;
+}
+
+export interface SessionAssistance {
+  active: boolean;
+  sessionUuid: string;
+  readOnly: boolean;
+  expiresAt: string | null;
+  operator: SessionAssistanceParty;
+  target: SessionAssistanceParty;
+}
+
 export interface SessionUser {
   name: string;
   email: string;
@@ -26,4 +40,5 @@ export interface SessionUser {
   subscription: PortalSubscription | null;
   isDemo?: boolean;
   demoPersonaKey?: string;
+  assistance?: SessionAssistance | null;
 }

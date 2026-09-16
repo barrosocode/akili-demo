@@ -6,6 +6,9 @@ import { GuardianShellBody } from "@/components/portal/guardian/GuardianShellBod
 import { FooterClean } from "@/components/portal/shared/FooterClean";
 import { ScrollToTop } from "@/components/marketing/layout/ScrollToTop";
 import { KiddinoRoot } from "@/components/theme/KiddinoRoot";
+import { AssistanceBanner } from "@/features/assistance/components/AssistanceBanner";
+import { AssistanceExpiryWatcher } from "@/features/assistance/components/AssistanceExpiryWatcher";
+import { AssistanceShellChrome } from "@/features/assistance/components/AssistanceShellChrome";
 import { SupportFloatingButton } from "@/features/support";
 import { TawkProvider } from "@/features/support/tawk";
 import type { TawkPublicConfig } from "@/features/support/tawk/tawk.types";
@@ -39,6 +42,8 @@ export function GuardianDashboardShell({
   return (
     <KiddinoRoot>
       <TawkProvider config={tawkConfig}>
+        <AssistanceBanner />
+        <AssistanceExpiryWatcher />
         <GuardianHeader cartTotalLabel={cartTotalLabel} />
         <section className="vs-blog-wrapper blog-details space-top space-extra-bottom">
           <div className="container">
@@ -54,7 +59,9 @@ export function GuardianDashboardShell({
           </div>
         </section>
         <FooterClean />
-        <SupportFloatingButton />
+        <AssistanceShellChrome>
+          <SupportFloatingButton />
+        </AssistanceShellChrome>
         <ScrollToTop offsetClassName="scrollToTop--above-support-fab" />
       </TawkProvider>
     </KiddinoRoot>

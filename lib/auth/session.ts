@@ -13,12 +13,24 @@ export type FetchPortalSessionResult =
   | { ok: true; session: SessionUser }
   | { ok: false; error: ApiError };
 
+export type FetchPortalSessionOptions = {
+  /**
+   * When set, calls /client/auth/me with this Bearer and skipAuth —
+   * used right after adopt so we don't rely on cookie round-trip
+   * or fall back to the support-desk PAT via getAccessToken().
+   */
+  accessToken?: string;
+};
+
 /**
  * Lê a sessão agregada do portal (`GET /client/auth/me`).
  * Propaga 401/403 — não engole erros de negócio.
  */
-export async function fetchPortalSession(): Promise<FetchPortalSessionResult> {
-  const token = await getAccessToken();
+export async function fetchPortalSession(
+  options?: FetchPortalSessionOptions
+): Promise<FetchPortalSessionResult> {
+  const explicitToken = options?.accessToken?.trim();
+  const token = explicitToken || (await getAccessToken());
   if (!token) {
     return {
       ok: false,
@@ -33,6 +45,12 @@ export async function fetchPortalSession(): Promise<FetchPortalSessionResult> {
   try {
     const portal = await laravelRequest<ClientPortalSession>("/client/auth/me", {
       skipUnauthorizedRetry: true,
+      ...(explicitToken
+        ? {
+            skipAuth: true,
+            headers: { Authorization: `Bearer ${explicitToken}` },
+          }
+        : {}),
     });
 
     if (!isGuardianPortalSession(portal)) {

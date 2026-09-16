@@ -1,13 +1,21 @@
 import axios, { type AxiosRequestConfig, type InternalAxiosRequestConfig } from "axios";
 import { unwrapData } from "@/lib/api/envelope";
-import { parseAxiosProblem, toApiError } from "@/lib/api/errors";
+import { toApiError } from "@/lib/api/errors";
 import { ApiError } from "@/types/api";
+import { hasAssistanceSessionCookie } from "@/lib/auth/assistance-cookies";
 import {
+  clearAllPortalAuthCookies,
   clearAuthCookies,
   getAccessToken,
   getRefreshToken,
+  isSupportDeskTokenActive,
   setAuthCookies,
 } from "@/lib/auth/cookies";
+import {
+  clearSupportAuthCookies,
+  getSupportAccessToken,
+  setSupportAuthCookies,
+} from "@/lib/auth/support-cookies";
 
 const baseURL = process.env.LARAVEL_API_URL ?? "http://localhost:8000/api/v1";
 const timeout = Number(process.env.LARAVEL_API_TIMEOUT_MS ?? 30000);
@@ -24,6 +32,10 @@ const http = axios.create({
 });
 
 async function refreshAccessToken(): Promise<string | null> {
+  if (await hasAssistanceSessionCookie()) {
+    return null;
+  }
+
   if (!refreshPromise) {
     refreshPromise = (async () => {
       const refreshToken = await getRefreshToken();
@@ -31,9 +43,14 @@ async function refreshAccessToken(): Promise<string | null> {
 
       if (!refreshToken && !accessToken) return null;
 
+      const useSupportRefresh = await isSupportDeskTokenActive();
+      const refreshPath = useSupportRefresh
+        ? "/support/auth/refresh"
+        : "/client/auth/refresh";
+
       try {
         const response = await axios.post(
-          `${baseURL}/client/auth/refresh`,
+          `${baseURL}${refreshPath}`,
           {},
           {
             headers: {
@@ -50,17 +67,31 @@ async function refreshAccessToken(): Promise<string | null> {
           expires_in?: number;
         }>(response.data);
 
-        await setAuthCookies({
-          accessToken: data.token,
-          refreshToken: data.refresh_token,
-          expiresAt: data.expires_in
-            ? Date.now() + data.expires_in * 1000
-            : undefined,
-        });
+        if (useSupportRefresh) {
+          await setSupportAuthCookies({
+            accessToken: data.token,
+            refreshToken: data.refresh_token,
+            expiresAt: data.expires_in
+              ? Date.now() + data.expires_in * 1000
+              : undefined,
+          });
+        } else {
+          await setAuthCookies({
+            accessToken: data.token,
+            refreshToken: data.refresh_token,
+            expiresAt: data.expires_in
+              ? Date.now() + data.expires_in * 1000
+              : undefined,
+          });
+        }
 
         return data.token;
       } catch {
-        await clearAuthCookies();
+        if (useSupportRefresh) {
+          await clearSupportAuthCookies();
+        } else {
+          await clearAuthCookies();
+        }
         return null;
       } finally {
         refreshPromise = null;
@@ -98,6 +129,11 @@ http.interceptors.response.use(
       !original._retry &&
       !original.headers?.["x-skip-unauthorized-retry"]
     ) {
+      if (await hasAssistanceSessionCookie()) {
+        await clearAllPortalAuthCookies();
+        return Promise.reject(toApiError(error));
+      }
+
       original._retry = true;
       const newToken = await refreshAccessToken();
       if (newToken) {
@@ -121,6 +157,43 @@ export async function laravelRequest<T>(
 
     if (config?.skipAuth) headers["x-skip-auth"] = "1";
     if (config?.skipUnauthorizedRetry) headers["x-skip-unauthorized-retry"] = "1";
+
+    const response = await http.request({
+      url: path,
+      ...config,
+      headers,
+    });
+
+    return unwrapData<T>(response.data);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw toApiError(error);
+  }
+}
+
+/** Força o Bearer da mesa de suporte (ignora prioridade assistance/guardian). */
+export async function supportLaravelRequest<T>(
+  path: string,
+  config?: AxiosRequestConfig & { skipUnauthorizedRetry?: boolean }
+): Promise<T> {
+  const token = await getSupportAccessToken();
+  if (!token) {
+    throw new ApiError({
+      title: "Não autenticado",
+      status: 401,
+      detail: "Sessão de atendimento expirada. Entre novamente.",
+    });
+  }
+
+  try {
+    const headers: Record<string, string> = {
+      ...(config?.headers as Record<string, string> | undefined),
+      Authorization: `Bearer ${token}`,
+      "x-skip-auth": "1",
+    };
+    if (config?.skipUnauthorizedRetry) {
+      headers["x-skip-unauthorized-retry"] = "1";
+    }
 
     const response = await http.request({
       url: path,
