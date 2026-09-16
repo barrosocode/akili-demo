@@ -33,8 +33,12 @@ Convite de responsável (e-mail): a API usa `AKILI_GUARDIAN_INVITE_URL` apontand
 | `LARAVEL_API_URL` | server | Base da API (inclui `/api/v1`) |
 | `AUTH_COOKIE_NAME` | server | Cookie HttpOnly do access token |
 | `AUTH_REFRESH_COOKIE_NAME` | server | Cookie HttpOnly do refresh |
-| `COOKIE_SECURE` | server | `true` em produção |
-| `ADMIN_APP_URL` | server | Link para escolas no layout de auth |
+| `AUTH_ASSISTANCE_COOKIE_NAME` | server | Cookie HttpOnly do PAT `client-assistance` |
+| `AUTH_SUPPORT_COOKIE_NAME` | server | Cookie HttpOnly do PAT `client-support` (mesa) |
+| `AUTH_SUPPORT_REFRESH_COOKIE_NAME` | server | Refresh da mesa de suporte |
+| `COOKIE_SECURE` | server | `false` em HTTP local; **`true` obrigatório em staging/produção HTTPS** (guardião, aluno, assistência e mesa) |
+| `COOKIE_SAME_SITE` | server | Padrão `lax` |
+| `ADMIN_APP_URL` | server | Link para escolas no layout de auth / retorno pós-assistência |
 | `NEXT_PUBLIC_APP_NAME` | client | Nome exibido na UI |
 | `NEXT_PUBLIC_APP_URL` | client | URL pública do portal |
 
@@ -63,12 +67,24 @@ Lógica em `lib/permissions/guardian-capabilities.ts`.
 
 | Rota | Descrição |
 |------|-----------|
-| `/` | Landing (visitante) ou home dos filhos (logado) |
+| `/` | Landing (visitante) ou home dos filhos (logado); sem marketing se cookie de assistência |
 | `/checkout` | Contratação B2C (stub) |
 | `/signin` | Login unificado (redirect por perfil: aluno → `/aluno`, responsável → `/`, escola → admin) |
 | `/forgot-password` | Recuperação de senha (stub) |
 | `/first-access` | Primeiro acesso (stub) |
 | `/invite` | Aceitar convite da escola (stub) |
+| `/assistance/adopt` | Handoff one-time (`?code=`) → cookie assistência → `/assistance/entrar` |
+| `/assistance/entrar` | Bridge: espera sessão de assistência e entra no dashboard |
+| `/suporte/entrar` | Login da mesa de atendimento (`client-support`) |
+
+### Mesa de atendimento (operador)
+
+| Rota | Descrição |
+|------|-----------|
+| `/suporte` | Busca de responsáveis (cookie mesa) |
+| `/suporte/usuarios/[uuid]` | Detalhe + iniciar assistência (start+adopt via BFF) |
+
+Assistance read-only e mesa: [support-assistance.md](./support-assistance.md).
 
 ### Autenticadas (responsável)
 

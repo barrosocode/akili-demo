@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { siteConfig } from "@/constants/site";
 import { DemoPersonaSwitcher } from "@/features/demo";
+import { isAssistanceReadOnly } from "@/lib/permissions/guardian-capabilities";
 import { useSession } from "@/providers/session-provider";
 import { useLogoutMutation } from "@/services/queries/auth.mutations";
 
@@ -21,6 +22,7 @@ export function GuardianHeader({ cartTotalLabel = "0,00" }: GuardianHeaderProps)
   const logout = useLogoutMutation();
   const router = useRouter();
   const displayName = user?.name ?? "Responsável";
+  const readOnly = isAssistanceReadOnly(user);
 
   async function handleLogout() {
     try {
@@ -34,11 +36,13 @@ export function GuardianHeader({ cartTotalLabel = "0,00" }: GuardianHeaderProps)
 
   return (
     <header className="vs-header header-layout4">
-      <div className="header-top4">
-        <div className="container-style4">
-          <DemoPersonaSwitcher />
+      {!readOnly ? (
+        <div className="header-top4">
+          <div className="container-style4">
+            <DemoPersonaSwitcher />
+          </div>
         </div>
-      </div>
+      ) : null}
       <div className="sticky-wrap">
         <div className="sticky-active">
           <div className="container-style4">
@@ -60,19 +64,43 @@ export function GuardianHeader({ cartTotalLabel = "0,00" }: GuardianHeaderProps)
                 <div className="col">
                   <span style={{ fontSize: 15 }}>
                     Bem-vindo(a),{" "}
-                    <Link href="/profile">{displayName}</Link>
+                    {readOnly ? (
+                      <span>{displayName}</span>
+                    ) : (
+                      <Link href="/profile">{displayName}</Link>
+                    )}
                   </span>
+                  {readOnly ? (
+                    <span
+                      className="d-block"
+                      style={{ fontSize: 12, opacity: 0.75, marginTop: 2 }}
+                    >
+                      Visualização somente leitura
+                    </span>
+                  ) : null}
                 </div>
                 <div className="col-auto d-none d-lg-block">
                   <div className="header-icons4">
-                    <Link
-                      href="/purchases"
-                      className="simple-icon cart"
-                      title="Compras"
-                    >
-                      <i className="fa fa-shopping-cart" aria-hidden />
-                      <span>R$ {cartTotalLabel}</span>
-                    </Link>
+                    {!readOnly ? (
+                      <Link
+                        href="/purchases"
+                        className="simple-icon cart"
+                        title="Compras"
+                      >
+                        <i className="fa fa-shopping-cart" aria-hidden />
+                        <span>R$ {cartTotalLabel}</span>
+                      </Link>
+                    ) : (
+                      <span
+                        className="simple-icon cart"
+                        title="Compras indisponíveis no modo atendimento"
+                        aria-disabled="true"
+                        style={{ opacity: 0.45, cursor: "not-allowed" }}
+                      >
+                        <i className="fa fa-shopping-cart" aria-hidden />
+                        <span>R$ {cartTotalLabel}</span>
+                      </span>
+                    )}
                     <button
                       type="button"
                       className="simple-icon cart"

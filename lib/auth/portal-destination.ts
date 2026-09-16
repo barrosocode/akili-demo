@@ -3,13 +3,18 @@ import {
   GUARDIAN_HOME_PATH,
   STUDENT_HOME_PATH,
 } from "@/lib/auth/portal-paths";
+import {
+  SUPPORT_ASSISTANCE_START_PERMISSION,
+  SUPPORT_HOME_PATH,
+} from "@/lib/auth/support-config";
 import { can } from "@/lib/permissions/can";
 import type { AuthUser } from "@/types/auth";
 
-export type PortalKind = "guardian" | "student" | "admin";
+export type PortalKind = "guardian" | "student" | "admin" | "support";
 
 export const STUDENT_DEFAULT_PATH = STUDENT_HOME_PATH;
 export const GUARDIAN_DEFAULT_PATH = GUARDIAN_HOME_PATH;
+export const SUPPORT_DEFAULT_PATH = SUPPORT_HOME_PATH;
 
 const INSTITUTIONAL_USER_TYPES = new Set<AuthUser["type"]>([
   "akili_admin",
@@ -32,6 +37,12 @@ const ADMIN_DASHBOARD_PERMISSIONS = [
   "school.profile.read",
 ] as const;
 
+export function hasSupportAssistanceStartPermission(
+  user: Pick<AuthUser, "permissions">
+): boolean {
+  return can(user.permissions, SUPPORT_ASSISTANCE_START_PERMISSION);
+}
+
 /**
  * Define o portal de destino com base em `user.type`, roles e permissions da API.
  */
@@ -41,6 +52,11 @@ export function resolvePortalDestination(user: AuthUser): {
 } {
   if (user.type === "student") {
     return { portal: "student", redirectTo: STUDENT_DEFAULT_PATH };
+  }
+
+  // Permission-based support desk (before institutional → admin bounce).
+  if (hasSupportAssistanceStartPermission(user)) {
+    return { portal: "support", redirectTo: SUPPORT_DEFAULT_PATH };
   }
 
   if (INSTITUTIONAL_USER_TYPES.has(user.type)) {
@@ -73,4 +89,8 @@ export function resolvePortalDestination(user: AuthUser): {
 
 export function institutionalPortalMessage(): string {
   return "Este portal é exclusivo para responsáveis e alunos. Escolas e professores devem acessar o painel administrativo.";
+}
+
+export function supportPortalDeniedMessage(): string {
+  return "Este acesso é exclusivo para operadores de atendimento.";
 }

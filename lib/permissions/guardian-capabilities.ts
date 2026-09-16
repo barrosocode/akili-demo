@@ -10,6 +10,13 @@ import type { PortalSubscription } from "@/types/domain/subscription";
 import { GUARDIAN_PERMISSION } from "@/lib/auth/config";
 import { can } from "@/lib/permissions/can";
 import { toRef } from "@/lib/api/sanitize";
+import {
+  applyAssistanceCapabilities,
+  isAssistanceReadOnly,
+  mapPortalAssistance,
+} from "@/features/assistance/assistance-session";
+
+export { isAssistanceReadOnly, mapPortalAssistance };
 
 export function resolveAccountOrigin(
   permissions: string[],
@@ -78,6 +85,11 @@ export function toSessionUserFromPortal(
     session.permissions,
     session.account_origin
   );
+  const assistance = mapPortalAssistance(session.assistance ?? null);
+  const capabilities = applyAssistanceCapabilities(
+    resolveGuardianCapabilities(session.permissions, accountOrigin),
+    assistance
+  );
 
   return {
     name: session.user.name,
@@ -86,10 +98,7 @@ export function toSessionUserFromPortal(
     roles: session.roles,
     permissions: session.permissions,
     accountOrigin,
-    capabilities: resolveGuardianCapabilities(
-      session.permissions,
-      accountOrigin
-    ),
+    capabilities,
     terms: {
       allAccepted: session.terms.all_accepted,
       pendingCount: session.terms.pending.length,
@@ -100,6 +109,7 @@ export function toSessionUserFromPortal(
     isDemo:
       typeof session.user.is_demo === "boolean" ? session.user.is_demo : undefined,
     demoPersonaKey: session.user.demo_persona_key,
+    assistance,
   };
 }
 

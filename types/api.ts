@@ -20,6 +20,7 @@ export interface ProblemDetails {
   detail?: string;
   instance?: string;
   errors?: Record<string, string[]>;
+  error_code?: string;
 }
 
 export class ApiError extends Error {
@@ -28,6 +29,7 @@ export class ApiError extends Error {
   readonly type?: string;
   readonly detail?: string;
   readonly errors?: Record<string, string[]>;
+  readonly errorCode?: string;
 
   constructor(problem: ProblemDetails) {
     super(problem.detail ?? problem.title);
@@ -37,5 +39,6 @@ export class ApiError extends Error {
     this.type = problem.type;
     this.detail = problem.detail;
     this.errors = problem.errors;
+    this.errorCode = problem.error_code;
   }
 }

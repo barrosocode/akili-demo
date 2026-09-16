@@ -14,6 +14,8 @@ export function jsonError(error: unknown) {
         title: apiError.title,
         status: apiError.status,
         detail: apiError.detail,
+        type: apiError.type,
+        error_code: apiError.errorCode,
         errors: getFieldErrors(apiError.errors),
       },
     },

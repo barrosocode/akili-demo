@@ -16,7 +16,13 @@ export function parseAxiosProblem(error: AxiosError): ProblemDetails {
   const data = error.response?.data;
 
   if (isProblemDetails(data)) {
-    return { ...data, status: data.status ?? status };
+    const record = data as ProblemDetails & Record<string, unknown>;
+    return {
+      ...data,
+      status: data.status ?? status,
+      error_code:
+        typeof record.error_code === "string" ? record.error_code : undefined,
+    };
   }
 
   return {
@@ -52,6 +58,20 @@ export function toApiError(error: unknown): ApiError {
   });
 }
 
+export function isAssistanceExpiredError(error: unknown): boolean {
+  const apiError = toApiError(error);
+  if (apiError.errorCode === "support_assistance_expired") return true;
+  const type = apiError.type?.toLowerCase() ?? "";
+  return type.includes("support-assistance-expired");
+}
+
+export function isAssistanceReadOnlyError(error: unknown): boolean {
+  const apiError = toApiError(error);
+  if (apiError.errorCode === "support_assistance_read_only") return true;
+  const type = apiError.type?.toLowerCase() ?? "";
+  return type.includes("support-assistance-read-only");
+}
+
 export function isConsentRequiredError(error: unknown): boolean {
   const apiError = toApiError(error);
   if (apiError.status !== 403) return false;
@@ -83,8 +103,21 @@ export function getUserFacingApiMessage(
   error: unknown,
   fallback = "Não foi possível concluir a operação."
 ): string {
-  if (!isApiError(error)) return fallback;
-  const detail = error.detail?.trim();
-  if (detail) return detail;
-  return STATUS_FALLBACKS[error.status] ?? fallback;
+  if (isApiError(error)) {
+    const detail = error.detail?.trim();
+    if (detail) return detail;
+    return STATUS_FALLBACKS[error.status] ?? fallback;
+  }
+
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "detail" in error &&
+    typeof (error as { detail?: unknown }).detail === "string"
+  ) {
+    const detail = (error as { detail: string }).detail.trim();
+    if (detail) return detail;
+  }
+
+  return fallback;
 }

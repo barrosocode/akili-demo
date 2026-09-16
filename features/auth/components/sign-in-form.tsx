@@ -170,6 +170,10 @@ export function SignInForm() {
                 Acesse o painel administrativo
               </a>
             </p>
+            <p className="mt-2">
+              Operador de suporte?{" "}
+              <Link href="/suporte/entrar">Acesso atendimento</Link>
+            </p>
           </div>
         </div>
       </div>
