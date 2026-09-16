@@ -1,8 +1,8 @@
 import type {
   ClientPortalSession,
   PortalAssistance,
-} from "../../types/portal-session.ts";
-import type { SessionAssistance, SessionUser } from "../../types/session.ts";
+} from "../../types/portal-session";
+import type { SessionAssistance, SessionUser } from "../../types/session";
 
 export function mapPortalAssistance(
   assistance: PortalAssistance | null | undefined
