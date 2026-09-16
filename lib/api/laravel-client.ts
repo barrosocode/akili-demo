@@ -2,7 +2,9 @@ import axios, { type AxiosRequestConfig, type InternalAxiosRequestConfig } from 
 import { unwrapData } from "@/lib/api/envelope";
 import { parseAxiosProblem, toApiError } from "@/lib/api/errors";
 import { ApiError } from "@/types/api";
+import { hasAssistanceSessionCookie } from "@/lib/auth/assistance-cookies";
 import {
+  clearAllPortalAuthCookies,
   clearAuthCookies,
   getAccessToken,
   getRefreshToken,
@@ -24,6 +26,11 @@ const http = axios.create({
 });
 
 async function refreshAccessToken(): Promise<string | null> {
+  if (await hasAssistanceSessionCookie()) {
+    // PAT client-assistance não entra no fluxo de refresh do portal.
+    return null;
+  }
+
   if (!refreshPromise) {
     refreshPromise = (async () => {
       const refreshToken = await getRefreshToken();
@@ -98,6 +105,11 @@ http.interceptors.response.use(
       !original._retry &&
       !original.headers?.["x-skip-unauthorized-retry"]
     ) {
+      if (await hasAssistanceSessionCookie()) {
+        await clearAllPortalAuthCookies();
+        return Promise.reject(toApiError(error));
+      }
+
       original._retry = true;
       const newToken = await refreshAccessToken();
       if (newToken) {

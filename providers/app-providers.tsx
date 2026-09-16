@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 
+import { AssistanceNavigationReporter } from "@/features/assistance/components/AssistanceNavigationReporter";
 import { DemoTokenBootstrap } from "@/features/demo";
 import { QueryProvider } from "@/providers/query-provider";
 import { SessionProvider } from "@/providers/session-provider";
@@ -20,6 +21,7 @@ export function AppProviders({
   return (
     <QueryProvider>
       <SessionProvider initialUser={initialUser}>
+        <AssistanceNavigationReporter />
         <DemoTokenBootstrap />
         {children}
       </SessionProvider>

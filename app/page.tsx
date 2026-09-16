@@ -30,7 +30,7 @@ export default async function HomePage() {
     return <PublicMarketingHome />;
   }
 
-  if (!session.terms.allAccepted) {
+  if (!session.terms.allAccepted && !session.assistance?.active) {
     redirect("/terms");
   }
 

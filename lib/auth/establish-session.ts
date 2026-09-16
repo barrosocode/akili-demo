@@ -1,5 +1,6 @@
 import { laravelRequest } from "@/lib/api/laravel-client";
 import { studentLaravelRequest } from "@/lib/api/student-laravel-client";
+import { clearAssistanceAuthCookie } from "@/lib/auth/assistance-cookies";
 import { clearAuthCookies, setAuthCookies } from "@/lib/auth/cookies";
 import {
   clearStudentAuthCookies,
@@ -18,6 +19,7 @@ export async function establishGuardianSession(
   response: LoginResponse
 ): Promise<SessionUser> {
   await clearStudentAuthCookies();
+  await clearAssistanceAuthCookie();
   await setAuthCookies({
     accessToken: response.token,
     refreshToken: response.refresh_token,
@@ -36,6 +38,7 @@ export async function establishStudentSession(
   response: LoginResponse
 ): Promise<Record<string, unknown>> {
   await clearAuthCookies();
+  await clearAssistanceAuthCookie();
   await setStudentAuthCookies({
     accessToken: response.token,
     refreshToken: response.refresh_token,

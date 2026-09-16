@@ -33,8 +33,10 @@ Convite de responsável (e-mail): a API usa `AKILI_GUARDIAN_INVITE_URL` apontand
 | `LARAVEL_API_URL` | server | Base da API (inclui `/api/v1`) |
 | `AUTH_COOKIE_NAME` | server | Cookie HttpOnly do access token |
 | `AUTH_REFRESH_COOKIE_NAME` | server | Cookie HttpOnly do refresh |
-| `COOKIE_SECURE` | server | `true` em produção |
-| `ADMIN_APP_URL` | server | Link para escolas no layout de auth |
+| `AUTH_ASSISTANCE_COOKIE_NAME` | server | Cookie HttpOnly do PAT `client-assistance` |
+| `COOKIE_SECURE` | server | `false` em HTTP local; **`true` obrigatório em staging/produção HTTPS** (guardião, aluno e assistência) |
+| `COOKIE_SAME_SITE` | server | Padrão `lax` |
+| `ADMIN_APP_URL` | server | Link para escolas no layout de auth / retorno pós-assistência |
 | `NEXT_PUBLIC_APP_NAME` | client | Nome exibido na UI |
 | `NEXT_PUBLIC_APP_URL` | client | URL pública do portal |
 

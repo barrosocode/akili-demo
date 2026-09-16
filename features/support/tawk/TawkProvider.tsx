@@ -64,10 +64,10 @@ export function TawkProvider({ children, config }: TawkProviderProps) {
   const queryClient = useQueryClient();
   const { user, isAuthenticated, isLoading: sessionLoading } = useSession();
   const configured = Boolean(config);
-  const sessionKey = useMemo(
-    () => (isAuthenticated ? tawkSessionKeyFromUser(user) : null),
-    [isAuthenticated, user]
-  );
+  const sessionKey = useMemo(() => {
+    if (!isAuthenticated || user?.assistance?.active) return null;
+    return tawkSessionKeyFromUser(user);
+  }, [isAuthenticated, user]);
 
   const loadRequested = Boolean(configured && sessionKey);
   const [status, setStatus] = useState<TawkStatus>(
