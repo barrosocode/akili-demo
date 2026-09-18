@@ -11,39 +11,42 @@ export interface LessonTabMeta {
   tierSub?: string;
 }
 
-export const LESSON_TABS: LessonTabMeta[] = [
-  { id: "treino", label: "Conteúdo" },
-  {
+const LESSON_TAB_META: Record<LessonTabId, LessonTabMeta> = {
+  treino: { id: "treino", label: "Conteúdo" },
+  conf: {
     id: "conf",
     label: "Conferência",
     tierName: "Conferência de aprendizado",
     tierSub: "(memória — logo após estudar o conteúdo)",
   },
-  {
+  r1: {
     id: "r1",
     label: "Revisão 1",
     tierName: "Revisão 1",
     tierSub: "(memória — após 1 dia)",
   },
-  {
+  r2: {
     id: "r2",
     label: "Revisão 2",
     tierName: "Revisão 2",
     tierSub: "(memória — revisão)",
   },
-  {
+  r3: {
     id: "r3",
     label: "Revisão 3",
     tierName: "Revisão 3",
     tierSub: "(memória — revisão)",
   },
-  {
+  desafio: {
     id: "desafio",
     label: "Desafio",
     tierName: "Desafio",
     tierSub: "(generalização — aprofundam e testam o raciocínio)",
   },
-];
+};
+
+/** Abas da aula em supervisão (sem sessão). Não é a lista completa do player. */
+export const AULA_TAB_IDS: LessonTabId[] = ["treino", "conf"];
 
 export const MEMORIZATION_TAB_IDS: LessonQuestionTabId[] = [
   "conf",
@@ -57,14 +60,42 @@ export type QuestionTabDistribution = Record<
   ContentQuestion[]
 >;
 
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 export function optionLetter(index: number): string {
   return String.fromCharCode(65 + index);
 }
 
-export function shuffleArray<T>(items: T[]): T[] {
+export function isPersistedQuestionUuid(value: string | undefined): value is string {
+  return Boolean(value && UUID_PATTERN.test(value));
+}
+
+export function questionAnswerKey(
+  question: ContentQuestion,
+  index: number
+): string {
+  if (isPersistedQuestionUuid(question.uuid)) return question.uuid;
+  return `legacy:${index}:${question.text.slice(0, 80)}`;
+}
+
+export function mulberry32(seed: number): () => number {
+  let state = seed >>> 0;
+  return () => {
+    state += 0x6d2b79f5;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t ^= t + Math.imul(t ^ (t >>> 7), 61 | t);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+export function shuffleArray<T>(
+  items: T[],
+  random: () => number = Math.random
+): T[] {
   const result = [...items];
   for (let index = result.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(Math.random() * (index + 1));
+    const swapIndex = Math.floor(random() * (index + 1));
     const current = result[index];
     result[index] = result[swapIndex];
     result[swapIndex] = current;
@@ -72,19 +103,26 @@ export function shuffleArray<T>(items: T[]): T[] {
   return result;
 }
 
-/** Divide itens embaralhados de forma equilibrada entre N buckets, sem repetição. */
+function sortQuestionsForSeed(questions: ContentQuestion[]): ContentQuestion[] {
+  return [...questions].sort((left, right) => {
+    const leftKey = left.uuid || left.text;
+    const rightKey = right.uuid || right.text;
+    return leftKey.localeCompare(rightKey);
+  });
+}
+
+/** Divide itens já ordenados de forma equilibrada entre N buckets, sem repetição. */
 export function distributeEvenly<T>(items: T[], bucketCount: number): T[][] {
   if (bucketCount <= 0) return [];
 
-  const shuffled = shuffleArray(items);
   const buckets: T[][] = Array.from({ length: bucketCount }, () => []);
-  const baseSize = Math.floor(shuffled.length / bucketCount);
-  const remainder = shuffled.length % bucketCount;
+  const baseSize = Math.floor(items.length / bucketCount);
+  const remainder = items.length % bucketCount;
   let offset = 0;
 
   for (let bucketIndex = 0; bucketIndex < bucketCount; bucketIndex += 1) {
     const size = baseSize + (bucketIndex < remainder ? 1 : 0);
-    buckets[bucketIndex] = shuffled.slice(offset, offset + size);
+    buckets[bucketIndex] = items.slice(offset, offset + size);
     offset += size;
   }
 
@@ -92,19 +130,29 @@ export function distributeEvenly<T>(items: T[], bucketCount: number): T[][] {
 }
 
 export function buildQuestionTabDistribution(
-  questions: ContentQuestion[]
+  questions: ContentQuestion[],
+  seed?: number
 ): QuestionTabDistribution {
-  const memorization = questions.filter(
-    (question) => question.question_type === "memorization"
+  const random = seed === undefined ? null : mulberry32(seed);
+
+  function order(items: ContentQuestion[]): ContentQuestion[] {
+    const sorted = sortQuestionsForSeed(items);
+    if (!random) return sorted;
+    return shuffleArray(sorted, random);
+  }
+
+  const memorization = order(
+    questions.filter((question) => question.question_type === "memorization")
   );
-  const generalized = questions.filter(
-    (question) => question.question_type === "generalized"
+  const generalized = order(
+    questions.filter((question) => question.question_type === "generalized")
   );
-  // Sem tipo tipado → Conferência (compatível com conteúdos legados).
-  const untyped = questions.filter(
-    (question) =>
-      question.question_type !== "memorization" &&
-      question.question_type !== "generalized"
+  const untyped = order(
+    questions.filter(
+      (question) =>
+        question.question_type !== "memorization" &&
+        question.question_type !== "generalized"
+    )
   );
   const memorizationBuckets = distributeEvenly(
     memorization,
@@ -116,8 +164,12 @@ export function buildQuestionTabDistribution(
     r1: memorizationBuckets[1] ?? [],
     r2: memorizationBuckets[2] ?? [],
     r3: memorizationBuckets[3] ?? [],
-    desafio: shuffleArray(generalized),
+    desafio: generalized,
   };
+}
+
+export function isLessonTabId(value: string): value is LessonTabId {
+  return Object.prototype.hasOwnProperty.call(LESSON_TAB_META, value);
 }
 
 export function isQuestionTabId(
@@ -126,13 +178,19 @@ export function isQuestionTabId(
   return tabId !== "treino";
 }
 
-/** Abas visíveis: Conteúdo sempre; demais só se houver questões. */
-export function resolveVisibleTabs(
-  _pagesCount: number,
-  distribution: QuestionTabDistribution
-): LessonTabMeta[] {
-  return LESSON_TABS.filter((tab) => {
-    if (tab.id === "treino") return true;
-    return distribution[tab.id].length > 0;
+/**
+ * Abas do player vêm da sessão (`visible_tabs`).
+ * `desafio` fica fora deste recorte mesmo se a API ainda enviar.
+ */
+export function resolveTabsFromIds(tabIds: readonly string[]): LessonTabMeta[] {
+  const seen = new Set<LessonTabId>();
+  const tabs: LessonTabMeta[] = [];
+
+  tabIds.forEach((raw) => {
+    if (raw === "desafio" || !isLessonTabId(raw) || seen.has(raw)) return;
+    seen.add(raw);
+    tabs.push(LESSON_TAB_META[raw]);
   });
+
+  return tabs;
 }

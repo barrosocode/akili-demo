@@ -5,6 +5,15 @@ type PendingMaterialsProps = {
 };
 
 export function PendingMaterials({ materials }: PendingMaterialsProps) {
+  if (!materials.length) {
+    return (
+      <div className="widget mb-4">
+        <h3 className="widget_title">Materiais pendentes</h3>
+        <p className="mb-0">Nenhum material liberado no momento.</p>
+      </div>
+    );
+  }
+
   const pending = materials.filter(
     (item) => (item.percentComplete ?? 0) < 100
   );

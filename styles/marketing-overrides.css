@@ -808,3 +808,330 @@
   color: #ffe8e8;
   font-size: 0.8125rem;
 }
+
+/* Portal — layout do dashboard (sidebar + conteúdo; o Kanban pode cruzar as duas colunas) */
+.marketing-root .portal-dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem 40px;
+  align-items: start;
+}
+
+.marketing-root .portal-main-col,
+.marketing-root .portal-dashboard__sidebar,
+.marketing-root .portal-dashboard__main,
+.marketing-root .portal-dashboard-page > .blog-content,
+.marketing-root .study-kanban-wrap {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.marketing-root .blog-content {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (min-width: 992px) {
+  .marketing-root .portal-dashboard:not(.portal-dashboard--bleed) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  }
+
+  .marketing-root .portal-dashboard__sidebar {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .marketing-root .portal-dashboard__main {
+    grid-column: 2;
+  }
+
+  .marketing-root .portal-dashboard:has(.portal-dashboard-page) > .portal-dashboard__main {
+    display: contents;
+  }
+
+  .marketing-root .portal-dashboard-page {
+    display: contents;
+  }
+
+  .marketing-root .portal-dashboard-page > .blog-content {
+    grid-column: 2;
+  }
+
+  .marketing-root .portal-dashboard .study-kanban-wrap {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Portal — quadro Kanban de estudos (ocupa a largura da coluna de conteúdo) */
+.marketing-root .study-kanban-wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.marketing-root .study-kanban {
+  display: grid;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  gap: 0.75rem;
+  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.marketing-root .study-kanban-column {
+  --widget-padding-y: 20px;
+  --widget-padding-x: 16px;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.marketing-root .study-kanban-column__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 0;
+  margin-bottom: 0.75rem;
+}
+
+.marketing-root .study-kanban-column .widget_title {
+  margin: 0;
+  padding: 0 0 10px 0;
+  font-size: 1.125rem;
+  line-height: 1.2;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.marketing-root .study-kanban-column__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+  max-height: 32rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.marketing-root .study-kanban-card {
+  min-width: 0;
+  max-width: 100%;
+  padding: 0.85rem 0.9rem;
+  border-radius: 18px;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.marketing-root .study-kanban-card__link {
+  display: block;
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.marketing-root .study-kanban-card__link:focus-visible {
+  outline: 3px solid var(--theme-color, #ff6b00);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+.marketing-root .study-kanban-card__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.marketing-root .study-kanban-card .portal-chip {
+  max-width: 100%;
+}
+
+.marketing-root .study-kanban-card__title {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.marketing-root .study-kanban-card .small {
+  width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.marketing-root .study-kanban-card__action {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--theme-color, #ff6b00);
+}
+
+@media (min-width: 768px) {
+  .marketing-root .study-kanban {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 992px) {
+  .marketing-root .study-kanban {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.marketing-root .study-kanban-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(16, 24, 40, 0.45);
+}
+
+.marketing-root .study-kanban-dialog {
+  --widget-padding-y: 24px;
+  --widget-padding-x: 20px;
+  width: min(32rem, 100%);
+  max-height: min(90vh, 40rem);
+  margin: 0;
+  overflow: auto;
+}
+
+.marketing-root .study-kanban-dialog__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.marketing-root .study-kanban-dialog__header .widget_title {
+  margin: 0;
+  padding: 0 0 10px 0;
+  font-size: 1.35rem;
+}
+
+.marketing-root .study-kanban-dialog__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.marketing-root .study-kanban-dialog__log-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.marketing-root .study-kanban-log {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.marketing-root .study-kanban-log li {
+  position: relative;
+  padding: 0.65rem 0 0.65rem 1.1rem;
+  border-left: 3px solid var(--theme-color2, #ffd54f);
+}
+
+.marketing-root .study-kanban-log li + li {
+  margin-top: 0.15rem;
+}
+
+.marketing-root .study-kanban-log strong,
+.marketing-root .study-kanban-log span {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.marketing-root .study-kanban-log span {
+  margin-top: 0.2rem;
+  color: #667;
+  font-size: 0.9rem;
+}
+
+@media (min-width: 768px) {
+  .marketing-root .study-kanban-dialog-backdrop {
+    align-items: center;
+  }
+}
+
+.marketing-root .study-complete-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10060;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(16, 24, 40, 0.45);
+}
+
+.marketing-root .study-complete-dialog {
+  --widget-padding-y: 28px;
+  --widget-padding-x: 24px;
+  width: min(22rem, 100%);
+  margin: 0;
+  text-align: center;
+}
+
+.marketing-root .study-complete-dialog .widget_title {
+  margin-bottom: 0.5rem;
+  padding-bottom: 0;
+}
+
+.marketing-root .study-complete-dialog__emoji {
+  margin: 0 0 0.35rem;
+  color: var(--theme-color, #ff6b00);
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+.marketing-root .study-complete-dialog__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin: 1.25rem 0 1.5rem;
+}
+
+.marketing-root .study-complete-dialog__stats div {
+  padding: 0.75rem 0.5rem;
+  border-radius: 12px;
+  background: rgba(255, 213, 79, 0.25);
+}
+
+.marketing-root .study-complete-dialog__stats strong,
+.marketing-root .study-complete-dialog__stats span {
+  display: block;
+}
+
+.marketing-root .study-complete-dialog__stats strong {
+  font-size: 1.15rem;
+}
+
+.marketing-root .study-complete-dialog__stats span {
+  margin-top: 0.2rem;
+  color: #667;
+  font-size: 0.8rem;
+}

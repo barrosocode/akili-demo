@@ -1,0 +1,179 @@
+{
+    "module": "task-children",
+    "description": "Subitens (checklist) de uma task, com ordenação por position e flag finished",
+    "features": ["list", "view", "create", "update", "patch", "delete", "reorder"],
+    "pagination": {
+        "default_per_page": 15,
+        "max_per_page": 100
+    },
+    "filters": ["task_id", "finished", "created_by", "created_at"],
+    "model": {
+        "name": "TaskChild",
+        "table": "task_children",
+        "fields": [
+            {
+                "name": "id",
+                "type": "uuid",
+                "primary_key": true,
+                "nullable": false,
+                "encrypt": false
+            },
+            {
+                "name": "task_id",
+                "type": "uuid",
+                "nullable": false,
+                "index": true,
+                "encrypt": false,
+                "validation": ["required", "uuid"],
+                "lgpd_classification": "none",
+                "notes": "FK → tasks.id"
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "length": 200,
+                "nullable": false,
+                "encrypt": false,
+                "validation": ["required", "string", "min:1", "max:200"],
+                "lgpd_classification": "none"
+            },
+            {
+                "name": "code",
+                "type": "string",
+                "length": 50,
+                "nullable": false,
+                "index": true,
+                "encrypt": false,
+                "validation": ["required", "string", "max:50", "alpha_dash"],
+                "lgpd_classification": "none",
+                "notes": "Único por task (task_id, code)."
+            },
+            {
+                "name": "description",
+                "type": "text",
+                "nullable": true,
+                "encrypt": false,
+                "validation": ["nullable", "string"],
+                "lgpd_classification": "DP"
+            },
+            {
+                "name": "finished",
+                "type": "boolean",
+                "default": false,
+                "nullable": false,
+                "index": true,
+                "encrypt": false,
+                "validation": ["required", "boolean"],
+                "lgpd_classification": "none"
+            },
+            {
+                "name": "position",
+                "type": "integer",
+                "nullable": false,
+                "default": 0,
+                "index": true,
+                "encrypt": false,
+                "validation": ["required", "integer", "min:0"],
+                "lgpd_classification": "none",
+                "notes": "Ordem dentro da task pai. Drag-and-drop via reorder."
+            },
+            {
+                "name": "created_by",
+                "type": "uuid",
+                "nullable": false,
+                "index": true,
+                "encrypt": false,
+                "validation": ["required", "uuid"],
+                "lgpd_classification": "none",
+                "notes": "FK → users.id"
+            },
+            {
+                "name": "created_at",
+                "type": "timestamp",
+                "nullable": false,
+                "encrypt": false,
+                "validation": ["auto"],
+                "lgpd_classification": "none"
+            },
+            {
+                "name": "updated_at",
+                "type": "timestamp",
+                "nullable": false,
+                "encrypt": false,
+                "validation": ["auto"],
+                "lgpd_classification": "none"
+            },
+            {
+                "name": "deleted_at",
+                "type": "timestamp",
+                "nullable": true,
+                "index": true,
+                "encrypt": false,
+                "validation": ["nullable", "date"],
+                "lgpd_classification": "none",
+                "notes": "Soft-delete obrigatório (LGPD)."
+            }
+        ],
+        "relationships": [
+            {
+                "type": "belongsTo",
+                "model": "Task",
+                "fk": "task_id"
+            },
+            {
+                "type": "belongsTo",
+                "model": "User",
+                "fk": "created_by"
+            },
+            {
+                "type": "morphMany",
+                "model": "Comment",
+                "morph_name": "commentable"
+            }
+        ],
+        "events": [
+            {
+                "on": "created",
+                "dispatch": "TaskChildCreatedEvent"
+            },
+            {
+                "on": "finished_toggled",
+                "dispatch": "TaskChildFinishedToggledEvent"
+            },
+            {
+                "on": "reordered",
+                "dispatch": "TaskChildReorderedEvent"
+            },
+            {
+                "on": "deleted",
+                "dispatch": "TaskChildDeletedEvent"
+            }
+        ],
+        "indexes": [
+            {
+                "name": "uq_task_children_task_id_code",
+                "columns": ["task_id", "code"],
+                "unique": true
+            },
+            {
+                "name": "ix_task_children_task_id_position",
+                "columns": ["task_id", "position"],
+                "unique": false
+            }
+        ],
+        "notes": "Sem pivot task_child_users — acesso herdado via board_users da task pai."
+    },
+    "permissions": {
+        "list": ["board_member"],
+        "view": ["board_member"],
+        "create": ["board_member"],
+        "update": ["board_member"],
+        "delete": ["board_member"],
+        "reorder": ["board_member"]
+    },
+    "_metadata": {
+        "last_modified": "2026-09-14",
+        "modified_by": "data-modeler",
+        "changes": ["Schema inicial com position e finished"]
+    }
+}

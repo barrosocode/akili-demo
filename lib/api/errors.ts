@@ -19,6 +19,28 @@ export function parseAxiosProblem(error: AxiosError): ProblemDetails {
     return { ...data, status: data.status ?? status };
   }
 
+  if (typeof data === "object" && data !== null) {
+    const record = data as Record<string, unknown>;
+    if (typeof record.message === "string" && record.message.trim()) {
+      const errors =
+        typeof record.errors === "object" &&
+        record.errors !== null &&
+        !Array.isArray(record.errors)
+          ? (record.errors as Record<string, string[]>)
+          : undefined;
+
+      return {
+        title: record.message,
+        status,
+        detail: record.message,
+        errors,
+        errorCode:
+          typeof record.error_code === "string" ? record.error_code : null,
+        resource: record,
+      };
+    }
+  }
+
   return {
     title: error.response?.statusText || "Erro na requisição",
     status,

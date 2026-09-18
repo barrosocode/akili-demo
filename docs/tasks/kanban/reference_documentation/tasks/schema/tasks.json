@@ -1,0 +1,286 @@
+{
+    "module": "tasks",
+    "description": "Cards do Kanban vinculados a boards, com colunas fixas no MVP, ordenação por position e recorrência JSON",
+    "features": ["list", "view", "create", "update", "patch", "delete", "move"],
+    "pagination": {
+        "default_per_page": 15,
+        "max_per_page": 100
+    },
+    "filters": ["board_id", "status", "urgency_level", "created_by", "created_at"],
+    "model": {
+        "name": "Task",
+        "table": "tasks",
+        "fields": [
+            {
+                "name": "id",
+                "type": "uuid",
+                "primary_key": true,
+                "nullable": false,
+                "encrypt": false
+            },
+            {
+                "name": "board_id",
+                "type": "uuid",
+                "nullable": false,
+                "index": true,
+                "encrypt": false,
+                "validation": ["required", "uuid"],
+                "lgpd_classification": "none",
+                "notes": "FK → boards.id"
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "length": 200,
+                "nullable": false,
+                "index": false,
+                "encrypt": false,
+                "validation": ["required", "string", "min:1", "max:200"],
+                "lgpd_classification": "none"
+            },
+            {
+                "name": "code",
+                "type": "string",
+                "length": 50,
+                "nullable": false,
+                "index": true,
+                "encrypt": false,
+                "validation": ["required", "string", "max:50", "alpha_dash"],
+                "lgpd_classification": "none",
+                "notes": "Único por board (board_id, code)."
+            },
+            {
+                "name": "description",
+                "type": "text",
+                "nullable": true,
+                "index": false,
+                "encrypt": false,
+                "validation": ["nullable", "string"],
+                "lgpd_classification": "DP"
+            },
+            {
+                "name": "urgency_level",
+                "type": "enum",
+                "options": ["low", "medium", "high", "critical"],
+                "default": "medium",
+                "nullable": false,
+                "index": true,
+                "encrypt": false,
+                "validation": ["required", "in:low,medium,high,critical"],
+                "lgpd_classification": "none"
+            },
+            {
+                "name": "status",
+                "type": "enum",
+                "options": ["backlog", "todo", "doing", "done"],
+                "default": "backlog",
+                "nullable": false,
+                "index": true,
+                "encrypt": false,
+                "validation": ["required", "in:backlog,todo,doing,done"],
+                "lgpd_classification": "none",
+                "notes": "MVP: enum fixo. Evolução futura: FK → board_columns.id."
+            },
+            {
+                "name": "position",
+                "type": "integer",
+                "nullable": false,
+                "default": 0,
+                "index": true,
+                "encrypt": false,
+                "validation": ["required", "integer", "min:0"],
+                "lgpd_classification": "none",
+                "notes": "Ordem dentro da coluna (status). Atualizado no drag-and-drop (Move)."
+            },
+            {
+                "name": "recurrence",
+                "type": "json",
+                "nullable": true,
+                "index": false,
+                "encrypt": false,
+                "validation": ["nullable", "json"],
+                "lgpd_classification": "none",
+                "notes": "Estrutura: { frequency, interval, days[], until? }. Validado no use case."
+            },
+            {
+                "name": "estimated_start",
+                "type": "timestamp",
+                "nullable": true,
+                "index": false,
+                "encrypt": false,
+                "validation": ["nullable", "date"],
+                "lgpd_classification": "none"
+            },
+            {
+                "name": "estimated_end",
+                "type": "timestamp",
+                "nullable": true,
+                "index": false,
+                "encrypt": false,
+                "validation": ["nullable", "date"],
+                "lgpd_classification": "none"
+            },
+            {
+                "name": "start_date",
+                "type": "timestamp",
+                "nullable": true,
+                "index": false,
+                "encrypt": false,
+                "validation": ["nullable", "date"],
+                "lgpd_classification": "none",
+                "notes": "Data real de início (não estimada)."
+            },
+            {
+                "name": "end_date",
+                "type": "timestamp",
+                "nullable": true,
+                "index": false,
+                "encrypt": false,
+                "validation": ["nullable", "date"],
+                "lgpd_classification": "none",
+                "notes": "Data real de conclusão."
+            },
+            {
+                "name": "created_by",
+                "type": "uuid",
+                "nullable": false,
+                "index": true,
+                "encrypt": false,
+                "validation": ["required", "uuid"],
+                "lgpd_classification": "none",
+                "notes": "FK → users.id"
+            },
+            {
+                "name": "created_at",
+                "type": "timestamp",
+                "nullable": false,
+                "encrypt": false,
+                "validation": ["auto"],
+                "lgpd_classification": "none"
+            },
+            {
+                "name": "updated_at",
+                "type": "timestamp",
+                "nullable": false,
+                "encrypt": false,
+                "validation": ["auto"],
+                "lgpd_classification": "none"
+            },
+            {
+                "name": "deleted_at",
+                "type": "timestamp",
+                "nullable": true,
+                "index": true,
+                "encrypt": false,
+                "validation": ["nullable", "date"],
+                "lgpd_classification": "none",
+                "notes": "Soft-delete obrigatório (LGPD)."
+            }
+        ],
+        "relationships": [
+            {
+                "type": "belongsTo",
+                "model": "Board",
+                "fk": "board_id"
+            },
+            {
+                "type": "belongsTo",
+                "model": "User",
+                "fk": "created_by"
+            },
+            {
+                "type": "hasMany",
+                "model": "TaskChild",
+                "fk": "task_id"
+            },
+            {
+                "type": "morphMany",
+                "model": "Comment",
+                "morph_name": "commentable"
+            }
+        ],
+        "events": [
+            {
+                "on": "status_changed",
+                "dispatch": "TaskStatusChangedEvent",
+                "notes": "Move: atualiza status + position. Grava audit_logs (action=moved, user_id)."
+            },
+            {
+                "on": "created",
+                "dispatch": "TaskCreatedEvent"
+            },
+            {
+                "on": "updated",
+                "dispatch": "TaskUpdatedEvent"
+            },
+            {
+                "on": "deleted",
+                "dispatch": "TaskDeletedEvent"
+            }
+        ],
+        "indexes": [
+            {
+                "name": "uq_tasks_board_id_code",
+                "columns": ["board_id", "code"],
+                "unique": true
+            },
+            {
+                "name": "ix_tasks_board_status_position",
+                "columns": ["board_id", "status", "position"],
+                "unique": false,
+                "notes": "Listagem do Kanban por coluna."
+            }
+        ]
+    },
+    "permissions": {
+        "list": ["board_member"],
+        "view": ["board_member"],
+        "create": ["board_member"],
+        "update": ["board_member"],
+        "delete": ["board_owner"],
+        "move": ["board_member"]
+    },
+    "api_extensions": {
+        "move_reindex": {
+            "endpoint": "POST /api/v1/tasks/{id}/move",
+            "description": "Move transacional com reindex de siblings nas colunas origem e destino. Positions ficam contíguas 0..n-1 por (board_id, status). Posição além do fim é clampada.",
+            "client_contract": "Enviar apenas o move da task arrastada; o backend normaliza toda a coluna."
+        },
+        "checklist_summary": {
+            "endpoint": "GET /api/v1/tasks, GET /api/v1/tasks/{id}",
+            "field": "checklist_summary",
+            "shape": { "total": "integer", "finished": "integer" },
+            "notes": "Tasks sem filhos retornam { total: 0, finished: 0 }."
+        },
+        "clear_date_flags": {
+            "endpoint": "PATCH /api/v1/tasks/{id}",
+            "fields": [
+                "clear_estimated_start",
+                "clear_estimated_end",
+                "clear_start_date",
+                "clear_end_date"
+            ],
+            "notes": "Espelham clear_recurrence; não enviar a data e o clear_* correspondente no mesmo payload."
+        },
+        "recurrence_biweekly": {
+            "input": { "frequency": "biweekly", "interval": 1 },
+            "stored": { "frequency": "daily", "interval": 14 },
+            "notes": "Alias de quinzenal normalizado na persistência."
+        },
+        "date_range_validation": {
+            "rules": [
+                "estimated_end >= estimated_start quando ambos informados",
+                "end_date >= start_date quando ambos informados"
+            ],
+            "notes": "Validado em POST /tasks e PATCH /tasks/{id} (merge com valores existentes no update)."
+        }
+    },
+    "_metadata": {
+        "last_modified": "2026-09-15",
+        "modified_by": "api-engineer",
+        "changes": [
+            "Schema inicial com position, recurrence JSON e status enum fixo MVP",
+            "Extensões API: move reindex, checklist_summary, clear date flags, biweekly"
+        ]
+    }
+}

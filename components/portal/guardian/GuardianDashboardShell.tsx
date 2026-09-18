@@ -36,7 +36,7 @@ export function GuardianDashboardShell({
               <div className="col-lg-4">
                 <GuardianSidebar activeHref={activeHref} />
               </div>
-              <div className="col-lg-8">{children}</div>
+              <div className="col-lg-8 portal-main-col">{children}</div>
             </div>
           )}
         </div>

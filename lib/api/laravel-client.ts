@@ -1,6 +1,12 @@
 import axios, { type AxiosRequestConfig, type InternalAxiosRequestConfig } from "axios";
-import { unwrapData } from "@/lib/api/envelope";
-import { parseAxiosProblem, toApiError } from "@/lib/api/errors";
+import {
+  unwrapData,
+  unwrapPagination,
+  unwrapResource,
+  unwrapResourceNullable,
+  type EnvelopePagination,
+} from "@/lib/api/envelope";
+import { toApiError } from "@/lib/api/errors";
 import { ApiError } from "@/types/api";
 import {
   clearAuthCookies,
@@ -110,10 +116,15 @@ http.interceptors.response.use(
   }
 );
 
-export async function laravelRequest<T>(
+type LaravelRequestConfig = AxiosRequestConfig & {
+  skipAuth?: boolean;
+  skipUnauthorizedRetry?: boolean;
+};
+
+async function laravelEnvelope(
   path: string,
-  config?: AxiosRequestConfig & { skipAuth?: boolean; skipUnauthorizedRetry?: boolean }
-): Promise<T> {
+  config?: LaravelRequestConfig
+): Promise<unknown> {
   try {
     const headers: Record<string, string> = {
       ...(config?.headers as Record<string, string> | undefined),
@@ -128,11 +139,49 @@ export async function laravelRequest<T>(
       headers,
     });
 
-    return unwrapData<T>(response.data);
+    return response.data;
   } catch (error) {
     if (error instanceof ApiError) throw error;
     throw toApiError(error);
   }
+}
+
+export async function laravelRequest<T>(
+  path: string,
+  config?: LaravelRequestConfig
+): Promise<T> {
+  const payload = await laravelEnvelope(path, config);
+  return unwrapData<T>(payload);
+}
+
+export async function laravelResource<T>(
+  path: string,
+  key: string,
+  config?: LaravelRequestConfig
+): Promise<T> {
+  const payload = await laravelEnvelope(path, config);
+  return unwrapResource<T>(payload, key);
+}
+
+export async function laravelResourceNullable<T>(
+  path: string,
+  key: string,
+  config?: LaravelRequestConfig
+): Promise<T | null> {
+  const payload = await laravelEnvelope(path, config);
+  return unwrapResourceNullable<T>(payload, key);
+}
+
+export async function laravelResourceCollection<T>(
+  path: string,
+  key: string,
+  config?: LaravelRequestConfig
+): Promise<{ items: T[]; pagination: EnvelopePagination | null }> {
+  const payload = await laravelEnvelope(path, config);
+  return {
+    items: unwrapResource<T[]>(payload, key),
+    pagination: unwrapPagination(payload),
+  };
 }
 
 export { http as laravelHttp };

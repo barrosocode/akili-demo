@@ -1,0 +1,89 @@
+{
+  "module": "teacher-study-board",
+  "stack": "next",
+  "repo": "akili-admin",
+  "api_version": "v1",
+  "api_base": "/api/v1",
+  "description": "Quadro Kanban read-only na ficha do aluno no portal do professor. Vê board, cards e plano applied. Não gera, não edita inputs, não abre sessão.",
+  "features": ["list", "view"],
+  "pagination": {
+    "default_per_page": 50,
+    "max_per_page": 100
+  },
+  "filters": ["status", "kind", "scheduled_on"],
+  "pages": [
+    {
+      "path": "/teacher/students/[uuid]",
+      "persona": "teacher",
+      "auth": "admin_sanctum",
+      "reads": ["board", "tasks", "study_plan"]
+    }
+  ],
+  "api_contract": {
+    "version": "v1",
+    "endpoints": [
+      {
+        "method": "GET",
+        "laravel": "/api/v1/teacher/students/{student}/board",
+        "key": "board",
+        "permission": "teacher.students.board.view"
+      },
+      {
+        "method": "GET",
+        "laravel": "/api/v1/teacher/students/{student}/board/tasks",
+        "key": "tasks",
+        "permission": "teacher.students.board.view",
+        "paginated": true
+      },
+      {
+        "method": "GET",
+        "laravel": "/api/v1/teacher/students/{student}/study-plans/current",
+        "key": "study_plan",
+        "permission": "teacher.students.board.view"
+      }
+    ]
+  },
+  "model": {
+    "name": "TeacherStudyBoardView",
+    "table": "n/a-frontend",
+    "fields": [
+      {
+        "name": "uuid",
+        "type": "uuid",
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "DP",
+        "notes": "Nome do quadro do aluno da turma."
+      },
+      {
+        "name": "tasks",
+        "type": "json",
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      }
+    ],
+    "relationships": [],
+    "events": []
+  },
+  "permissions": {
+    "list": ["teacher"],
+    "view": ["teacher"],
+    "create": ["teacher"],
+    "update": ["teacher"],
+    "delete": ["teacher"],
+    "notes": "Só GET. Arrays create/update/delete preenchidos para o sdd-module não abortar — NÃO gerar writes."
+  },
+  "_metadata": {
+    "last_modified": "2026-09-17",
+    "modified_by": "kanban-frontend-pack",
+    "changes": ["Módulo UI professor: Kanban read-only"]
+  }
+}

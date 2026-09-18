@@ -1,0 +1,198 @@
+{
+    "module": "boards",
+    "description": "Quadros Kanban compartilhados entre usuários com controle de acesso por papel (owner/member)",
+    "features": ["list", "view", "create", "update", "patch", "delete", "share"],
+    "pagination": {
+        "default_per_page": 15,
+        "max_per_page": 100
+    },
+    "filters": ["name", "code", "created_by", "created_at"],
+    "model": {
+        "name": "Board",
+        "table": "boards",
+        "fields": [
+            {
+                "name": "id",
+                "type": "uuid",
+                "primary_key": true,
+                "nullable": false,
+                "encrypt": false
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "length": 150,
+                "nullable": false,
+                "index": false,
+                "encrypt": false,
+                "validation": ["required", "string", "min:1", "max:150"],
+                "lgpd_classification": "none"
+            },
+            {
+                "name": "code",
+                "type": "string",
+                "length": 50,
+                "nullable": false,
+                "unique": true,
+                "index": true,
+                "encrypt": false,
+                "validation": ["required", "string", "max:50", "alpha_dash"],
+                "lgpd_classification": "none",
+                "notes": "Identificador único global do board (slug)."
+            },
+            {
+                "name": "description",
+                "type": "text",
+                "nullable": true,
+                "index": false,
+                "encrypt": false,
+                "validation": ["nullable", "string"],
+                "lgpd_classification": "DP",
+                "notes": "Pode conter dados pessoais inseridos pelo usuário."
+            },
+            {
+                "name": "created_by",
+                "type": "uuid",
+                "nullable": false,
+                "index": true,
+                "encrypt": false,
+                "validation": ["required", "uuid"],
+                "lgpd_classification": "none",
+                "notes": "FK → users.id. Criador inicial; também deve ser owner em board_users."
+            },
+            {
+                "name": "created_at",
+                "type": "timestamp",
+                "nullable": false,
+                "index": false,
+                "encrypt": false,
+                "validation": ["auto"],
+                "lgpd_classification": "none"
+            },
+            {
+                "name": "updated_at",
+                "type": "timestamp",
+                "nullable": false,
+                "index": false,
+                "encrypt": false,
+                "validation": ["auto"],
+                "lgpd_classification": "none"
+            },
+            {
+                "name": "deleted_at",
+                "type": "timestamp",
+                "nullable": true,
+                "index": true,
+                "encrypt": false,
+                "validation": ["nullable", "date"],
+                "lgpd_classification": "none",
+                "notes": "Soft-delete obrigatório (LGPD)."
+            }
+        ],
+        "relationships": [
+            {
+                "type": "belongsTo",
+                "model": "User",
+                "fk": "created_by"
+            },
+            {
+                "type": "belongsToMany",
+                "model": "User",
+                "pivot_table": "board_users",
+                "fk": "board_id",
+                "related_fk": "user_id",
+                "pivot_fields": [
+                    {
+                        "name": "role",
+                        "type": "enum",
+                        "options": ["owner", "member"],
+                        "nullable": false,
+                        "default": "member",
+                        "validation": ["required", "in:owner,member"]
+                    },
+                    {
+                        "name": "created_at",
+                        "type": "timestamp",
+                        "nullable": false,
+                        "validation": ["auto"]
+                    }
+                ],
+                "notes": "Única pivot de usuários. Sem assignees em tasks — acesso via board."
+            },
+            {
+                "type": "hasMany",
+                "model": "Task",
+                "fk": "board_id"
+            }
+        ],
+        "events": [
+            {
+                "on": "user_shared",
+                "dispatch": "BoardUserSharedEvent",
+                "notes": "Disparado ao adicionar membro via share_with/addUser."
+            },
+            {
+                "on": "user_removed",
+                "dispatch": "BoardUserRemovedEvent"
+            },
+            {
+                "on": "created",
+                "dispatch": "BoardCreatedEvent"
+            },
+            {
+                "on": "deleted",
+                "dispatch": "BoardDeletedEvent"
+            }
+        ],
+        "indexes": [
+            {
+                "name": "ix_board_users_user_id",
+                "table": "board_users",
+                "columns": ["user_id"],
+                "notes": "Listar boards que o usuário participa."
+            }
+        ]
+    },
+    "permissions": {
+        "list": ["board_member"],
+        "view": ["board_member"],
+        "create": ["authenticated"],
+        "update": ["board_owner"],
+        "delete": ["board_owner"],
+        "share": ["board_owner"]
+    },
+    "api_extensions": {
+        "create_request": {
+            "share_with": {
+                "type": "array",
+                "max_items": 10,
+                "items": {
+                    "email": "string (EmailStr)",
+                    "role": "member (default)"
+                },
+                "notes": "Convites opcionais na criação do board."
+            }
+        },
+        "share_request": {
+            "user_id": "uuid (opcional, XOR email)",
+            "email": "string (opcional, XOR user_id)",
+            "role": "owner | member"
+        },
+        "member_response": {
+            "fields": ["user_id", "name", "email", "role", "created_at"],
+            "notes": "name/email em claro para co-membros do board."
+        },
+        "user_invite_endpoints": [
+            "GET /api/v1/users/lookup?email=",
+            "GET /api/v1/users/search?q="
+        ]
+    },
+    "_metadata": {
+        "last_modified": "2026-09-15",
+        "modified_by": "api-boards-frontend",
+        "changes": [
+            "Schema inicial aprovado na entrevista Kanban",
+            "share_with no create, share por email, membros enriquecidos, lookup/search"
+        ]
+    }
+}

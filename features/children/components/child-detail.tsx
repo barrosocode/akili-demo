@@ -8,13 +8,22 @@ import {
   PendingMaterials,
   ProgressBySubject,
   ProgressOverview,
-  WeeklyEvolution,
   PerformanceBadge,
+  LearningOverview,
 } from "@/features/progress";
+import {
+  composeStudySummary,
+  hasLearningAccuracy,
+  lastThirtyDaysLearningFilters,
+  materialsFromLearning,
+  resolveStudyStreak,
+} from "@/features/progress/lib/learning-kpis";
 import { getUserFacingApiMessage } from "@/lib/api/errors";
 import { useSession } from "@/providers/session-provider";
 import { BffClientError } from "@/services/bff/client";
 import {
+  useChildLearningKpiQuery,
+  useChildLearningQuery,
   useChildProgressQuery,
   useChildrenQuery,
 } from "@/services/queries/children.queries";
@@ -35,7 +44,11 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
   const child = children.find((item) => item.ref === childRef);
   const canViewProgress = child?.canViewProgress ?? false;
 
-  const progressQuery = useChildProgressQuery(childRef, Boolean(child) && canViewProgress);
+  const canLoadLearning = Boolean(child) && canViewProgress;
+  const progressQuery = useChildProgressQuery(childRef, canLoadLearning);
+  const learningQuery = useChildLearningQuery(childRef, canLoadLearning);
+  const kpiFilters = useMemo(() => lastThirtyDaysLearningFilters(), []);
+  const kpiQuery = useChildLearningKpiQuery(childRef, kpiFilters, canLoadLearning);
   const [tab, setTab] = useState<TabId>("overview");
 
   useEffect(() => {
@@ -95,7 +108,29 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
   }
 
   const progress = progressQuery.data;
+  const learning = learningQuery.data;
   const isDemo = progress?.status === "demo";
+  const streak = resolveStudyStreak(progress);
+  const hasAccuracy = hasLearningAccuracy(kpiQuery.data);
+  const overviewSummary = composeStudySummary({
+    activitiesCompleted: learning?.kpis.activities_completed ?? null,
+    accuracyPercent: hasAccuracy
+      ? kpiQuery.data?.accuracy.percent ?? null
+      : null,
+    hasAccuracy,
+    streakDays: streak,
+  });
+  const learningMaterials = learning ? materialsFromLearning(learning) : [];
+  const overviewLoading =
+    canViewProgress &&
+    ((learningQuery.isLoading && !learning) ||
+      (progressQuery.isLoading && !progress && !learning));
+  const overviewError =
+    canViewProgress && learningQuery.error && !learning
+      ? learningQuery.error
+      : canViewProgress && progressQuery.error && !progress && !learning
+        ? progressQuery.error
+        : null;
 
   return (
     <div className="blog-content">
@@ -113,7 +148,10 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
       </p>
 
       {canViewProgress ? (
-        <p className="mb-4">
+        <p className="mb-4 d-flex flex-wrap gap-2">
+          <Link href={`/children/${childRef}/estudos`} className="vs-btn">
+            Plano de estudos
+          </Link>
           <Link href={`/aluno/supervisao/${childRef}`} className="vs-btn style3">
             Acessar Ambiente do Aluno
           </Link>
@@ -155,21 +193,21 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
         </div>
       ) : null}
 
-      {progressQuery.isLoading && canViewProgress ? (
+      {overviewLoading ? (
         <p role="status">Carregando progresso...</p>
       ) : null}
 
-      {progressQuery.error && canViewProgress ? (
+      {overviewError ? (
         <p style={{ color: "red" }}>
-          {progressQuery.error instanceof BffClientError
-            ? (progressQuery.error.detail ?? progressQuery.error.title)
-            : getUserFacingApiMessage(progressQuery.error)}
+          {overviewError instanceof BffClientError
+            ? (overviewError.detail ?? overviewError.title)
+            : getUserFacingApiMessage(overviewError)}
         </p>
       ) : null}
 
-      {progress && tab === "overview" ? (
+      {canViewProgress && tab === "overview" ? (
         <>
-          {progress.school || progress.classrooms.length ? (
+          {progress && (progress.school || progress.classrooms.length) ? (
             <div className="widget mb-4">
               <h3 className="widget_title">Escola e turma</h3>
               {progress.school ? (
@@ -205,12 +243,31 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
             </div>
           ) : null}
 
-          <ProgressOverview kpis={progress.kpis} summary={progress.summary} />
-          <WeeklyEvolution values={progress.kpis.weeklyEvolution ?? []} />
-          <ProgressBySubject materials={progress.materials} />
-          <PendingMaterials materials={progress.materials} />
+          {learning ? (
+            <ProgressOverview
+              overallPercent={learning.kpis.overall_percent}
+              activitiesCompleted={learning.kpis.activities_completed}
+              studyStreakDays={streak}
+              timeStudiedMinutes={Math.round(
+                learning.kpis.time_studied_seconds / 60
+              )}
+              accuracyPercent={
+                hasAccuracy ? kpiQuery.data?.accuracy.percent ?? null : null
+              }
+              summary={overviewSummary}
+            />
+          ) : null}
 
-          {progress.upcomingContent.length ? (
+          <LearningOverview childRef={childRef} enabled={canViewProgress} />
+
+          {learning ? (
+            <>
+              <ProgressBySubject materials={learningMaterials} />
+              <PendingMaterials materials={learningMaterials} />
+            </>
+          ) : null}
+
+          {progress?.upcomingContent.length ? (
             <div className="widget mb-4">
               <h3 className="widget_title">Próximos conteúdos</h3>
               <ul className="mb-0">
@@ -224,7 +281,7 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
             </div>
           ) : null}
 
-          {progress.notifications.length ? (
+          {progress?.notifications.length ? (
             <div className="widget mb-4">
               <h3 className="widget_title">Notificações</h3>
               <ul className="list-unstyled mb-0">
@@ -240,13 +297,24 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
         </>
       ) : null}
 
-      {progress && tab === "reports" ? (
+      {canViewProgress && tab === "reports" ? (
         <div>
-          {!reports.length ? (
+          {progressQuery.isLoading && !progress ? (
+            <p role="status">Carregando relatórios...</p>
+          ) : null}
+          {progressQuery.error && !progress ? (
+            <p style={{ color: "red" }}>
+              {progressQuery.error instanceof BffClientError
+                ? (progressQuery.error.detail ?? progressQuery.error.title)
+                : getUserFacingApiMessage(progressQuery.error)}
+            </p>
+          ) : null}
+          {progress && !reports.length ? (
             <div className="alert alert-info" role="status">
               Ainda não há relatórios pedagógicos para este período.
             </div>
-          ) : (
+          ) : null}
+          {reports.length ? (
             <>
               <div className="widget widget_categories mb-4">
                 <h3 className="widget_title">Períodos</h3>
@@ -320,12 +388,22 @@ export function ChildDetail({ childRef }: ChildDetailProps) {
                 </div>
               ) : null}
             </>
-          )}
+          ) : null}
         </div>
       ) : null}
 
-      {progress && tab === "achievements" ? (
-        <GamificationPanel gamification={progress.gamification} />
+      {canViewProgress && tab === "achievements" ? (
+        progressQuery.isLoading && !progress ? (
+          <p role="status">Carregando conquistas...</p>
+        ) : progressQuery.error && !progress ? (
+          <p style={{ color: "red" }}>
+            {progressQuery.error instanceof BffClientError
+              ? (progressQuery.error.detail ?? progressQuery.error.title)
+              : getUserFacingApiMessage(progressQuery.error)}
+          </p>
+        ) : (
+          <GamificationPanel gamification={progress?.gamification ?? null} />
+        )
       ) : null}
 
       <p className="mt-3">

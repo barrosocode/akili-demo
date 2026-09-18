@@ -1,0 +1,117 @@
+{
+  "module": "student-player-session-scope",
+  "stack": "next",
+  "repo": "akili-site",
+  "api_version": "v1",
+  "api_base": "/api/v1",
+  "description": "Player do aluno renderiza só as abas da learning_session (aula = treino+conf; revisão = r1|r2|r3). GET current com study_task_uuid.",
+  "features": ["view", "create", "update"],
+  "pagination": {
+    "default_per_page": 15,
+    "max_per_page": 100
+  },
+  "filters": ["study_task_uuid", "session_kind"],
+  "pages": [
+    {
+      "path": "/aluno/.../contents/[uuid]",
+      "persona": "student",
+      "auth": "student_session",
+      "notes": "Path real do player já existente. Query study_task_uuid opcional."
+    }
+  ],
+  "api_contract": {
+    "version": "v1",
+    "endpoints": [
+      {
+        "method": "POST",
+        "laravel": "/api/v1/mobile/student/contents/{content}/sessions",
+        "bff": "/api/student/contents/[uuid]/sessions",
+        "key": "data",
+        "notes": "Envelope legado. Body study_task_uuid. Resposta inclui session_kind e visible_tabs."
+      },
+      {
+        "method": "GET",
+        "laravel": "/api/v1/mobile/student/contents/{content}/sessions/current",
+        "bff": "/api/student/contents/[uuid]/sessions/current",
+        "key": "data",
+        "notes": "Query study_task_uuid e session_kind."
+      },
+      {
+        "method": "POST",
+        "laravel": "/api/v1/mobile/student/sessions/{session}/attempts",
+        "bff": "/api/student/sessions/[uuid]/attempts",
+        "key": "data"
+      },
+      {
+        "method": "PATCH",
+        "laravel": "/api/v1/mobile/student/sessions/{session}",
+        "bff": "/api/student/sessions/[uuid]",
+        "key": "data"
+      },
+      {
+        "method": "POST",
+        "laravel": "/api/v1/mobile/student/contents/{content}/progress",
+        "bff": "/api/student/contents/[uuid]/progress",
+        "key": "data",
+        "notes": "mark_completed só na aula (treino+conf)."
+      }
+    ]
+  },
+  "model": {
+    "name": "LearningSessionView",
+    "table": "n/a-frontend",
+    "fields": [
+      {
+        "name": "uuid",
+        "type": "uuid",
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "session_kind",
+        "type": "enum",
+        "options": ["new_content", "review_r1", "review_r2", "review_r3"],
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "visible_tabs",
+        "type": "json",
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "study_task_uuid",
+        "type": "uuid",
+        "nullable": true,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "shuffle_seed",
+        "type": "integer",
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      }
+    ],
+    "relationships": [],
+    "events": []
+  },
+  "permissions": {
+    "list": ["student"],
+    "view": ["student"],
+    "create": ["student"],
+    "update": ["student"],
+    "delete": ["student"],
+    "notes": "Arrays preenchidos para o sdd-module. Sem DELETE. Guardian readOnly: zero writes."
+  },
+  "_metadata": {
+    "last_modified": "2026-09-17",
+    "modified_by": "data-modeler-skill",
+    "changes": ["Módulo UI: player respeita visible_tabs da sessão"]
+  }
+}

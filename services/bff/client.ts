@@ -5,6 +5,8 @@ export class BffClientError extends Error {
   readonly title: string;
   readonly detail?: string;
   readonly errors?: Record<string, string>;
+  readonly errorCode?: string | null;
+  readonly data?: unknown;
 
   constructor(payload: ApiErrorPayload) {
     super(payload.detail ?? payload.title);
@@ -13,6 +15,8 @@ export class BffClientError extends Error {
     this.title = payload.title;
     this.detail = payload.detail;
     this.errors = payload.errors;
+    this.errorCode = payload.errorCode ?? payload.error_code ?? null;
+    this.data = payload.data;
   }
 }
 
@@ -40,14 +44,28 @@ export async function bffClient<T>(
   const payload = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new BffClientError(
-      payload.error ?? {
-        title: "Erro na requisição",
-        status: response.status,
-        detail: "Não foi possível concluir a operação.",
-      }
-    );
+    const errorPayload =
+      payload && typeof payload === "object" && "error" in payload
+        ? (payload.error as ApiErrorPayload)
+        : {
+            title: "Erro na requisição",
+            status: response.status,
+            detail: "Não foi possível concluir a operação.",
+          };
+
+    throw new BffClientError({
+      ...errorPayload,
+      status: errorPayload.status ?? response.status,
+      data:
+        payload && typeof payload === "object" && "data" in payload
+          ? (payload as { data?: unknown }).data
+          : undefined,
+    });
   }
 
-  return (payload.data ?? payload) as T;
+  if (typeof payload === "object" && payload !== null && "data" in payload) {
+    return (payload as { data: T }).data;
+  }
+
+  return payload as T;
 }

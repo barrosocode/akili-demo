@@ -1,6 +1,12 @@
 import axios, { type AxiosRequestConfig, type InternalAxiosRequestConfig } from "axios";
 
-import { unwrapData } from "@/lib/api/envelope";
+import {
+  unwrapData,
+  unwrapPagination,
+  unwrapResource,
+  unwrapResourceNullable,
+  type EnvelopePagination,
+} from "@/lib/api/envelope";
 import { toApiError } from "@/lib/api/errors";
 import {
   clearStudentAuthCookies,
@@ -111,10 +117,15 @@ http.interceptors.response.use(
   }
 );
 
-export async function studentLaravelRequest<T>(
+type StudentLaravelConfig = AxiosRequestConfig & {
+  skipAuth?: boolean;
+  skipUnauthorizedRetry?: boolean;
+};
+
+async function studentLaravelEnvelope(
   path: string,
-  config?: AxiosRequestConfig & { skipAuth?: boolean; skipUnauthorizedRetry?: boolean }
-): Promise<T> {
+  config?: StudentLaravelConfig
+): Promise<unknown> {
   try {
     const headers: Record<string, string> = {
       ...(config?.headers as Record<string, string> | undefined),
@@ -129,9 +140,47 @@ export async function studentLaravelRequest<T>(
       headers,
     });
 
-    return unwrapData<T>(response.data);
+    return response.data;
   } catch (error) {
     if (error instanceof ApiError) throw error;
     throw toApiError(error);
   }
+}
+
+export async function studentLaravelRequest<T>(
+  path: string,
+  config?: StudentLaravelConfig
+): Promise<T> {
+  const payload = await studentLaravelEnvelope(path, config);
+  return unwrapData<T>(payload);
+}
+
+export async function studentLaravelResource<T>(
+  path: string,
+  key: string,
+  config?: StudentLaravelConfig
+): Promise<T> {
+  const payload = await studentLaravelEnvelope(path, config);
+  return unwrapResource<T>(payload, key);
+}
+
+export async function studentLaravelResourceNullable<T>(
+  path: string,
+  key: string,
+  config?: StudentLaravelConfig
+): Promise<T | null> {
+  const payload = await studentLaravelEnvelope(path, config);
+  return unwrapResourceNullable<T>(payload, key);
+}
+
+export async function studentLaravelResourceCollection<T>(
+  path: string,
+  key: string,
+  config?: StudentLaravelConfig
+): Promise<{ items: T[]; pagination: EnvelopePagination | null }> {
+  const payload = await studentLaravelEnvelope(path, config);
+  return {
+    items: unwrapResource<T[]>(payload, key),
+    pagination: unwrapPagination(payload),
+  };
 }

@@ -1,0 +1,108 @@
+{
+  "module": "student-study-board",
+  "stack": "next",
+  "repo": "akili-site",
+  "api_version": "v1",
+  "api_base": "/api/v1",
+  "description": "Casca do quadro de estudos do aluno autenticado: GET board + plano atual, empty state, rota no portal Kiddino. Sem colunas e sem writes.",
+  "features": ["view"],
+  "pagination": {
+    "default_per_page": 15,
+    "max_per_page": 100
+  },
+  "filters": [],
+  "pages": [
+    {
+      "path": "/aluno/estudos",
+      "persona": "student",
+      "auth": "student_session",
+      "reads": ["board", "study_plan"]
+    }
+  ],
+  "api_contract": {
+    "version": "v1",
+    "endpoints": [
+      {
+        "method": "GET",
+        "laravel": "/api/v1/mobile/student/board",
+        "bff": "/api/student/board",
+        "key": "board",
+        "permission": "student.board.view"
+      },
+      {
+        "method": "GET",
+        "laravel": "/api/v1/mobile/student/study-plans/current",
+        "bff": "/api/student/study-plans/current",
+        "key": "study_plan",
+        "permission": "student.board.view",
+        "notes": "Pode ser null"
+      }
+    ]
+  },
+  "model": {
+    "name": "StudentBoardView",
+    "table": "n/a-frontend",
+    "fields": [
+      {
+        "name": "uuid",
+        "type": "uuid",
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "DP",
+        "notes": "Nome do quadro; contém preferred_name do aluno."
+      },
+      {
+        "name": "status",
+        "type": "enum",
+        "options": ["active", "archived"],
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "student_uuid",
+        "type": "uuid",
+        "nullable": true,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "members",
+        "type": "json",
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "DP",
+        "notes": "name + member_role. Sem e-mail."
+      },
+      {
+        "name": "current_study_plan",
+        "type": "json",
+        "nullable": true,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      }
+    ],
+    "relationships": [],
+    "events": []
+  },
+  "permissions": {
+    "list": ["student"],
+    "view": ["student"],
+    "create": ["student"],
+    "update": ["student"],
+    "delete": ["student"],
+    "notes": "HTTP só GET. create/update/delete preenchidos para o validador do sdd-module não abortar — NÃO gerar CRUD."
+  },
+  "_metadata": {
+    "last_modified": "2026-09-17",
+    "modified_by": "kanban-frontend-pack",
+    "changes": ["Módulo UI aluno: casca do quadro"]
+  }
+}
