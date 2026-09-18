@@ -10,6 +10,9 @@ npm install
 npm run dev
 ```
 
+
+
+
 App: http://localhost:3000  
 API Laravel: http://localhost:8000/api/v1 (server-only, via BFF)
 
