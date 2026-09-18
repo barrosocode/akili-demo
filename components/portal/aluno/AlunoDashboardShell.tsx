@@ -36,15 +36,13 @@ export function AlunoDashboardShell({
       <section className="vs-blog-wrapper blog-details space-top space-extra-bottom">
         <div className="container">
           {fullBleed ? (
-            <div className="row gx-40">
-              <div className="col-12">{children}</div>
-            </div>
+            <div className="portal-dashboard portal-dashboard--bleed">{children}</div>
           ) : (
-            <div className="row gx-40">
-              <div className="col-lg-4">
+            <div className="portal-dashboard">
+              <div className="portal-dashboard__sidebar">
                 <AlunoSidebar activeHref={activeHref} />
               </div>
-              <div className="col-lg-8">{children}</div>
+              <div className="portal-dashboard__main">{children}</div>
             </div>
           )}
         </div>

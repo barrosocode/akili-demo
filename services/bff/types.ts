@@ -3,6 +3,8 @@ export interface ApiErrorPayload {
   status: number;
   detail?: string;
   type?: string;
-  error_code?: string;
+  error_code?: string | null;
+  errorCode?: string | null;
   errors?: Record<string, string>;
+  data?: unknown;
 }

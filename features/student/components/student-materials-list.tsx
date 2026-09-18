@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { useStudentFrequencyQuery } from "@/features/student/hooks/use-student-frequency";
 import { useStudentMaterialsQuery } from "@/features/student/hooks/use-student-materials";
 import { getUserFacingApiMessage } from "@/lib/api/errors";
 import { BffClientError } from "@/services/bff/client";
@@ -19,10 +20,12 @@ export function StudentMaterialsList({
   childRef,
 }: StudentMaterialsListProps) {
   const ownQuery = useStudentMaterialsQuery(!materialsProp && !readOnly);
+  const frequencyQuery = useStudentFrequencyQuery(!readOnly);
   const materials = materialsProp ?? ownQuery.data ?? [];
   const loading = !materialsProp && !readOnly && ownQuery.isLoading;
   const error = !materialsProp && !readOnly ? ownQuery.error : null;
   const base = readOnly && childRef ? `/aluno/supervisao/${childRef}/materiais` : "/aluno/materiais";
+  const frequency = frequencyQuery.data;
 
   if (loading) {
     return <p role="status">Carregando materiais...</p>;
@@ -47,7 +50,15 @@ export function StudentMaterialsList({
   }
 
   return (
-    <div className="row">
+    <>
+      {!readOnly && frequency ? (
+        <p className="mb-3">
+          {frequency.available_count === 0
+            ? "Não há aulas disponíveis na sua matrícula."
+            : `${frequency.viewed_count} de ${frequency.available_count} aulas vistas · ${frequency.pending_count} pendentes`}
+        </p>
+      ) : null}
+      <div className="row">
       {materials.map((material) => {
         const percent = material.progress.percent_complete ?? 0;
         return (
@@ -73,6 +84,7 @@ export function StudentMaterialsList({
           </div>
         );
       })}
-    </div>
+      </div>
+    </>
   );
 }

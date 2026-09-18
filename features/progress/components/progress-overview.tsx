@@ -1,13 +1,27 @@
 import { formatMinutes } from "@/features/progress/lib/labels";
-import type { ChildKpis } from "@/types/domain/child";
 
 type ProgressOverviewProps = {
-  kpis: ChildKpis;
+  overallPercent: number | null;
+  activitiesCompleted: number | null;
+  studyStreakDays: number | null;
+  timeStudiedMinutes: number | null;
+  accuracyPercent: number | null;
   summary: string | null;
 };
 
-export function ProgressOverview({ kpis, summary }: ProgressOverviewProps) {
-  const overall = kpis.overallPercent ?? 0;
+function formatAccuracy(value: number): string {
+  return `${value.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`;
+}
+
+export function ProgressOverview({
+  overallPercent,
+  activitiesCompleted,
+  studyStreakDays,
+  timeStudiedMinutes,
+  accuracyPercent,
+  summary,
+}: ProgressOverviewProps) {
+  const overall = overallPercent ?? 0;
 
   return (
     <div className="widget mb-4">
@@ -31,22 +45,22 @@ export function ProgressOverview({ kpis, summary }: ProgressOverviewProps) {
       </div>
       <div className="row g-3">
         <div className="col-6 col-md-3">
-          <strong>{kpis.activitiesCompleted ?? "—"}</strong>
+          <strong>{activitiesCompleted ?? "—"}</strong>
           <div>Atividades</div>
         </div>
         <div className="col-6 col-md-3">
-          <strong>{kpis.studyStreakDays ?? "—"}</strong>
+          <strong>{studyStreakDays ?? "—"}</strong>
           <div>Dias seguidos</div>
         </div>
         <div className="col-6 col-md-3">
-          <strong>{formatMinutes(kpis.timeStudiedMinutes)}</strong>
+          <strong>{formatMinutes(timeStudiedMinutes)}</strong>
           <div>Tempo estudado</div>
         </div>
         <div className="col-6 col-md-3">
           <strong>
-            {kpis.averageScore != null ? `${kpis.averageScore}%` : "—"}
+            {accuracyPercent != null ? formatAccuracy(accuracyPercent) : "—"}
           </strong>
-          <div>Desempenho</div>
+          <div>Média</div>
         </div>
       </div>
     </div>

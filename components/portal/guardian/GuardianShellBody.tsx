@@ -26,7 +26,7 @@ export function GuardianShellBody({ children, sidebar }: GuardianShellBodyProps)
   return (
     <div className="row gx-40">
       <div className="col-lg-4">{sidebar}</div>
-      <div className="col-lg-8">{children}</div>
+      <div className="col-lg-8 portal-main-col">{children}</div>
     </div>
   );
 }

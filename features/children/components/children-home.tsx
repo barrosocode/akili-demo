@@ -120,6 +120,14 @@ export function ChildrenHome() {
                     </Link>
                     {child.canViewProgress && child.accessible ? (
                       <Link
+                        href={`/children/${child.ref}/estudos`}
+                        className="vs-btn style3"
+                      >
+                        Plano de estudos
+                      </Link>
+                    ) : null}
+                    {child.canViewProgress && child.accessible ? (
+                      <Link
                         href={`/aluno/supervisao/${child.ref}`}
                         className="vs-btn style3"
                       >

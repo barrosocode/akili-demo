@@ -1,0 +1,91 @@
+{
+  "module": "student-kanban-player-scope",
+  "stack": "next",
+  "repo": "akili-site",
+  "api_version": "v1",
+  "api_base": "/api/v1",
+  "description": "Clique do card do Kanban abre o player com study_task_uuid e kind. Não reconstrói o quadro.",
+  "features": ["view", "create"],
+  "pagination": {
+    "default_per_page": 50,
+    "max_per_page": 100
+  },
+  "filters": ["status", "kind"],
+  "pages": [
+    {
+      "path": "/aluno/estudos",
+      "persona": "student",
+      "auth": "student_session",
+      "notes": "Clique no card navega ao player existente com query."
+    },
+    {
+      "path": "/children/[ref]/estudos",
+      "persona": "guardian",
+      "auth": "guardian_session",
+      "notes": "readOnly; sem POST session."
+    }
+  ],
+  "api_contract": {
+    "version": "v1",
+    "endpoints": [
+      {
+        "method": "GET",
+        "laravel": "/api/v1/mobile/student/board/tasks",
+        "bff": "/api/student/board/tasks",
+        "key": "tasks",
+        "paginated": true,
+        "notes": "Já existe no recorte kanban. Esta spec só altera a navegação do clique."
+      },
+      {
+        "method": "POST",
+        "laravel": "/api/v1/mobile/student/contents/{content}/sessions",
+        "bff": "/api/student/contents/[uuid]/sessions",
+        "key": "data",
+        "notes": "Disparado pelo player (spec 01) com o uuid do card clicado."
+      }
+    ]
+  },
+  "model": {
+    "name": "StudyTaskView",
+    "table": "n/a-frontend",
+    "fields": [
+      {
+        "name": "uuid",
+        "type": "uuid",
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "kind",
+        "type": "enum",
+        "options": ["new_content", "review_r1", "review_r2", "review_r3"],
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "content_uuid",
+        "type": "uuid",
+        "nullable": true,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      }
+    ],
+    "relationships": [],
+    "events": []
+  },
+  "permissions": {
+    "list": ["student", "guardian"],
+    "view": ["student", "guardian"],
+    "create": ["student"],
+    "update": ["student"],
+    "delete": ["student"],
+    "notes": "Sem CRUD de task. create/update = writes de sessão só do aluno, feitos no player."
+  },
+  "_metadata": {
+    "last_modified": "2026-09-17",
+    "modified_by": "data-modeler-skill",
+    "changes": ["Gancho Kanban → player com study_task_uuid"]
+  }
+}

@@ -8,19 +8,32 @@ export function jsonSuccess<T>(data: T, status = 200) {
 
 export function jsonError(error: unknown) {
   const apiError = toApiError(error);
-  return NextResponse.json(
-    {
-      error: {
-        title: apiError.title,
-        status: apiError.status,
-        detail: apiError.detail,
-        type: apiError.type,
-        error_code: apiError.errorCode,
-        errors: getFieldErrors(apiError.errors),
-      },
+  const body: {
+    error: {
+      title: string;
+      status: number;
+      detail?: string;
+      type?: string;
+      errors: Record<string, string>;
+      error_code: string | null;
+    };
+    data?: unknown;
+  } = {
+    error: {
+      title: apiError.title,
+      status: apiError.status,
+      detail: apiError.detail,
+      type: apiError.type,
+      errors: getFieldErrors(apiError.errors),
+      error_code: apiError.errorCode ?? null,
     },
-    { status: apiError.status }
-  );
+  };
+
+  if (apiError.status === 409 && apiError.resource?.study_plan) {
+    body.data = apiError.resource.study_plan;
+  }
+
+  return NextResponse.json(body, { status: apiError.status });
 }
 
 export function notImplemented(feature: string) {

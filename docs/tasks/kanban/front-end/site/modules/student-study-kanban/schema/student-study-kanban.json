@@ -1,0 +1,122 @@
+{
+  "module": "student-study-kanban",
+  "stack": "next",
+  "repo": "akili-site",
+  "api_version": "v1",
+  "api_base": "/api/v1",
+  "description": "Kanban de cards gerados pelo sistema. Colunas backlog/todo/doing/done via GET paginado. Clique do aluno abre o player com study_task_uuid. Sem move HTTP.",
+  "features": ["list", "view"],
+  "pagination": {
+    "default_per_page": 50,
+    "max_per_page": 100
+  },
+  "filters": ["status", "kind", "scheduled_on"],
+  "pages": [
+    {
+      "path": "/aluno/estudos",
+      "persona": "student",
+      "auth": "student_session",
+      "reads": ["tasks"]
+    },
+    {
+      "path": "/children/[ref]/estudos",
+      "persona": "guardian",
+      "auth": "guardian_session",
+      "reads": ["tasks"],
+      "notes": "readOnly"
+    }
+  ],
+  "api_contract": {
+    "version": "v1",
+    "endpoints": [
+      {
+        "method": "GET",
+        "laravel": "/api/v1/mobile/student/board/tasks",
+        "bff": "/api/student/board/tasks",
+        "key": "tasks",
+        "permission": "student.board.view",
+        "paginated": true
+      },
+      {
+        "method": "GET",
+        "laravel": "/api/v1/guardian/students/{student}/board/tasks",
+        "bff": "/api/guardian/children/[student]/board/tasks",
+        "key": "tasks",
+        "permission": "guardian.children.board.view",
+        "paginated": true
+      },
+      {
+        "method": "POST",
+        "laravel": "/api/v1/mobile/student/contents/{content}/sessions",
+        "key": "data",
+        "notes": "Envelope legado {data}. Body metadata.study_task_uuid. Só aluno."
+      }
+    ]
+  },
+  "model": {
+    "name": "StudyTaskView",
+    "table": "n/a-frontend",
+    "fields": [
+      {
+        "name": "uuid",
+        "type": "uuid",
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "kind",
+        "type": "enum",
+        "options": ["new_content", "review_r1", "review_r2", "review_r3"],
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none",
+        "notes": "Nome pedagógico do tópico."
+      },
+      {
+        "name": "status",
+        "type": "enum",
+        "options": ["backlog", "todo", "doing", "done"],
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "scheduled_on",
+        "type": "date",
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "content_uuid",
+        "type": "uuid",
+        "nullable": true,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      }
+    ],
+    "relationships": [],
+    "events": []
+  },
+  "permissions": {
+    "list": ["student", "guardian"],
+    "view": ["student", "guardian"],
+    "create": ["student", "guardian"],
+    "update": ["student", "guardian"],
+    "delete": ["student", "guardian"],
+    "notes": "Sem CRUD/move HTTP. Arrays preenchidos para o sdd-module. Aluno escreve só session no player."
+  },
+  "_metadata": {
+    "last_modified": "2026-09-17",
+    "modified_by": "kanban-frontend-pack",
+    "changes": ["Módulo UI Kanban + gancho do player"]
+  }
+}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { useStudentDashboardQuery } from "@/features/student/hooks/use-student-dashboard";
+import { useStudentFrequencyQuery } from "@/features/student/hooks/use-student-frequency";
 import { useStudentSession } from "@/features/student/hooks/use-student-session";
 import { getUserFacingApiMessage } from "@/lib/api/errors";
 import { BffClientError } from "@/services/bff/client";
@@ -15,6 +16,7 @@ type StudentDashboardViewProps = {
   readOnly?: boolean;
   childRef?: string;
   studentName?: string;
+  title?: string;
 };
 
 function formatDuration(seconds: number): string {
@@ -62,12 +64,15 @@ export function StudentDashboardView({
   readOnly = false,
   childRef,
   studentName,
+  title,
 }: StudentDashboardViewProps) {
   const { session } = useStudentSession();
   const ownQuery = useStudentDashboardQuery(!readOnly && !dashboard);
+  const frequencyQuery = useStudentFrequencyQuery(!readOnly);
   const data = dashboard ?? ownQuery.data;
   const loading = isLoading ?? ownQuery.isLoading;
   const fetchError = error ?? ownQuery.error;
+  const frequency = frequencyQuery.data;
 
   const displayName = studentName ?? session?.student.name ?? session?.user.name ?? "Aluno";
   const materialsBase = readOnly && childRef ? `/aluno/supervisao/${childRef}/materiais` : "/aluno/materiais";
@@ -116,7 +121,7 @@ export function StudentDashboardView({
       ) : null}
 
       <div className="portal-page-header">
-        <h2 className="blog-title">Olá, {displayName}</h2>
+        <h2 className="blog-title">{title ?? `Olá, ${displayName}`}</h2>
       </div>
       {contextLine ? <p className="mb-4">{contextLine}</p> : null}
 
@@ -129,14 +134,16 @@ export function StudentDashboardView({
         </div>
         <div className="col-6 col-md-3">
           <div className="widget text-center h-100">
-            <strong style={{ fontSize: "1.5rem" }}>{data.kpis.materials_available}</strong>
-            <div>Materiais</div>
+            <strong style={{ fontSize: "1.5rem" }}>
+              {data.kpis.activities_completed}
+            </strong>
+            <div>Atividades concluídas</div>
           </div>
         </div>
         <div className="col-6 col-md-3">
           <div className="widget text-center h-100">
             <strong style={{ fontSize: "1.5rem" }}>{data.kpis.materials_completed}</strong>
-            <div>Concluídos</div>
+            <div>Materiais concluídos</div>
           </div>
         </div>
         <div className="col-6 col-md-3">
@@ -148,6 +155,63 @@ export function StudentDashboardView({
           </div>
         </div>
       </div>
+
+      {!readOnly ? (
+        <div className="mb-4">
+          <h3 className="mb-3">Frequência das aulas</h3>
+          {frequencyQuery.isLoading && !frequency ? (
+            <p role="status">Carregando frequência...</p>
+          ) : null}
+          {frequencyQuery.error && !frequency ? (
+            <p style={{ color: "red" }} role="alert">
+              {frequencyQuery.error instanceof BffClientError
+                ? (frequencyQuery.error.detail ?? frequencyQuery.error.title)
+                : getUserFacingApiMessage(frequencyQuery.error)}
+            </p>
+          ) : null}
+          {frequency && frequency.available_count === 0 ? (
+            <div className="alert alert-info mb-0" role="status">
+              Não há aulas disponíveis na sua matrícula.
+            </div>
+          ) : null}
+          {frequency && frequency.available_count > 0 ? (
+            <div className="row g-3">
+              <div className="col-6 col-md-3">
+                <div className="widget text-center h-100">
+                  <strong style={{ fontSize: "1.5rem" }}>
+                    {frequency.available_count}
+                  </strong>
+                  <div>Aulas disponíveis</div>
+                </div>
+              </div>
+              <div className="col-6 col-md-3">
+                <div className="widget text-center h-100">
+                  <strong style={{ fontSize: "1.5rem" }}>
+                    {frequency.viewed_count}
+                  </strong>
+                  <div>Já vistas</div>
+                </div>
+              </div>
+              <div className="col-6 col-md-3">
+                <div className="widget text-center h-100">
+                  <strong style={{ fontSize: "1.5rem" }}>
+                    {frequency.pending_count}
+                  </strong>
+                  <div>Pendentes</div>
+                </div>
+              </div>
+              <div className="col-6 col-md-3">
+                <div className="widget text-center h-100">
+                  <strong style={{ fontSize: "1.5rem" }}>
+                    {frequency.viewed_percent}%
+                  </strong>
+                  <div>% vistas</div>
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
       {data.next_activity ? (
         <div className="widget mb-4">

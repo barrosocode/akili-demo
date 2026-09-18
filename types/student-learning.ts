@@ -23,17 +23,130 @@ export type ContentPage = {
   items: ContentPageItem[];
 };
 
+export type ContentQuestionOption = {
+  uuid?: string;
+  text: string;
+  is_correct: boolean;
+  action?: string | null;
+};
+
 export type ContentQuestion = {
+  uuid?: string;
   text: string;
   image?: string | null;
   hint?: string | null;
   explanation?: string | null;
   question_type?: string;
-  options: Array<{
-    text: string;
-    is_correct: boolean;
-    action?: string | null;
-  }>;
+  expected_time?: number;
+  difficulty_id?: string;
+  options: ContentQuestionOption[];
+};
+
+export type LearningSessionStatus =
+  | "started"
+  | "in_progress"
+  | "completed"
+  | "abandoned";
+
+export type ActivityAttemptStatus = "in_progress" | "completed" | "abandoned";
+
+export type LearningSessionKind =
+  | "new_content"
+  | "review_r1"
+  | "review_r2"
+  | "review_r3";
+
+export type ActivityTabId = "conf" | "r1" | "r2" | "r3" | "desafio";
+
+export function isLearningSessionKind(
+  value: string | null | undefined
+): value is LearningSessionKind {
+  return (
+    value === "new_content" ||
+    value === "review_r1" ||
+    value === "review_r2" ||
+    value === "review_r3"
+  );
+}
+
+export type ActivityAttempt = {
+  uuid: string;
+  tab_id: ActivityTabId;
+  attempt_number: number;
+  status: ActivityAttemptStatus;
+  accuracy_rate: number | null;
+  error_rate: number | null;
+  started_at: string | null;
+  completed_at: string | null;
+};
+
+export type ActivityResponseSummary = {
+  uuid: string;
+  question_uuid: string;
+  selected_option_uuid: string | null;
+  is_correct: boolean;
+  sequence_in_attempt: number;
+  sequence_in_session: number;
+  tab_id: ActivityTabId;
+  response_time_ms: number;
+  hint_used: boolean;
+  attempted_at: string | null;
+};
+
+export type LearningSession = {
+  uuid: string;
+  status: LearningSessionStatus;
+  session_kind: LearningSessionKind;
+  visible_tabs: string[];
+  study_task_uuid: string | null;
+  shuffle_seed: number;
+  content_uuid: string | null;
+  content_version_uuid: string;
+  started_at: string | null;
+  completed_at: string | null;
+  duration_seconds: number;
+  attempts: ActivityAttempt[];
+  responses: ActivityResponseSummary[];
+};
+
+export type StartLearningSessionRequest = {
+  content_version_uuid: string;
+  study_task_uuid?: string;
+  metadata?: {
+    study_task_uuid?: string;
+  };
+};
+
+export type CompleteLearningSessionRequest = {
+  status: Extract<LearningSessionStatus, "completed" | "abandoned">;
+  duration_seconds?: number;
+};
+
+export type StartActivityAttemptRequest = {
+  tab_id: ActivityTabId;
+};
+
+export type CompleteActivityAttemptRequest = {
+  status: Extract<ActivityAttemptStatus, "completed" | "abandoned">;
+  duration_seconds?: number;
+};
+
+export type RecordActivityResponseRequest = {
+  event_uuid: string;
+  question_uuid: string;
+  selected_option_uuid: string;
+  response_time_ms: number;
+  sequence_in_attempt?: number;
+  sequence_in_session?: number;
+  hint_used?: boolean;
+  attempted_at?: string;
+};
+
+export type StudentFrequency = {
+  available_count: number;
+  viewed_count: number;
+  pending_count: number;
+  viewed_percent: number;
 };
 
 export type StudentMaterialProgress = {

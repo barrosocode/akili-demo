@@ -1,0 +1,146 @@
+{
+  "module": "guardian-study-planner",
+  "stack": "next",
+  "repo": "akili-site",
+  "api_version": "v1",
+  "api_base": "/api/v1",
+  "description": "Responsável configura método/horários (inclui DPS) e dispara o gerador determinístico. Acompanha warnings E001–E008 e omitted_topics. Não move cards.",
+  "features": ["list", "view", "create", "update"],
+  "pagination": {
+    "default_per_page": 15,
+    "max_per_page": 100
+  },
+  "filters": ["student_uuid"],
+  "pages": [
+    {
+      "path": "/children/[ref]/estudos",
+      "persona": "guardian",
+      "auth": "guardian_session",
+      "reads": ["boards", "study_setting", "availability_slots", "school_schedule_slots", "study_plans", "study_plan"],
+      "writes": ["study_setting", "availability_slots", "school_schedule_slots", "study_plan"]
+    }
+  ],
+  "api_contract": {
+    "version": "v1",
+    "endpoints": [
+      {
+        "method": "GET",
+        "laravel": "/api/v1/guardian/boards",
+        "key": "boards",
+        "permission": "guardian.children.board.view"
+      },
+      {
+        "method": "GET/PUT",
+        "laravel": "/api/v1/guardian/students/{student}/study-settings",
+        "key": "study_setting",
+        "permission": "guardian.children.study_plan.manage"
+      },
+      {
+        "method": "GET/PUT",
+        "laravel": "/api/v1/guardian/students/{student}/availability-slots",
+        "key": "availability_slots",
+        "permission": "guardian.children.study_plan.manage",
+        "paginated": true
+      },
+      {
+        "method": "GET/PUT",
+        "laravel": "/api/v1/guardian/students/{student}/school-schedule",
+        "key": "school_schedule_slots",
+        "permission": "guardian.children.study_plan.manage",
+        "paginated": true
+      },
+      {
+        "method": "POST",
+        "laravel": "/api/v1/guardian/students/{student}/study-plans",
+        "key": "study_plan",
+        "permission": "guardian.children.study_plan.manage",
+        "success_status": 202
+      },
+      {
+        "method": "GET",
+        "laravel": "/api/v1/guardian/students/{student}/study-plans",
+        "key": "study_plans",
+        "permission": "guardian.children.board.view",
+        "paginated": true
+      },
+      {
+        "method": "GET",
+        "laravel": "/api/v1/guardian/students/{student}/study-plans/current",
+        "key": "study_plan",
+        "permission": "guardian.children.board.view"
+      },
+      {
+        "method": "GET",
+        "laravel": "/api/v1/guardian/students/{student}/study-plans/{plan}",
+        "key": "study_plan",
+        "permission": "guardian.children.board.view"
+      }
+    ]
+  },
+  "model": {
+    "name": "GuardianStudyPlannerView",
+    "table": "n/a-frontend",
+    "fields": [
+      {
+        "name": "inverted_classroom",
+        "type": "boolean",
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "spaced_review",
+        "type": "boolean",
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "review_model",
+        "type": "enum",
+        "options": ["dehaene", "leitner", "custom"],
+        "nullable": false,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "items_per_session",
+        "type": "integer",
+        "nullable": true,
+        "encrypt": false,
+        "lgpd_classification": "none"
+      },
+      {
+        "name": "tdah_adjustment",
+        "type": "boolean",
+        "nullable": false,
+        "encrypt": true,
+        "lgpd_classification": "DPS",
+        "notes": "Só no form do responsável. Nunca localStorage. Nunca no Kanban."
+      },
+      {
+        "name": "on_medication",
+        "type": "boolean",
+        "nullable": false,
+        "encrypt": true,
+        "lgpd_classification": "DPS",
+        "notes": "Dado de saúde. Idem."
+      }
+    ],
+    "relationships": [],
+    "events": []
+  },
+  "permissions": {
+    "list": ["guardian"],
+    "view": ["guardian"],
+    "create": ["guardian"],
+    "update": ["guardian"],
+    "delete": ["guardian"],
+    "notes": "delete HTTP não existe. Array preenchido só para o sdd-module. create=POST generate; update=PUT inputs."
+  },
+  "_metadata": {
+    "last_modified": "2026-09-17",
+    "modified_by": "kanban-frontend-pack",
+    "changes": ["Módulo UI responsável: inputs + gerador"]
+  }
+}

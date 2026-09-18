@@ -4,6 +4,8 @@
 
 export const GUARDIAN_HOME_PATH = "/";
 export const STUDENT_HOME_PATH = "/aluno";
+export const STUDENT_STUDIES_PATH = "/aluno/estudos";
+export const STUDENT_PROGRESS_PATH = "/aluno/progresso";
 export const STUDENT_LOGIN_PATH = "/aluno/entrar";
 export const GUARDIAN_LOGIN_PATH = "/signin";
 
@@ -66,7 +68,7 @@ export function resolveGuardianPostLoginPath(
 export type StudentShellNavItem = {
   label: string;
   href: string;
-  key: "home" | "environment" | "materials";
+  key: "home" | "environment" | "progress" | "studies" | "materials";
 };
 
 /**
@@ -93,6 +95,11 @@ export function resolveStudentShellNav(pathname: string): StudentShellNavItem[] 
 
   return [
     { key: "home", label: "Início", href: STUDENT_HOME_PATH },
+    {
+      key: "progress",
+      label: "Meu progresso",
+      href: STUDENT_PROGRESS_PATH,
+    },
     { key: "materials", label: "Materiais", href: `${STUDENT_HOME_PATH}/materiais` },
   ];
 }
@@ -114,7 +121,18 @@ export function resolveStudentShellActiveHref(pathname: string): string | undefi
   if (pathname.startsWith(`${STUDENT_HOME_PATH}/materiais`)) {
     return `${STUDENT_HOME_PATH}/materiais`;
   }
-  if (pathname === STUDENT_HOME_PATH || pathname === `${STUDENT_HOME_PATH}/`) {
+  if (
+    pathname === STUDENT_PROGRESS_PATH ||
+    pathname.startsWith(`${STUDENT_PROGRESS_PATH}/`)
+  ) {
+    return STUDENT_PROGRESS_PATH;
+  }
+  if (
+    pathname === STUDENT_HOME_PATH ||
+    pathname === `${STUDENT_HOME_PATH}/` ||
+    pathname === STUDENT_STUDIES_PATH ||
+    pathname.startsWith(`${STUDENT_STUDIES_PATH}/`)
+  ) {
     return STUDENT_HOME_PATH;
   }
   return undefined;

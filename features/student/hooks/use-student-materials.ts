@@ -54,6 +54,7 @@ export function useSaveStudentProgressMutation(contentUuid: string) {
       queryClient.invalidateQueries({ queryKey: ["student", "dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["student", "materials"] });
       queryClient.invalidateQueries({ queryKey: ["student", "content", contentUuid] });
+      queryClient.invalidateQueries({ queryKey: ["student", "kpis", "frequency"] });
     },
   });
 }
