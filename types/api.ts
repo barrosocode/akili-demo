@@ -21,6 +21,7 @@ export interface ProblemDetails {
   instance?: string;
   errors?: Record<string, string[]>;
   errorCode?: string | null;
+  error_code?: string;
   resource?: Record<string, unknown>;
 }
 
@@ -41,7 +42,7 @@ export class ApiError extends Error {
     this.type = problem.type;
     this.detail = problem.detail;
     this.errors = problem.errors;
-    this.errorCode = problem.errorCode;
+    this.errorCode = problem.errorCode ?? problem.error_code ?? null;
     this.resource = problem.resource;
   }
 }

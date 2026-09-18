@@ -66,6 +66,20 @@ export interface PortalSubscriptionRaw {
   downgrade_targets: string[];
 }
 
+export interface PortalAssistanceParty {
+  uuid: string;
+  name: string;
+}
+
+export interface PortalAssistance {
+  active: boolean;
+  session_uuid: string;
+  read_only: boolean;
+  expires_at: string | null;
+  operator: PortalAssistanceParty;
+  target: PortalAssistanceParty;
+}
+
 export interface ClientPortalSession {
   user: PortalSessionUser;
   guardian: PortalGuardian | null;
@@ -76,4 +90,5 @@ export interface ClientPortalSession {
   terms: PortalTerms;
   preferences: Record<string, unknown>;
   account_origin?: AccountOrigin;
+  assistance?: PortalAssistance | null;
 }

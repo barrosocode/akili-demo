@@ -4,8 +4,9 @@ export class BffClientError extends Error {
   readonly status: number;
   readonly title: string;
   readonly detail?: string;
-  readonly errors?: Record<string, string>;
+  readonly type?: string;
   readonly errorCode?: string | null;
+  readonly errors?: Record<string, string>;
   readonly data?: unknown;
 
   constructor(payload: ApiErrorPayload) {
@@ -14,6 +15,7 @@ export class BffClientError extends Error {
     this.status = payload.status;
     this.title = payload.title;
     this.detail = payload.detail;
+    this.type = payload.type;
     this.errors = payload.errors;
     this.errorCode = payload.errorCode ?? payload.error_code ?? null;
     this.data = payload.data;

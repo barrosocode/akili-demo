@@ -13,6 +13,7 @@ export function jsonError(error: unknown) {
       title: string;
       status: number;
       detail?: string;
+      type?: string;
       errors: Record<string, string>;
       error_code: string | null;
     };
@@ -22,6 +23,7 @@ export function jsonError(error: unknown) {
       title: apiError.title,
       status: apiError.status,
       detail: apiError.detail,
+      type: apiError.type,
       errors: getFieldErrors(apiError.errors),
       error_code: apiError.errorCode ?? null,
     },

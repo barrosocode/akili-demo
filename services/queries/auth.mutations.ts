@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { endAuthenticatedTawkSession } from "@/features/support/tawk";
 import { authBff } from "@/services/bff/auth.bff";
 import { queryKeys } from "@/services/queries/query-keys";
 import type { AcceptInviteRequest, LoginRequest, SignupRequest } from "@/types/auth";
@@ -42,7 +43,9 @@ export function useLogoutMutation() {
 
   return useMutation({
     mutationFn: () => authBff.logout(),
-    onSuccess: () => {
+    onSuccess: async () => {
+      await endAuthenticatedTawkSession();
+      queryClient.removeQueries({ queryKey: queryKeys.support.tawkIdentityRoot });
       queryClient.removeQueries({ queryKey: queryKeys.auth.me });
       queryClient.clear();
     },

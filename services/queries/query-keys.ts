@@ -22,6 +22,16 @@ export const queryKeys = {
     all: ["purchases"] as const,
     list: () => [...queryKeys.purchases.all, "list"] as const,
   },
+  support: {
+    all: ["support"] as const,
+    topics: () => [...queryKeys.support.all, "topics"] as const,
+    topic: (uuid: string) => [...queryKeys.support.all, "topic", uuid] as const,
+    faq: (uuid: string) => [...queryKeys.support.all, "faq", uuid] as const,
+    search: (q: string) => [...queryKeys.support.all, "search", q] as const,
+    tawkIdentityRoot: ["support", "tawk", "identity"] as const,
+    tawkIdentity: (sessionKey: string) =>
+      [...queryKeys.support.tawkIdentityRoot, sessionKey] as const,
+  },
   demo: {
     all: ["demo"] as const,
     personas: ["demo", "personas"] as const,

@@ -5,6 +5,8 @@ import { AlunoSidebar } from "@/components/portal/aluno/AlunoSidebar";
 import { FooterClean } from "@/components/portal/shared/FooterClean";
 import { ScrollToTop } from "@/components/marketing/layout/ScrollToTop";
 import { KiddinoRoot } from "@/components/theme/KiddinoRoot";
+import { AssistanceBanner } from "@/features/assistance/components/AssistanceBanner";
+import { AssistanceExpiryWatcher } from "@/features/assistance/components/AssistanceExpiryWatcher";
 import { STUDENT_HOME_PATH } from "@/lib/auth/portal-paths";
 
 type AlunoDashboardShellProps = {
@@ -17,6 +19,7 @@ type AlunoDashboardShellProps = {
 
 /**
  * Shell do dashboard do aluno (PORTAL-012).
+ * Também envolve supervisão do responsável (`/aluno/supervisao/**` via AlunoRouteShell).
  */
 export function AlunoDashboardShell({
   children,
@@ -27,6 +30,8 @@ export function AlunoDashboardShell({
 }: AlunoDashboardShellProps) {
   return (
     <KiddinoRoot>
+      <AssistanceBanner />
+      <AssistanceExpiryWatcher />
       <AlunoHeader homeHref={homeHref} />
       <section className="vs-blog-wrapper blog-details space-top space-extra-bottom">
         <div className="container">

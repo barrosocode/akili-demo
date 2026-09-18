@@ -4,7 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { ChildSwitcher } from "@/components/portal/guardian/ChildSwitcher";
+import { isAssistanceReadOnly } from "@/lib/permissions/guardian-capabilities";
 import { GUARDIAN_HOME_PATH } from "@/lib/auth/portal-paths";
+import { useSession } from "@/providers/session-provider";
 import type { NavItem } from "@/types/marketing";
 
 const guardianNav: NavItem[] = [
@@ -13,8 +15,11 @@ const guardianNav: NavItem[] = [
   { label: "Adicionar filho", href: "/children/new" },
   { label: "Compras", href: "/purchases" },
   { label: "Relatórios", href: "/relatorios" },
+  { label: "Central de Ajuda", href: "/ajuda" },
   { label: "Meus dados", href: "/profile" },
 ];
+
+const READ_ONLY_HIDDEN_HREFS = new Set(["/children/new", "/purchases"]);
 
 type GuardianSidebarProps = {
   activeHref?: string;
@@ -38,6 +43,11 @@ function isNavActive(pathname: string, href: string): boolean {
  */
 export function GuardianSidebar({ activeHref }: GuardianSidebarProps) {
   const pathname = usePathname() ?? "/";
+  const { user } = useSession();
+  const readOnly = isAssistanceReadOnly(user);
+  const items = readOnly
+    ? guardianNav.filter((item) => !READ_ONLY_HIDDEN_HREFS.has(item.href))
+    : guardianNav;
 
   return (
     <aside className="sidebar-area">
@@ -45,7 +55,7 @@ export function GuardianSidebar({ activeHref }: GuardianSidebarProps) {
       <div className="widget widget_categories">
         <h3 className="widget_title">Menu</h3>
         <ul>
-          {guardianNav.map((item) => {
+          {items.map((item) => {
             const active =
               activeHref !== undefined
                 ? activeHref === item.href ||
@@ -67,10 +77,17 @@ export function GuardianSidebar({ activeHref }: GuardianSidebarProps) {
         </ul>
       </div>
       <div className="widget">
-        <h3 className="widget_title">Tutorial</h3>
+        <h3 className="widget_title">Ajuda</h3>
         <p>
-          Conheça a plataforma e acompanhe o progresso dos seus filhos com o
-          método Akili Educ.
+          {readOnly ? (
+            "Modo atendimento: navegação liberada, alterações bloqueadas pelo sistema."
+          ) : (
+            <>
+              Dúvidas sobre o portal? Consulte a{" "}
+              <Link href="/ajuda">Central de Ajuda</Link> ou use o botão{" "}
+              <strong>?</strong> no canto da tela.
+            </>
+          )}
         </p>
       </div>
     </aside>
