@@ -30,13 +30,6 @@ const INSTITUTIONAL_ROLE_SLUGS = new Set([
   "teacher",
 ]);
 
-const ADMIN_DASHBOARD_PERMISSIONS = [
-  "dashboards.school.view",
-  "dashboards.teacher.view",
-  "schools.read",
-  "school.profile.read",
-] as const;
-
 export function hasSupportAssistanceStartPermission(
   user: Pick<AuthUser, "permissions">
 ): boolean {
@@ -59,29 +52,23 @@ export function resolvePortalDestination(user: AuthUser): {
     return { portal: "support", redirectTo: SUPPORT_DEFAULT_PATH };
   }
 
+  const hasGuardianAccess = can(user.permissions, GUARDIAN_PERMISSION);
+  // Site is the guardian/student portal: prefer the family home even if the
+  // seed also carries a leftover school/teacher role.
+  if (
+    user.type === "guardian" ||
+    hasGuardianAccess ||
+    user.roles.includes("guardian")
+  ) {
+    return { portal: "guardian", redirectTo: GUARDIAN_DEFAULT_PATH };
+  }
+
   if (INSTITUTIONAL_USER_TYPES.has(user.type)) {
     return { portal: "admin", redirectTo: authConfig.adminAppUrl };
   }
 
   if (user.roles.some((role) => INSTITUTIONAL_ROLE_SLUGS.has(role))) {
     return { portal: "admin", redirectTo: authConfig.adminAppUrl };
-  }
-
-  const hasGuardianAccess = can(user.permissions, GUARDIAN_PERMISSION);
-  const hasAdminDashboard = ADMIN_DASHBOARD_PERMISSIONS.some((permission) =>
-    can(user.permissions, permission)
-  );
-
-  if (hasAdminDashboard && !hasGuardianAccess) {
-    return { portal: "admin", redirectTo: authConfig.adminAppUrl };
-  }
-
-  if (user.type === "guardian" && hasGuardianAccess) {
-    return { portal: "guardian", redirectTo: GUARDIAN_DEFAULT_PATH };
-  }
-
-  if (hasGuardianAccess) {
-    return { portal: "guardian", redirectTo: GUARDIAN_DEFAULT_PATH };
   }
 
   return { portal: "admin", redirectTo: authConfig.adminAppUrl };

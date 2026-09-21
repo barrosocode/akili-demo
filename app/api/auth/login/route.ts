@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 
 import {
+  authenticateStudentWithLaravel,
   authenticateSupportWithLaravel,
   authenticateWithLaravel,
   establishGuardianSession,
@@ -9,17 +10,12 @@ import {
 } from "@/lib/auth/establish-session";
 import { clearAuthCookies } from "@/lib/auth/cookies";
 import { clearStudentAuthCookies } from "@/lib/auth/student-cookies";
+import { resolvePortalDestination } from "@/lib/auth/portal-destination";
 import {
-  institutionalPortalMessage,
-  resolvePortalDestination,
-} from "@/lib/auth/portal-destination";
-import {
-  forbidden,
   jsonError,
   jsonSuccess,
   validationError,
 } from "@/lib/api/response";
-import { isGuardianUser } from "@/lib/permissions/guardian-capabilities";
 import { loginSchema } from "@/features/auth/schemas/auth.schema";
 import type { LoginSuccessPayload } from "@/types/auth-login";
 
@@ -47,7 +43,11 @@ export async function POST(request: NextRequest) {
     const destination = resolvePortalDestination(response.user);
 
     if (destination.portal === "student") {
-      const session = await establishStudentSession(response);
+      const studentResponse = await authenticateStudentWithLaravel(
+        parsed.data.email,
+        parsed.data.password
+      );
+      const session = await establishStudentSession(studentResponse);
       const payload: LoginSuccessPayload = {
         portal: "student",
         redirectTo: destination.redirectTo,
@@ -80,10 +80,6 @@ export async function POST(request: NextRequest) {
         session: {},
       };
       return jsonSuccess(payload);
-    }
-
-    if (!isGuardianUser(response.user)) {
-      return forbidden(institutionalPortalMessage());
     }
 
     const session = await establishGuardianSession(response);

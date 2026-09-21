@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 
 import {
-  authenticateWithLaravel,
+  authenticateStudentWithLaravel,
   establishStudentSession,
 } from "@/lib/auth/establish-session";
 import {
@@ -32,10 +32,9 @@ export async function POST(request: NextRequest) {
       return validationError(errors);
     }
 
-    const response = await authenticateWithLaravel(
+    const response = await authenticateStudentWithLaravel(
       parsed.data.email,
-      parsed.data.password,
-      "student-web"
+      parsed.data.password
     );
 
     const destination = resolvePortalDestination(response.user);
