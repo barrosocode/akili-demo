@@ -92,6 +92,19 @@ export async function authenticateWithLaravel(
   });
 }
 
+/** Canal mobile — o portal do aluno só aceita PAT de `/mobile/auth/*`. */
+export async function authenticateStudentWithLaravel(
+  email: string,
+  password: string
+): Promise<LoginResponse> {
+  return studentLaravelRequest<LoginResponse>("/mobile/auth/login", {
+    method: "POST",
+    data: { email, password, device_name: "student-web" },
+    skipAuth: true,
+    skipUnauthorizedRetry: true,
+  });
+}
+
 export async function authenticateSupportWithLaravel(
   email: string,
   password: string
