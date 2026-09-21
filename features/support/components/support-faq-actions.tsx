@@ -8,7 +8,7 @@ import {
 import type { SupportFaqAction } from "@/types/domain/support-faq";
 
 type SupportFaqActionsProps = {
-  actions: SupportFaqAction[];
+  actions?: SupportFaqAction[] | null;
 };
 
 function ActionLink({ action }: { action: ResolvedSupportAction }) {
@@ -33,7 +33,7 @@ function ActionLink({ action }: { action: ResolvedSupportAction }) {
 }
 
 export function SupportFaqActions({ actions }: SupportFaqActionsProps) {
-  const resolved = resolveSupportActions(actions);
+  const resolved = resolveSupportActions(actions ?? []);
   if (resolved.length === 0) return null;
 
   return (

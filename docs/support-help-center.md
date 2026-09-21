@@ -40,18 +40,24 @@ O frontend **não** filtra por portal. O BFF/API devolvem só conteúdo publicad
 
 ## Ações do FAQ
 
+Os botões de ação aparecem **somente no artigo** (`/ajuda/topicos/.../faqs/...`), não no FAB/modal nem na lista de tópicos.
+
 `features/support/lib/map-route-target.ts` mapeia `type=route` para o portal do responsável / aluno:
 
 - `guardian_signin` → `/signin`
-- `guardian_children` → home do responsável
+- `guardian_first_access` → `/first-access`
+- `guardian_forgot_password` → `/forgot-password`
+- `guardian_children` → `/children`
 - `guardian_profile` → `/profile`
 - `guardian_reports` → `/relatorios`
 - `student_login` → `/aluno/entrar`
-- `student_materials` → `/aluno`
+- `student_materials` → `/aluno/materiais`
 
-Targets de Admin / professor / escola são omitidos. `external_url` só `https` / `mailto`.
+Targets de Admin / professor / escola são omitidos. `external_url` só `https` / `mailto`. Lista ausente ou vazia após o filtro: a seção “Ações” não é renderizada.
 
-A base de conteúdo (tópicos/FAQs) é seedada na API (`FaqSeeder`) e filtrada por `portal=guardian`.
+No CMS Admin, o destino deve ser de responsável/aluno quando o tópico está no portal `guardian`; caso contrário o botão não aparece aqui.
+
+A base de conteúdo (tópicos/FAQs) é seedada na API (`FaqSeeder`) e filtrada por `portal=guardian`. Os tópicos Acesso, Minha conta, Meus filhos, Acompanhamento e Acesso do aluno saem com botão de ação em cada artigo; republicar com `php artisan db:seed --class=FaqSeeder`.
 
 ## Chat (Tawk.to)
 

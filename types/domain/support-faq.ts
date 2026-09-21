@@ -4,6 +4,8 @@ export type SupportFaqRouteTarget =
   | "student_login"
   | "student_materials"
   | "guardian_signin"
+  | "guardian_first_access"
+  | "guardian_forgot_password"
   | "guardian_children"
   | "guardian_profile"
   | "guardian_reports"
