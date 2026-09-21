@@ -1,3 +1,5 @@
+"use client";
+
 import type { ReactNode } from "react";
 
 import { AlunoHeader } from "@/components/portal/aluno/AlunoHeader";
@@ -7,6 +9,8 @@ import { ScrollToTop } from "@/components/marketing/layout/ScrollToTop";
 import { KiddinoRoot } from "@/components/theme/KiddinoRoot";
 import { AssistanceBanner } from "@/features/assistance/components/AssistanceBanner";
 import { AssistanceExpiryWatcher } from "@/features/assistance/components/AssistanceExpiryWatcher";
+import { AssistanceShellChrome } from "@/features/assistance/components/AssistanceShellChrome";
+import { SupportFloatingButton } from "@/features/support";
 import { STUDENT_HOME_PATH } from "@/lib/auth/portal-paths";
 
 type AlunoDashboardShellProps = {
@@ -15,6 +19,8 @@ type AlunoDashboardShellProps = {
   fullBleed?: boolean;
   homeHref?: string;
   footerHomeHref?: string;
+  showSupportFab?: boolean;
+  scrollToTopOffsetClassName?: string;
 };
 
 /**
@@ -27,6 +33,8 @@ export function AlunoDashboardShell({
   fullBleed = false,
   homeHref = STUDENT_HOME_PATH,
   footerHomeHref = STUDENT_HOME_PATH,
+  showSupportFab = false,
+  scrollToTopOffsetClassName,
 }: AlunoDashboardShellProps) {
   return (
     <KiddinoRoot>
@@ -48,7 +56,12 @@ export function AlunoDashboardShell({
         </div>
       </section>
       <FooterClean homeHref={footerHomeHref} />
-      <ScrollToTop />
+      {showSupportFab ? (
+        <AssistanceShellChrome>
+          <SupportFloatingButton />
+        </AssistanceShellChrome>
+      ) : null}
+      <ScrollToTop offsetClassName={scrollToTopOffsetClassName} />
     </KiddinoRoot>
   );
 }

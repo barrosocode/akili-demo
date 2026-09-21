@@ -1,27 +1,34 @@
-# Central de Ajuda — Portal do Responsável (`site`)
+# Central de Ajuda — Portal (`site`)
 
 Consumo da FAQ publicada no portal `guardian`. CMS e regras de publicação ficam no Admin/API; este app só renderiza.
 
-Contrato: `GET /api/v1/support/faq/*?portal=guardian` (via BFF Next).
+Contrato: `GET /api/v1/support/faq/*?portal=guardian` (via BFF Next). Aluno autenticado usa o mesmo catálogo (não há portal CMS `student`).
 
 ## Entrada
 
-- FAB flutuante no shell do responsável (`SupportFloatingButton`)
-- Item de navegação **Central de Ajuda** → `/ajuda`
+- FAB flutuante (`SupportFloatingButton`) no shell do responsável e no shell autenticado do aluno / supervisão
+- Item de navegação **Central de Ajuda** (responsável) → `/ajuda`
+- `/aluno/entrar` não mostra o FAB (usuário ainda não logado)
+- Assistência read-only oculta o FAB (`AssistanceShellChrome`)
 
 ## Rotas
 
-| Rota | Descrição |
-|------|-----------|
-| `/ajuda` | Home (busca + tópicos) |
-| `/ajuda/topicos/[topicUuid]` | Tópico + lista de FAQs |
-| `/ajuda/topicos/[topicUuid]/faqs/[faqUuid]` | Artigo + ações |
+| Rota | Quem | Descrição |
+|------|------|-----------|
+| `/ajuda` | Responsável (e supervisão) | Home (busca + tópicos) |
+| `/ajuda/topicos/[topicUuid]` | Responsável | Tópico + lista de FAQs |
+| `/ajuda/topicos/[topicUuid]/faqs/[faqUuid]` | Responsável | Artigo + ações |
+| `/aluno/ajuda` | Aluno logado | Home |
+| `/aluno/ajuda/topicos/[topicUuid]` | Aluno logado | Tópico |
+| `/aluno/ajuda/topicos/[topicUuid]/faqs/[faqUuid]` | Aluno logado | Artigo + ações (`guardian_*` omitidos) |
+
+O FAB resolve os hrefs pelo pathname: área do aluno (exceto `/aluno/supervisao`) usa `/aluno/ajuda`; o restante usa `/ajuda`.
 
 ## Camadas
 
 | Camada | Path |
 |--------|------|
-| BFF | `app/api/support/faq/*` — força `portal=guardian`; `app/api/support/tawk/identity` |
+| BFF | `app/api/support/faq/*` — força `portal=guardian`; aceita cookie de aluno ou de responsável; `app/api/support/tawk/identity` |
 | Client BFF | `services/bff/support.bff.ts` |
 | React Query | `services/queries/support.queries.ts` |
 | UI | `features/support/` |
@@ -40,7 +47,7 @@ O frontend **não** filtra por portal. O BFF/API devolvem só conteúdo publicad
 
 ## Ações do FAQ
 
-Os botões de ação aparecem **somente no artigo** (`/ajuda/topicos/.../faqs/...`), não no FAB/modal nem na lista de tópicos.
+Os botões de ação aparecem **somente no artigo**, não no FAB/modal nem na lista de tópicos.
 
 `features/support/lib/map-route-target.ts` mapeia `type=route` para o portal do responsável / aluno:
 
@@ -53,7 +60,7 @@ Os botões de ação aparecem **somente no artigo** (`/ajuda/topicos/.../faqs/..
 - `student_login` → `/aluno/entrar`
 - `student_materials` → `/aluno/materiais`
 
-Targets de Admin / professor / escola são omitidos. `external_url` só `https` / `mailto`. Lista ausente ou vazia após o filtro: a seção “Ações” não é renderizada.
+Na área do aluno, destinos `guardian_*` são omitidos para não enviar o aluno a telas do responsável. Targets de Admin / professor / escola são omitidos em ambos. `external_url` só `https` / `mailto`. Lista ausente ou vazia após o filtro: a seção “Ações” não é renderizada.
 
 No CMS Admin, o destino deve ser de responsável/aluno quando o tópico está no portal `guardian`; caso contrário o botão não aparece aqui.
 
@@ -63,9 +70,9 @@ A base de conteúdo (tópicos/FAQs) é seedada na API (`FaqSeeder`) e filtrada p
 
 Integração centralizada em `features/support/tawk/`:
 
-1. Sessão autenticada no portal → `GuardianDashboardShell` (Server Component) lê `TAWK_PROPERTY_ID` / `TAWK_WIDGET_ID` inline e passa `config` ao `TawkProvider`
+1. Sessão autenticada (responsável ou aluno) → Server Component lê `TAWK_PROPERTY_ID` / `TAWK_WIDGET_ID` (`readTawkPublicConfig`) e passa `config` ao `TawkProvider` (`GuardianDashboardShell` / `AlunoSupportChrome`)
 2. Client registra a config (`setTawkPublicConfig`), carrega o embed e só maximiza após identity/login — sem `NEXT_PUBLIC_`
-3. BFF `GET /api/support/tawk/identity` → Laravel (única fonte de `user_id` / `hash`)
+3. BFF `GET /api/support/tawk/identity` → Laravel (única fonte de `user_id` / `hash`); cookie de aluno ou de responsável
 4. `Tawk_API.login` apenas com o payload da Identity API
 5. Logout / troca de usuário / 401 da sessão → `endAuthenticatedTawkSession()` (controller + widget)
 6. `openChat` revalida Identity API (`staleTime: 0` + forceRefresh) para não manter identidade após expiração
@@ -80,4 +87,4 @@ Sem sessão Akili: não chama Identity API nem login autenticado. Falhas de API/
 
 ## Fora de escopo
 
-Tickets, impersonation, paginação server-side no consume (lista completa), widget no portal do aluno.
+Tickets, impersonation, paginação server-side no consume (lista completa).

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { SupportBreadcrumb } from "@/features/support/components/support-breadcrumb";
 import { SupportStateMessage } from "@/features/support/components/support-state-message";
-import { SUPPORT_PATHS } from "@/features/support/lib/paths";
+import { useSupportPaths } from "@/features/support/lib/use-support-paths";
 import { useSupportTopicQuery } from "@/services/queries/support.queries";
 
 type SupportTopicPageProps = {
@@ -11,6 +11,7 @@ type SupportTopicPageProps = {
 };
 
 export function SupportTopicPage({ topicUuid }: SupportTopicPageProps) {
+  const paths = useSupportPaths();
   const { data, isLoading, isError, error, refetch } = useSupportTopicQuery(topicUuid);
 
   if (isLoading) {
@@ -30,7 +31,7 @@ export function SupportTopicPage({ topicUuid }: SupportTopicPageProps) {
           onRetry={() => void refetch()}
         />
         <p className="mt-3">
-          <Link href={SUPPORT_PATHS.home}>Voltar à Central de Ajuda</Link>
+          <Link href={paths.home}>Voltar à Central de Ajuda</Link>
         </p>
       </div>
     );
@@ -58,7 +59,7 @@ export function SupportTopicPage({ topicUuid }: SupportTopicPageProps) {
         <ul className="akili-support-faq-list">
           {data.faqs.map((faq) => (
             <li key={faq.uuid}>
-              <Link href={SUPPORT_PATHS.faq(data.uuid, faq.uuid)}>{faq.title}</Link>
+              <Link href={paths.faq(data.uuid, faq.uuid)}>{faq.title}</Link>
             </li>
           ))}
         </ul>

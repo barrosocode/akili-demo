@@ -50,6 +50,31 @@ describe("resolveSupportActions", () => {
     assert.deepEqual(resolved, []);
   });
 
+  it("omits guardian route targets for the student audience", () => {
+    const resolved = resolveSupportActions(
+      [
+        action({ type: "route", target: "guardian_children", label: "Filhos" }),
+        action({ type: "route", target: "guardian_profile", label: "Dados" }),
+        action({ type: "route", target: "student_materials", label: "Materiais" }),
+        action({
+          type: "external_url",
+          target: "https://akili.example/help",
+          label: "Docs",
+        }),
+      ],
+      { audience: "student" }
+    );
+
+    assert.deepEqual(resolved, [
+      { kind: "internal", href: "/aluno/materiais", label: "Materiais" },
+      {
+        kind: "external",
+        href: "https://akili.example/help",
+        label: "Docs",
+      },
+    ]);
+  });
+
   it("allows https and mailto external urls only", () => {
     const resolved = resolveSupportActions([
       action({

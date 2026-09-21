@@ -11,6 +11,7 @@ const EXACT_LABELS: Record<string, string> = {
   "/purchases": "Compras",
   "/relatorios": "Relatórios",
   "/ajuda": "Central de Ajuda",
+  "/aluno/ajuda": "Central de Ajuda",
   "/terms": "Termos",
   "/aluno": "Ambiente do aluno",
   "/aluno/materiais": "Materiais",
@@ -56,6 +57,7 @@ export function resolveAssistancePageLabel(pathname: string): string {
 
   if (/^\/children\/[^/]+$/.test(path)) return "Filho";
   if (/^\/ajuda\/topicos(\/|$)/.test(path)) return "Central de Ajuda";
+  if (/^\/aluno\/ajuda(\/|$)/.test(path)) return "Central de Ajuda";
   if (/^\/aluno\/supervisao\/[^/]+\/materiais(\/|$)/.test(path)) {
     return "Materiais";
   }

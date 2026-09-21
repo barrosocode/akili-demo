@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { SUPPORT_PATHS } from "@/features/support/lib/paths";
+import { useSupportPaths } from "@/features/support/lib/use-support-paths";
 import type { SupportFaqTopicSummary } from "@/types/domain/support-faq";
 
 type SupportTopicCardProps = {
@@ -10,9 +10,10 @@ type SupportTopicCardProps = {
 };
 
 export function SupportTopicCard({ topic, onNavigate }: SupportTopicCardProps) {
+  const paths = useSupportPaths();
   return (
     <Link
-      href={SUPPORT_PATHS.topic(topic.uuid)}
+      href={paths.topic(topic.uuid)}
       className="akili-support-card"
       onClick={onNavigate}
     >

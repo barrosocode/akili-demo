@@ -10,7 +10,7 @@ export function SupportHomePage() {
         <p className="akili-support-hero__eyebrow">Akili Educ</p>
         <h1 className="akili-support-hero__title">Central de Ajuda</h1>
         <p className="akili-support-hero__subtitle">
-          Encontre respostas para suas dúvidas no Portal do Responsável.
+          Encontre respostas para suas dúvidas.
         </p>
       </header>
 

@@ -5,6 +5,7 @@ import {
   resolveSupportActions,
   type ResolvedSupportAction,
 } from "@/features/support/lib/map-route-target";
+import { useSupportActionAudience } from "@/features/support/lib/use-support-paths";
 import type { SupportFaqAction } from "@/types/domain/support-faq";
 
 type SupportFaqActionsProps = {
@@ -33,7 +34,8 @@ function ActionLink({ action }: { action: ResolvedSupportAction }) {
 }
 
 export function SupportFaqActions({ actions }: SupportFaqActionsProps) {
-  const resolved = resolveSupportActions(actions ?? []);
+  const audience = useSupportActionAudience();
+  const resolved = resolveSupportActions(actions ?? [], { audience });
   if (resolved.length === 0) return null;
 
   return (

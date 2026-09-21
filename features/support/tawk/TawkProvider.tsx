@@ -30,6 +30,7 @@ import type {
   TawkStatus,
 } from "@/features/support/tawk/tawk.types";
 import { useSession } from "@/providers/session-provider";
+import { useStudentSession } from "@/features/student/hooks/use-student-session";
 import { supportBff } from "@/services/bff/support.bff";
 import { queryKeys } from "@/services/queries/query-keys";
 
@@ -63,11 +64,20 @@ export function TawkProvider({ children, config }: TawkProviderProps) {
 
   const queryClient = useQueryClient();
   const { user, isAuthenticated, isLoading: sessionLoading } = useSession();
+  const studentEnabled = !sessionLoading && !isAuthenticated;
+  const { session: studentSession, isLoading: studentSessionLoading } =
+    useStudentSession({ enabled: studentEnabled });
   const configured = Boolean(config);
+  const identityLoading = sessionLoading || (studentEnabled && studentSessionLoading);
   const sessionKey = useMemo(() => {
-    if (!isAuthenticated || user?.assistance?.active) return null;
-    return tawkSessionKeyFromUser(user);
-  }, [isAuthenticated, user]);
+    if (user?.assistance?.active) return null;
+    if (isAuthenticated) return tawkSessionKeyFromUser(user);
+    const studentEmail = studentSession?.user.email?.trim();
+    if (studentEmail) {
+      return tawkSessionKeyFromUser({ email: studentEmail, isDemo: false });
+    }
+    return null;
+  }, [isAuthenticated, studentSession?.user.email, user]);
 
   const loadRequested = Boolean(configured && sessionKey);
   const [status, setStatus] = useState<TawkStatus>(
@@ -106,7 +116,7 @@ export function TawkProvider({ children, config }: TawkProviderProps) {
   }, [controller, queryClient]);
 
   useEffect(() => {
-    if (!configured || sessionLoading) return;
+    if (!configured || identityLoading) return;
 
     const previous = previousSessionKeyRef.current;
     previousSessionKeyRef.current = sessionKey;
@@ -125,7 +135,7 @@ export function TawkProvider({ children, config }: TawkProviderProps) {
     return () => {
       cancelled = true;
     };
-  }, [configured, controller, queryClient, sessionKey, sessionLoading]);
+  }, [configured, controller, queryClient, sessionKey, identityLoading]);
 
   const openChat = useCallback(async () => {
     if (!configured) return false;

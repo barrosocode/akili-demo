@@ -2,6 +2,7 @@ import type {
   SupportFaqAction,
   SupportFaqRouteTarget,
 } from "@/types/domain/support-faq";
+import type { SupportActionAudience } from "@/features/support/lib/paths";
 
 /** Paths aligned with `lib/auth/portal-paths`. */
 const ROUTE_TARGET_HREF: Partial<Record<SupportFaqRouteTarget, string>> = {
@@ -19,6 +20,10 @@ export type ResolvedSupportAction =
   | { kind: "internal"; href: string; label: string }
   | { kind: "external"; href: string; label: string };
 
+export type ResolveSupportActionsOptions = {
+  audience?: SupportActionAudience;
+};
+
 function isSafeExternalUrl(target: string): boolean {
   try {
     const url = new URL(target);
@@ -29,16 +34,19 @@ function isSafeExternalUrl(target: string): boolean {
 }
 
 /**
- * Maps FAQ actions to navigable links for the guardian portal.
+ * Maps FAQ actions to navigable links for the portal.
  * Admin / teacher / school route targets are omitted.
+ * Na área do aluno, destinos `guardian_*` também são omitidos.
  */
 export function resolveSupportActions(
-  actions: SupportFaqAction[] | null | undefined
+  actions: SupportFaqAction[] | null | undefined,
+  options?: ResolveSupportActionsOptions
 ): ResolvedSupportAction[] {
   if (!Array.isArray(actions)) {
     return [];
   }
 
+  const audience = options?.audience ?? "guardian";
   const resolved: ResolvedSupportAction[] = [];
 
   for (const action of actions) {
@@ -53,7 +61,11 @@ export function resolveSupportActions(
     }
 
     if (action.type === "route") {
-      const href = ROUTE_TARGET_HREF[action.target as SupportFaqRouteTarget];
+      const target = action.target as SupportFaqRouteTarget;
+      if (audience === "student" && target.startsWith("guardian_")) {
+        continue;
+      }
+      const href = ROUTE_TARGET_HREF[target];
       if (!href) continue;
       resolved.push({ kind: "internal", href, label });
     }

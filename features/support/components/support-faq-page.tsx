@@ -5,7 +5,7 @@ import { SupportBreadcrumb } from "@/features/support/components/support-breadcr
 import { SupportFaqActions } from "@/features/support/components/support-faq-actions";
 import { SupportFaqBody } from "@/features/support/components/support-faq-body";
 import { SupportStateMessage } from "@/features/support/components/support-state-message";
-import { SUPPORT_PATHS } from "@/features/support/lib/paths";
+import { useSupportPaths } from "@/features/support/lib/use-support-paths";
 import { useSupportFaqQuery } from "@/services/queries/support.queries";
 
 type SupportFaqPageProps = {
@@ -14,6 +14,7 @@ type SupportFaqPageProps = {
 };
 
 export function SupportFaqPage({ topicUuid, faqUuid }: SupportFaqPageProps) {
+  const paths = useSupportPaths();
   const { data, isLoading, isError, error, refetch } = useSupportFaqQuery(faqUuid);
 
   if (isLoading) {
@@ -33,13 +34,13 @@ export function SupportFaqPage({ topicUuid, faqUuid }: SupportFaqPageProps) {
           onRetry={() => void refetch()}
         />
         <p className="mt-3">
-          <Link href={SUPPORT_PATHS.topic(topicUuid)}>Voltar ao tópico</Link>
+          <Link href={paths.topic(topicUuid)}>Voltar ao tópico</Link>
         </p>
       </div>
     );
   }
 
-  const topicHref = SUPPORT_PATHS.topic(data.topic.uuid);
+  const topicHref = paths.topic(data.topic.uuid);
 
   return (
     <article className="akili-support-page">

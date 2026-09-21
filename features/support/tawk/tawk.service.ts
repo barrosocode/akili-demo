@@ -7,7 +7,7 @@ import type {
 const SCRIPT_ID = "akili-tawk-script";
 
 let loadPromise: Promise<void> | null = null;
-/** Config injetada pelo server (GuardianDashboardShell → TawkProvider). */
+/** Config injetada pelo server (shell autenticado → TawkProvider). */
 let injectedConfig: TawkPublicConfig | null = null;
 
 function isBrowser(): boolean {

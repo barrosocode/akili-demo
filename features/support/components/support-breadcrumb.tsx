@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { SUPPORT_PATHS } from "@/features/support/lib/paths";
+import { useSupportPaths } from "@/features/support/lib/use-support-paths";
 
 export type SupportBreadcrumbItem = {
   label: string;
@@ -13,8 +13,9 @@ type SupportBreadcrumbProps = {
 };
 
 export function SupportBreadcrumb({ items }: SupportBreadcrumbProps) {
+  const paths = useSupportPaths();
   const crumbs: SupportBreadcrumbItem[] = [
-    { label: "Central de Ajuda", href: SUPPORT_PATHS.home },
+    { label: "Central de Ajuda", href: paths.home },
     ...items,
   ];
 

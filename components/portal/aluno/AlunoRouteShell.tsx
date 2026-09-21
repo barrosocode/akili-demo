@@ -19,12 +19,16 @@ function isImmersiveLessonPath(pathname: string): boolean {
   return false;
 }
 
+function isHelpCenterPath(pathname: string): boolean {
+  return pathname === "/aluno/ajuda" || pathname.startsWith("/aluno/ajuda/");
+}
+
 /**
  * Shell Kiddino do aluno (sessão student) ou supervisão (sessão guardian).
  */
 export function AlunoRouteShell({ children }: { children: ReactNode }) {
   const pathname = usePathname() ?? "";
-  const fullBleed = isImmersiveLessonPath(pathname);
+  const fullBleed = isImmersiveLessonPath(pathname) || isHelpCenterPath(pathname);
   const supervision = isSupervisionPath(pathname);
 
   return (
@@ -33,6 +37,8 @@ export function AlunoRouteShell({ children }: { children: ReactNode }) {
       activeHref={resolveStudentShellActiveHref(pathname)}
       homeHref={supervision ? GUARDIAN_HOME_PATH : STUDENT_HOME_PATH}
       footerHomeHref={supervision ? GUARDIAN_HOME_PATH : STUDENT_HOME_PATH}
+      showSupportFab
+      scrollToTopOffsetClassName="scrollToTop--above-support-fab"
     >
       {children}
     </AlunoDashboardShell>

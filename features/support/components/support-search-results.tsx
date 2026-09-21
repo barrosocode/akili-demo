@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { SupportTalkToAgentButton } from "@/features/support/components/support-talk-to-agent-button";
-import { SUPPORT_PATHS } from "@/features/support/lib/paths";
+import { useSupportPaths } from "@/features/support/lib/use-support-paths";
 import type { SupportFaqSearchHit } from "@/types/domain/support-faq";
 
 type SupportSearchResultsProps = {
@@ -39,6 +39,7 @@ export function SupportSearchResults({
   hits,
   onNavigate,
 }: SupportSearchResultsProps) {
+  const paths = useSupportPaths();
   if (hits.length === 0) {
     return (
       <div className="akili-support-empty" role="status">
@@ -61,7 +62,7 @@ export function SupportSearchResults({
       {groups.map((group) => (
         <div key={group.topicUuid} className="akili-support-search-group">
           <h3 className="akili-support-search-group__title">
-            <Link href={SUPPORT_PATHS.topic(group.topicUuid)} onClick={onNavigate}>
+            <Link href={paths.topic(group.topicUuid)} onClick={onNavigate}>
               {group.topicName}
             </Link>
           </h3>
@@ -69,7 +70,7 @@ export function SupportSearchResults({
             {group.items.map((hit) => (
               <li key={hit.uuid}>
                 <Link
-                  href={SUPPORT_PATHS.faq(group.topicUuid, hit.uuid)}
+                  href={paths.faq(group.topicUuid, hit.uuid)}
                   onClick={onNavigate}
                 >
                   {hit.title}

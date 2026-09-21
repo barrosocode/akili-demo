@@ -1,12 +1,10 @@
-import { laravelRequest } from "@/lib/api/laravel-client";
 import { jsonError, jsonSuccess } from "@/lib/api/response";
-import { requireAuth } from "@/lib/auth/session";
+import { supportConsumeRequest } from "@/lib/api/support-consume";
 import type { TawkIdentity } from "@/features/support/tawk";
 
 export async function GET() {
   try {
-    await requireAuth();
-    const data = await laravelRequest<TawkIdentity>("/support/tawk/identity");
+    const data = await supportConsumeRequest<TawkIdentity>("/support/tawk/identity");
     return jsonSuccess(data);
   } catch (error) {
     return jsonError(error);

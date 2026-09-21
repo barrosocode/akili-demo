@@ -11,7 +11,7 @@
     "test:tawk": "node --experimental-strip-types --test features/support/tawk/tawk-session.test.ts",
     "test:assistance": "node --experimental-strip-types --test features/assistance/assistance.test.ts",
     "test:dev-login": "node --experimental-strip-types --test lib/auth/*.test.ts",
-    "test:support-faq": "node --experimental-strip-types --test features/support/lib/map-route-target.test.ts",
+    "test:support-faq": "node --experimental-strip-types --test features/support/lib/map-route-target.test.ts features/support/lib/paths.test.ts",
     "test": "npm run test:tawk && npm run test:assistance && npm run test:dev-login && npm run test:support-faq"
   },
   "dependencies": {
