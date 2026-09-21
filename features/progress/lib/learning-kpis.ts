@@ -67,6 +67,34 @@ export function resolveStudyStreak(
   return fromGame ?? fromKpi ?? null;
 }
 
+export function formatRatio(value: number): string {
+  return value.toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+export function formatPercent(value: number): string {
+  return `${value.toLocaleString("pt-BR", {
+    maximumFractionDigits: 1,
+  })}%`;
+}
+
+export function formatSecondsLabel(seconds: number | null | undefined): string {
+  if (seconds == null || !Number.isFinite(seconds)) {
+    return "—";
+  }
+  return `${seconds.toLocaleString("pt-BR", {
+    minimumFractionDigits: seconds < 10 ? 1 : 0,
+    maximumFractionDigits: 1,
+  })} s`;
+}
+
+export function formatResponseTimeMs(ms: number | null | undefined): string {
+  if (ms == null || !Number.isFinite(ms)) return "—";
+  return formatSecondsLabel(ms / 1000);
+}
+
 export function formatGamificationLevel(
   level: number | null | undefined,
   levelName: string | null | undefined
