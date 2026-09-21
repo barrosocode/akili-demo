@@ -8,14 +8,19 @@ import { loginSchema } from "@/features/auth/schemas/auth.schema";
 import { getUserFacingApiMessage } from "@/lib/api/errors";
 import {
   DEV_LOGIN_STUDENT_PROFILES,
-  isDevLoginPanelEnabled,
   type DevLoginProfile,
 } from "@/lib/auth/dev-login-profiles";
 import { resolveUnifiedLoginRedirect } from "@/lib/auth/post-login-path";
 import { BffClientError, bffClient } from "@/services/bff/client";
 import type { LoginSuccessPayload } from "@/types/auth-login";
 
-export function StudentLoginForm() {
+interface StudentLoginFormProps {
+  showDevQuickAccess?: boolean;
+}
+
+export function StudentLoginForm({
+  showDevQuickAccess = false,
+}: StudentLoginFormProps) {
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
   const [email, setEmail] = useState("");
@@ -104,7 +109,7 @@ export function StudentLoginForm() {
           {isSubmitting ? "Entrando..." : "Entrar"}
         </button>
       </form>
-      {isDevLoginPanelEnabled() ? (
+      {showDevQuickAccess ? (
         <DevQuickAccessPanel
           profiles={DEV_LOGIN_STUDENT_PROFILES}
           disabled={isSubmitting}

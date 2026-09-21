@@ -69,17 +69,53 @@ describe("DEV_LOGIN_STUDENT_PROFILES", () => {
 });
 
 describe("isDevLoginPanelEnabled", () => {
-  it("is true only when NODE_ENV is development", () => {
-    const previous = process.env.NODE_ENV;
+  it("is true in development even without the env flag", () => {
+    const previousNodeEnv = process.env.NODE_ENV;
+    const previousDev = process.env.DEV_LOGIN_PANEL;
+    const previousPublic = process.env.NEXT_PUBLIC_DEV_LOGIN_PANEL;
     try {
+      delete process.env.DEV_LOGIN_PANEL;
+      delete process.env.NEXT_PUBLIC_DEV_LOGIN_PANEL;
       process.env.NODE_ENV = "development";
       assert.equal(isDevLoginPanelEnabled(), true);
+    } finally {
+      process.env.NODE_ENV = previousNodeEnv;
+      restoreEnv("DEV_LOGIN_PANEL", previousDev);
+      restoreEnv("NEXT_PUBLIC_DEV_LOGIN_PANEL", previousPublic);
+    }
+  });
+
+  it("follows DEV_LOGIN_PANEL / NEXT_PUBLIC_DEV_LOGIN_PANEL in production", () => {
+    const previousNodeEnv = process.env.NODE_ENV;
+    const previousDev = process.env.DEV_LOGIN_PANEL;
+    const previousPublic = process.env.NEXT_PUBLIC_DEV_LOGIN_PANEL;
+    try {
       process.env.NODE_ENV = "production";
+      delete process.env.DEV_LOGIN_PANEL;
+      delete process.env.NEXT_PUBLIC_DEV_LOGIN_PANEL;
       assert.equal(isDevLoginPanelEnabled(), false);
-      process.env.NODE_ENV = "test";
+
+      process.env.DEV_LOGIN_PANEL = "true";
+      assert.equal(isDevLoginPanelEnabled(), true);
+
+      process.env.DEV_LOGIN_PANEL = "false";
+      process.env.NEXT_PUBLIC_DEV_LOGIN_PANEL = "1";
+      assert.equal(isDevLoginPanelEnabled(), true);
+
+      process.env.NEXT_PUBLIC_DEV_LOGIN_PANEL = "false";
       assert.equal(isDevLoginPanelEnabled(), false);
     } finally {
-      process.env.NODE_ENV = previous;
+      process.env.NODE_ENV = previousNodeEnv;
+      restoreEnv("DEV_LOGIN_PANEL", previousDev);
+      restoreEnv("NEXT_PUBLIC_DEV_LOGIN_PANEL", previousPublic);
     }
   });
 });
+
+function restoreEnv(name: string, value: string | undefined) {
+  if (value === undefined) {
+    delete process.env[name];
+    return;
+  }
+  process.env[name] = value;
+}

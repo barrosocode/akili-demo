@@ -41,6 +41,8 @@ Convite de responsável (e-mail): a API usa `AKILI_GUARDIAN_INVITE_URL` apontand
 | `ADMIN_APP_URL` | server | Link para escolas no layout de auth / retorno pós-assistência |
 | `NEXT_PUBLIC_APP_NAME` | client | Nome exibido na UI |
 | `NEXT_PUBLIC_APP_URL` | client | URL pública do portal |
+| `DEV_LOGIN_PANEL` | server | `true` para o painel de acesso rápido no login (demo). Runtime. |
+| `NEXT_PUBLIC_DEV_LOGIN_PANEL` | client | Mesmo painel, inlined no build. |
 
 **Nunca** definir `NEXT_PUBLIC_API_URL`.
 

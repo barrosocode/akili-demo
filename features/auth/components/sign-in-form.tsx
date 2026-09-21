@@ -11,7 +11,6 @@ import { DevQuickAccessPanel } from "@/features/auth/components/dev-quick-access
 import { loginSchema } from "@/features/auth/schemas/auth.schema";
 import {
   DEV_LOGIN_PROFILES,
-  isDevLoginPanelEnabled,
   type DevLoginProfile,
 } from "@/lib/auth/dev-login-profiles";
 import { resolveUnifiedLoginRedirect } from "@/lib/auth/post-login-path";
@@ -20,11 +19,15 @@ import { BffClientError } from "@/services/bff/client";
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+interface SignInFormProps {
+  showDevQuickAccess?: boolean;
+}
+
 /**
  * Login Kiddino (PORTAL-003) — form-style3 + BFF.
  * Pós-sucesso: full navigation para o dashboard (`/` ou `?next=` seguro).
  */
-export function SignInForm() {
+export function SignInForm({ showDevQuickAccess = false }: SignInFormProps) {
   const searchParams = useSearchParams();
   const login = useLoginMutation();
   const {
@@ -172,7 +175,7 @@ export function SignInForm() {
                 </div>
               </div>
             </form>
-            {isDevLoginPanelEnabled() ? (
+            {showDevQuickAccess ? (
               <DevQuickAccessPanel
                 profiles={DEV_LOGIN_PROFILES}
                 disabled={login.isPending}
