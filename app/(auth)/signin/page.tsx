@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { SignInForm } from "@/features/auth";
+import { isDevLoginPanelEnabled } from "@/lib/auth/dev-login-profiles";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Entrar",
@@ -9,6 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default function SignInPage() {
+  const showDevQuickAccess = isDevLoginPanelEnabled();
+
   return (
     <Suspense
       fallback={
@@ -17,7 +22,7 @@ export default function SignInPage() {
         </div>
       }
     >
-      <SignInForm />
+      <SignInForm showDevQuickAccess={showDevQuickAccess} />
     </Suspense>
   );
 }
