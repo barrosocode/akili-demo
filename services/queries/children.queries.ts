@@ -4,9 +4,9 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import { childrenBff, learningSearchParams } from "@/services/bff/children.bff";
 import { queryKeys } from "@/services/queries/query-keys";
 import { queryConfig } from "@/lib/cache/query-config";
-import type {
-  LearningChartSeries,
-  LearningQueryFilters,
+import {
+  LEARNING_CHART_SERIES,
+  type LearningQueryFilters,
 } from "@/types/domain/learning";
 
 export function useChildrenQuery() {
@@ -49,13 +49,7 @@ export function useChildLearningKpiQuery(
   });
 }
 
-export const LEARNING_CHART_SERIES: LearningChartSeries[] = [
-  "time_ratio_over_time",
-  "time_ratio_by_order",
-  "accuracy_over_time",
-  "accuracy_by_order",
-  "accuracy_by_time_ratio",
-];
+export { LEARNING_CHART_SERIES };
 
 export function useChildLearningChartsQuery(
   ref: string,

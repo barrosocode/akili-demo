@@ -36,6 +36,15 @@ export const queryKeys = {
     all: ["demo"] as const,
     personas: ["demo", "personas"] as const,
   },
+  student: {
+    all: ["student"] as const,
+    dashboard: () => [...queryKeys.student.all, "dashboard"] as const,
+    frequency: () => [...queryKeys.student.all, "kpis", "frequency"] as const,
+    learningKpi: (filters: string) =>
+      [...queryKeys.student.all, "learning-kpi", filters] as const,
+    learningChart: (series: string, filters: string) =>
+      [...queryKeys.student.all, "learning-chart", series, filters] as const,
+  },
   studentStudyBoard: {
     all: ["student", "study-board"] as const,
     board: () => [...queryKeys.studentStudyBoard.all, "board"] as const,

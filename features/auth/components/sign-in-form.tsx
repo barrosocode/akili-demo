@@ -7,7 +7,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 
+import { DevQuickAccessPanel } from "@/features/auth/components/dev-quick-access-panel";
 import { loginSchema } from "@/features/auth/schemas/auth.schema";
+import {
+  DEV_LOGIN_PROFILES,
+  isDevLoginPanelEnabled,
+  type DevLoginProfile,
+} from "@/lib/auth/dev-login-profiles";
 import { resolveUnifiedLoginRedirect } from "@/lib/auth/post-login-path";
 import { useLoginMutation } from "@/services/queries/auth.mutations";
 import { BffClientError } from "@/services/bff/client";
@@ -26,10 +32,18 @@ export function SignInForm() {
     handleSubmit,
     formState: { errors },
     setError,
+    setValue,
+    clearErrors,
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
+
+  function applyDevLoginProfile(profile: DevLoginProfile) {
+    setValue("email", profile.email, { shouldDirty: true, shouldTouch: true });
+    setValue("password", profile.password, { shouldDirty: true, shouldTouch: true });
+    clearErrors();
+  }
 
   async function onSubmit(values: LoginFormValues) {
     try {
@@ -158,6 +172,13 @@ export function SignInForm() {
                 </div>
               </div>
             </form>
+            {isDevLoginPanelEnabled() ? (
+              <DevQuickAccessPanel
+                profiles={DEV_LOGIN_PROFILES}
+                disabled={login.isPending}
+                onSelect={applyDevLoginProfile}
+              />
+            ) : null}
             <p className="mt-4">
               É uma escola?{" "}
               <a

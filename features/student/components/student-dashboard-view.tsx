@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { LearningOverview } from "@/features/progress";
 import { useStudentDashboardQuery } from "@/features/student/hooks/use-student-dashboard";
 import { useStudentFrequencyQuery } from "@/features/student/hooks/use-student-frequency";
 import { useStudentSession } from "@/features/student/hooks/use-student-session";
@@ -212,6 +213,11 @@ export function StudentDashboardView({
           ) : null}
         </div>
       ) : null}
+
+      {readOnly && childRef ? (
+        <LearningOverview source="guardian" childRef={childRef} />
+      ) : null}
+      {!readOnly ? <LearningOverview source="student" /> : null}
 
       {data.next_activity ? (
         <div className="widget mb-4">

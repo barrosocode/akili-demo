@@ -9,6 +9,14 @@ export type LearningChartSeries =
   | "accuracy_by_order"
   | "accuracy_by_time_ratio";
 
+export const LEARNING_CHART_SERIES: LearningChartSeries[] = [
+  "time_ratio_over_time",
+  "time_ratio_by_order",
+  "accuracy_over_time",
+  "accuracy_by_order",
+  "accuracy_by_time_ratio",
+];
+
 export type LearningQueryFilters = {
   date_from: string;
   date_to: string;
