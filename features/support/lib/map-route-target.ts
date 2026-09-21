@@ -1,20 +1,18 @@
-import {
-  GUARDIAN_HOME_PATH,
-  STUDENT_HOME_PATH,
-  STUDENT_LOGIN_PATH,
-} from "@/lib/auth/portal-paths";
 import type {
   SupportFaqAction,
   SupportFaqRouteTarget,
 } from "@/types/domain/support-faq";
 
+/** Paths aligned with `lib/auth/portal-paths`. */
 const ROUTE_TARGET_HREF: Partial<Record<SupportFaqRouteTarget, string>> = {
-  guardian_children: GUARDIAN_HOME_PATH,
+  guardian_children: "/children",
   guardian_signin: "/signin",
+  guardian_first_access: "/first-access",
+  guardian_forgot_password: "/forgot-password",
   guardian_profile: "/profile",
   guardian_reports: "/relatorios",
-  student_login: STUDENT_LOGIN_PATH,
-  student_materials: STUDENT_HOME_PATH,
+  student_login: "/aluno/entrar",
+  student_materials: "/aluno/materiais",
 };
 
 export type ResolvedSupportAction =
@@ -35,8 +33,12 @@ function isSafeExternalUrl(target: string): boolean {
  * Admin / teacher / school route targets are omitted.
  */
 export function resolveSupportActions(
-  actions: SupportFaqAction[]
+  actions: SupportFaqAction[] | null | undefined
 ): ResolvedSupportAction[] {
+  if (!Array.isArray(actions)) {
+    return [];
+  }
+
   const resolved: ResolvedSupportAction[] = [];
 
   for (const action of actions) {
