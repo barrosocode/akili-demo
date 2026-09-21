@@ -1,5 +1,5 @@
 # Akili — Portal do Responsável
-  
+
 Frontend Next.js para responsáveis (famílias B2C e convidados pela escola).
  
 ## Setup
