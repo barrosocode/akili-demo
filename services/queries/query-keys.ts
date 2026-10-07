@@ -20,7 +20,7 @@ export const queryKeys = {
   },
   purchases: {
     all: ["purchases"] as const,
-    list: () => [...queryKeys.purchases.all, "list"] as const,
+    list: (page = 1) => [...queryKeys.purchases.all, "list", page] as const,
   },
   support: {
     all: ["support"] as const,

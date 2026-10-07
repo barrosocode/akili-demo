@@ -33,30 +33,18 @@ export function PurchasesPage() {
         </div>
       ) : null}
 
-      {!isLoading && !isError && !data?.length ? (
+      {!isLoading && !isError && !data?.purchases.length ? (
         <div className="alert alert-info" role="status">
           Nenhuma compra encontrada. Quando você contratar um plano, ele
           aparecerá aqui.
         </div>
       ) : null}
 
-      {!isLoading && !isError && data && data.length > 0 ? (
+      {!isLoading && !isError && data && data.purchases.length > 0 ? (
         <ul className="list-unstyled">
-          {data.map((item, index) => {
-            const label =
-              typeof item === "object" &&
-              item !== null &&
-              "label" in item &&
-              typeof (item as { label: unknown }).label === "string"
-                ? (item as { label: string }).label
-                : typeof item === "object" &&
-                    item !== null &&
-                    "name" in item &&
-                    typeof (item as { name: unknown }).name === "string"
-                  ? (item as { name: string }).name
-                  : `Compra ${index + 1}`;
-            return <li key={label}>{label}</li>;
-          })}
+          {data.purchases.map((item) => (
+            <li key={item.ref}>{item.packageName}</li>
+          ))}
         </ul>
       ) : null}
     </div>
