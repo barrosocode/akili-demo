@@ -1,3 +1,4 @@
+import { extractEnvelopeList } from "@/lib/api/envelope";
 import { jsonError, jsonSuccess, notImplemented } from "@/lib/api/response";
 import { requireAuth } from "@/lib/auth/session";
 import { laravelRequest } from "@/lib/api/laravel-client";
@@ -45,14 +46,30 @@ function isFlatChild(item: unknown): item is PortalChild {
   return typeof record.uuid === "string" && typeof record.name === "string" && !("student" in record);
 }
 
+function withChildDefaults(child: PortalChild): PortalChild {
+  return {
+    ...child,
+    status: child.status || "active",
+    profile_photo_url: child.profile_photo_url ?? null,
+    avatar: child.avatar ?? null,
+    grade_label: child.grade_label ?? null,
+    classroom_name: child.classroom_name ?? null,
+    school_name: child.school_name ?? null,
+    can_view_progress: Boolean(child.can_view_progress),
+    can_purchase: Boolean(child.can_purchase),
+    accessible: child.accessible !== false,
+  };
+}
+
 export async function GET() {
   try {
     await requireAuth();
-    const payload = await laravelRequest<unknown[]>("/guardian/students");
+    const payload = await laravelRequest<unknown>("/guardian/students");
+    const { items } = extractEnvelopeList(payload, "students");
 
-    const children = payload
+    const children = items
       .map((item) => {
-        if (isFlatChild(item)) return mapPortalChild(item);
+        if (isFlatChild(item)) return mapPortalChild(withChildDefaults(item));
         return mapLegacyLink(item as NestedGuardianStudentApi);
       })
       .filter((child): child is ChildSummary => child !== null);

@@ -11,6 +11,29 @@ function isProblemDetails(data: unknown): data is ProblemDetails {
   return typeof record.title === "string" && typeof record.status === "number";
 }
 
+function readFieldErrors(value: unknown): Record<string, string[]> | undefined {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return undefined;
+  }
+
+  const result: Record<string, string[]> = {};
+  for (const [field, messages] of Object.entries(value)) {
+    if (typeof messages === "string" && messages.trim()) {
+      result[field] = [messages];
+      continue;
+    }
+    if (
+      Array.isArray(messages) &&
+      messages.every((item) => typeof item === "string")
+    ) {
+      const list = messages.filter((item) => item.trim().length > 0);
+      if (list.length) result[field] = list;
+    }
+  }
+
+  return Object.keys(result).length ? result : undefined;
+}
+
 export function parseAxiosProblem(error: AxiosError): ProblemDetails {
   const status = error.response?.status ?? 500;
   const data = error.response?.data;
@@ -20,6 +43,7 @@ export function parseAxiosProblem(error: AxiosError): ProblemDetails {
     return {
       ...data,
       status: data.status ?? status,
+      errors: readFieldErrors(record.errors) ?? data.errors,
       error_code:
         typeof record.error_code === "string" ? record.error_code : undefined,
     };
@@ -27,21 +51,21 @@ export function parseAxiosProblem(error: AxiosError): ProblemDetails {
 
   if (typeof data === "object" && data !== null) {
     const record = data as Record<string, unknown>;
-    if (typeof record.message === "string" && record.message.trim()) {
-      const errors =
-        typeof record.errors === "object" &&
-        record.errors !== null &&
-        !Array.isArray(record.errors)
-          ? (record.errors as Record<string, string[]>)
-          : undefined;
-
+    const errors = readFieldErrors(record.errors);
+    const message =
+      typeof record.message === "string" && record.message.trim()
+        ? record.message
+        : undefined;
+    if (errors || message) {
       return {
-        title: record.message,
-        status,
-        detail: record.message,
+        title: message || error.response?.statusText || "Erro na requisição",
+        status: typeof record.status === "number" ? record.status : status,
+        detail: message,
         errors,
         errorCode:
           typeof record.error_code === "string" ? record.error_code : null,
+        error_code:
+          typeof record.error_code === "string" ? record.error_code : undefined,
         resource: record,
       };
     }

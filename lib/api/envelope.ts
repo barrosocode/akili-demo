@@ -73,3 +73,41 @@ export function unwrapPagination(payload: unknown): EnvelopePagination | null {
     total_pages: record.total_pages,
   };
 }
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  return null;
+}
+
+/** Lê uma coleção do envelope (`purchases`, `students`) ou de um array cru. */
+export function extractEnvelopeList(
+  payload: unknown,
+  key: string
+): { items: unknown[]; pagination: unknown } {
+  if (Array.isArray(payload)) {
+    return { items: payload, pagination: null };
+  }
+
+  const record = asRecord(payload);
+  if (!record) return { items: [], pagination: null };
+
+  if (Array.isArray(record[key])) {
+    return { items: record[key], pagination: record.pagination ?? null };
+  }
+
+  const nested = asRecord(record.data);
+  if (nested && Array.isArray(nested[key])) {
+    return {
+      items: nested[key],
+      pagination: nested.pagination ?? record.pagination ?? null,
+    };
+  }
+
+  if (Array.isArray(record.data)) {
+    return { items: record.data, pagination: record.pagination ?? null };
+  }
+
+  return { items: [], pagination: record.pagination ?? null };
+}

@@ -30,7 +30,6 @@ export const childrenBff = {
   progress(ref: string) {
     return bffClient<ChildProgress>(`/api/guardian/children/${ref}/progress`);
   },
-
   learning(ref: string) {
     return bffClient<StudentDashboard>(`/api/guardian/children/${ref}/learning`);
   },
@@ -51,12 +50,6 @@ export const childrenBff = {
     );
   },
 
-  create(payload: Record<string, unknown>) {
-    return bffClient<ChildSummary>("/api/guardian/children", {
-      method: "POST",
-      body: payload,
-    });
-  },
 };
 
 export { learningSearchParams };
