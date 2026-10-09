@@ -1,8 +1,13 @@
 export interface DevLoginProfile {
   id: string;
   label: string;
-  email: string;
   password: string;
+  email?: string;
+  login?: string;
+}
+
+export function devProfileIdentifier(profile: DevLoginProfile): string {
+  return profile.login ?? profile.email ?? "";
 }
 
 export const DEV_LOGIN_GUARDIAN: DevLoginProfile = {
@@ -15,7 +20,7 @@ export const DEV_LOGIN_GUARDIAN: DevLoginProfile = {
 export const DEV_LOGIN_STUDENT: DevLoginProfile = {
   id: "student",
   label: "Aluno",
-  email: "aluno@escola-exemplo.dev",
+  login: "aluno",
   password: "123123",
 };
 

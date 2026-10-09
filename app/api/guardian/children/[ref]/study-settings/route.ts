@@ -3,7 +3,7 @@ import { laravelResource } from "@/lib/api/laravel-client";
 import { jsonError, jsonSuccess, validationError } from "@/lib/api/response";
 import type { GuardianStudySetting } from "@/types/guardian-study-planner";
 
-const REVIEW_MODELS = new Set(["dehaene", "leitner", "custom"]);
+const REVIEW_MODELS = new Set(["dehaene", "leitner", "custom", "livre"]);
 
 function parseSettingsBody(body: unknown): GuardianStudySetting | null {
   if (typeof body !== "object" || body === null) return null;

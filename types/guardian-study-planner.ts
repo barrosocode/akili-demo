@@ -2,7 +2,7 @@ import type { EnvelopePagination } from "@/lib/api/envelope";
 import type { BoardStatus, StudyPlanStatus } from "@/types/student-study-board";
 
 export type WeekdayIso = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
-export type ReviewModel = "dehaene" | "leitner" | "custom";
+export type ReviewModel = "dehaene" | "custom" | "livre";
 export type DifficultyLevel = "N1" | "N2" | "N3" | "N4" | "N5";
 export type OmittedTopicReason =
   | "NO_PUBLISHED_CONTENT"

@@ -22,7 +22,7 @@ export const guardianStudyPlannerSchema = z
   .object({
     inverted_classroom: z.boolean(),
     spaced_review: z.boolean(),
-    review_model: z.enum(["dehaene", "leitner", "custom"]),
+    review_model: z.enum(["dehaene", "custom", "livre"]),
     items_per_session: z.union([z.literal(""), z.coerce.number().int().min(1).max(4)]),
     tdah_adjustment: z.boolean(),
     on_medication: z.boolean(),

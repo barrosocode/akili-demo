@@ -17,6 +17,8 @@ export const queryKeys = {
       [...queryKeys.children.all, "learning-kpi", ref, filters] as const,
     learningChart: (ref: string, series: string, filters: string) =>
       [...queryKeys.children.all, "learning-chart", ref, series, filters] as const,
+    registrationConsents: () =>
+      [...queryKeys.children.all, "registration-consents"] as const,
   },
   purchases: {
     all: ["purchases"] as const,
@@ -69,6 +71,8 @@ export const queryKeys = {
       [...queryKeys.guardianStudyPlanner.all, "study-plans", ref, page] as const,
     learning: (ref: string) =>
       [...queryKeys.guardianStudyPlanner.all, "learning", ref] as const,
+    subjects: () =>
+      [...queryKeys.guardianStudyPlanner.all, "subjects"] as const,
   },
   studyKanban: {
     all: ["study-kanban"] as const,

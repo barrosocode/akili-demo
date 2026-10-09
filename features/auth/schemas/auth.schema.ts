@@ -5,6 +5,11 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Informe sua senha"),
 });
 
+export const studentLoginSchema = z.object({
+  login: z.string().trim().min(1, "Informe o usuário"),
+  password: z.string().min(1, "Informe sua senha"),
+});
+
 export const forgotPasswordRequestSchema = z.object({
   email: z.string().email("Informe um e-mail válido"),
 });

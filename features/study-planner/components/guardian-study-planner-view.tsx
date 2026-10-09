@@ -8,15 +8,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { catalogFromLearning } from "@/features/study-planner/lib/catalog";
 import {
   addCalendarDays,
-  DIFFICULTY_LABELS,
   fortalezaTodayYmd,
   REVIEW_MODEL_LABELS,
+  reviewModelForForm,
 } from "@/features/study-planner/lib/labels";
-import { WEEKDAYS } from "@/features/study-planner/lib/weekdays";
+import { isSchoolWeekday, WEEKDAYS } from "@/features/study-planner/lib/weekdays";
 import {
   guardianStudyPlannerSchema,
   type GuardianStudyPlannerValues,
 } from "@/features/study-planner/schemas/planner.schema";
+import { SchoolScheduleWeek } from "@/features/study-planner/components/school-schedule-week";
 import { StudyPlanHistory } from "@/features/study-planner/components/study-plan-history";
 import { StudyPlanResult } from "@/features/study-planner/components/study-plan-result";
 import { StudyKanbanBoard } from "@/features/study-kanban/components/study-kanban-board";
@@ -38,6 +39,7 @@ import {
   useGuardianSchoolScheduleQuery,
   useGuardianStudyPlanPollQuery,
   useGuardianStudySettingsQuery,
+  useGuardianSubjectsQuery,
 } from "@/services/queries/guardian-study-planner.queries";
 import type { StudyPlanDetail } from "@/types/guardian-study-planner";
 
@@ -45,10 +47,36 @@ type GuardianStudyPlannerViewProps = {
   childRef: string;
 };
 
+const FOCUS_STUDY_BOARD_KEY = "akili-focus-study-board";
+
 function fieldMessage(
   error: { message?: string } | undefined
 ): string | null {
   return error?.message ?? null;
+}
+
+function reloadWithStudyBoardAtTop() {
+  try {
+    sessionStorage.setItem(FOCUS_STUDY_BOARD_KEY, "1");
+  } catch {
+    // O recarregamento segue mesmo se o navegador bloquear o armazenamento.
+  }
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+  window.location.reload();
+}
+
+function scrollStudyBoardIntoView() {
+  const board = document.getElementById("quadro");
+  if (!board) return false;
+
+  const header = document.querySelector(".sticky-active");
+  const offset =
+    header instanceof HTMLElement ? header.getBoundingClientRect().height + 12 : 0;
+  const top = board.getBoundingClientRect().top + window.scrollY - offset;
+  window.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+  return true;
 }
 
 export function GuardianStudyPlannerView({
@@ -66,6 +94,7 @@ export function GuardianStudyPlannerView({
   const scheduleQuery = useGuardianSchoolScheduleQuery(childRef, canViewProgress);
   const currentPlanQuery = useGuardianCurrentStudyPlanQuery(childRef, canViewProgress);
   const learningQuery = useGuardianChildLearningCatalogQuery(childRef, canViewProgress);
+  const subjectsQuery = useGuardianSubjectsQuery(canViewProgress);
 
   const saveSettings = useSaveGuardianStudySettingsMutation(childRef);
   const saveAvailability = useSaveGuardianAvailabilityMutation(childRef);
@@ -76,12 +105,26 @@ export function GuardianStudyPlannerView({
   const [pollTimedOut, setPollTimedOut] = useState(false);
   const [formAlert, setFormAlert] = useState<string | null>(null);
   const hydratedRef = useRef(false);
+  const reloadingRef = useRef(false);
 
   const pollQuery = useGuardianStudyPlanPollQuery(childRef, pollUuid);
   const catalog = useMemo(
     () => catalogFromLearning(learningQuery.data),
     [learningQuery.data]
   );
+  const subjects = subjectsQuery.data ?? [];
+  const subjectNames = useMemo(() => {
+    const names = new Map<string, string>();
+    for (const subject of subjects) {
+      names.set(subject.uuid, subject.name);
+    }
+    for (const slot of scheduleQuery.data?.items ?? []) {
+      if (slot.subject_name && !names.has(slot.subject_uuid)) {
+        names.set(slot.subject_uuid, slot.subject_name);
+      }
+    }
+    return names;
+  }, [scheduleQuery.data, subjects]);
 
   const {
     register,
@@ -134,7 +177,7 @@ export function GuardianStudyPlannerView({
     reset({
       inverted_classroom: settingsQuery.data.inverted_classroom,
       spaced_review: settingsQuery.data.spaced_review,
-      review_model: settingsQuery.data.review_model,
+      review_model: reviewModelForForm(settingsQuery.data.review_model),
       items_per_session:
         settingsQuery.data.items_per_session == null
           ? ""
@@ -147,10 +190,12 @@ export function GuardianStudyPlannerView({
         ends_at: slot.ends_at.slice(0, 5),
         is_recurring: slot.is_recurring,
       })),
-      school_schedule: scheduleQuery.data.items.map((slot) => ({
-        weekday: slot.weekday,
-        subject_uuid: slot.subject_uuid,
-      })),
+      school_schedule: scheduleQuery.data.items
+        .filter((slot) => isSchoolWeekday(slot.weekday))
+        .map((slot) => ({
+          weekday: slot.weekday,
+          subject_uuid: slot.subject_uuid,
+        })),
       starts_on: current?.starts_on ?? today,
       content_deadline_on:
         current?.content_deadline_on ?? addCalendarDays(today, 40),
@@ -177,6 +222,9 @@ export function GuardianStudyPlannerView({
     settingsQuery.data,
   ]);
 
+  const displayedPlan: StudyPlanDetail | null =
+    pollQuery.data ?? currentPlanQuery.data ?? null;
+
   useEffect(() => {
     if (!pollUuid) return;
     setPollTimedOut(false);
@@ -184,8 +232,35 @@ export function GuardianStudyPlannerView({
     return () => window.clearTimeout(timer);
   }, [pollUuid]);
 
-  const displayedPlan: StudyPlanDetail | null =
-    pollQuery.data ?? currentPlanQuery.data ?? null;
+  useEffect(() => {
+    if (!pollUuid || reloadingRef.current) return;
+    if (pollQuery.data?.status !== "applied") return;
+    reloadingRef.current = true;
+    reloadWithStudyBoardAtTop();
+  }, [pollQuery.data?.status, pollUuid]);
+
+  const focusCreatedBoard =
+    Boolean(child) &&
+    canViewProgress &&
+    Boolean(settingsQuery.data) &&
+    displayedPlan?.status === "applied";
+
+  useEffect(() => {
+    if (!focusCreatedBoard) return;
+    let pending = false;
+    try {
+      pending = sessionStorage.getItem(FOCUS_STUDY_BOARD_KEY) === "1";
+    } catch {
+      return;
+    }
+    if (!pending) return;
+    if (!scrollStudyBoardIntoView()) return;
+    try {
+      sessionStorage.removeItem(FOCUS_STUDY_BOARD_KEY);
+    } catch {
+      // A rolagem já aconteceu.
+    }
+  }, [focusCreatedBoard]);
   const isGenerating =
     displayedPlan?.status === "pending" || displayedPlan?.status === "generating";
   const isSaving =
@@ -236,7 +311,9 @@ export function GuardianStudyPlannerView({
           exception_dates: [],
         }))
       );
-      await saveSchedule.mutateAsync(values.school_schedule);
+      await saveSchedule.mutateAsync(
+        values.school_schedule.filter((slot) => isSchoolWeekday(slot.weekday))
+      );
       const plan = await generatePlan.mutateAsync({
         starts_on: values.starts_on,
         content_deadline_on: values.content_deadline_on,
@@ -249,7 +326,7 @@ export function GuardianStudyPlannerView({
           .filter((topic) => topic.selected)
           .map((topic) => ({
             topic_uuid: topic.topic_uuid,
-            difficulty_level: topic.difficulty_level,
+            difficulty_level: "N3",
             needs_reinforcement: topic.needs_reinforcement,
           })),
       });
@@ -506,56 +583,41 @@ export function GuardianStudyPlannerView({
 
         <div className="widget mb-4">
           <h3 className="widget_title">Horário da escola</h3>
-          {scheduleFields.fields.map((field, index) => (
-            <div key={field.id} className="row align-items-end">
-              <div className="col-12 col-md-4 form-group">
-                <label htmlFor={`schedule-${index}-weekday`}>Dia</label>
-                <select
-                  id={`schedule-${index}-weekday`}
-                  {...register(`school_schedule.${index}.weekday`)}
-                >
-                  {WEEKDAYS.map((day) => (
-                    <option key={day.iso} value={day.iso}>
-                      {day.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-12 col-md-6 form-group">
-                <label htmlFor={`schedule-${index}-subject`}>Disciplina</label>
-                <select
-                  id={`schedule-${index}-subject`}
-                  {...register(`school_schedule.${index}.subject_uuid`)}
-                >
-                  <option value="">Escolha</option>
-                  {catalog.subjects.map((subject) => (
-                    <option key={subject.uuid} value={subject.uuid}>
-                      {subject.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-12 col-md-2 form-group">
-                <button
-                  type="button"
-                  className="vs-btn style3"
-                  onClick={() => scheduleFields.remove(index)}
-                >
-                  Remover
-                </button>
-              </div>
-            </div>
-          ))}
-          <button
-            type="button"
-            className="vs-btn style3"
-            onClick={() =>
-              scheduleFields.append({ weekday: "mon", subject_uuid: "" })
-            }
-            disabled={catalog.subjects.length === 0}
-          >
-            Adicionar disciplina
-          </button>
+          <p>
+            Digite o nome e escolha a disciplina. Ela fica neste dia e você
+            pode incluir outra.
+          </p>
+          {subjectsQuery.isLoading ? (
+            <p role="status">Carregando disciplinas...</p>
+          ) : null}
+          {subjectsQuery.isError ? (
+            <p className="text-danger" role="alert">
+              {getUserFacingApiMessage(subjectsQuery.error)}
+            </p>
+          ) : null}
+          {!subjectsQuery.isLoading &&
+          !subjectsQuery.isError &&
+          subjects.length === 0 ? (
+            <p className="mb-0">Nenhuma disciplina cadastrada.</p>
+          ) : null}
+          {!subjectsQuery.isLoading && subjects.length > 0 ? (
+            <SchoolScheduleWeek
+              subjects={subjects}
+              slots={scheduleFields.fields.map((field, index) => ({
+                id: field.id,
+                index,
+                weekday: field.weekday,
+                subject_uuid: field.subject_uuid,
+              }))}
+              subjectName={(subjectUuid) =>
+                subjectNames.get(subjectUuid) ?? "Disciplina"
+              }
+              onAdd={(weekday, subjectUuid) =>
+                scheduleFields.append({ weekday, subject_uuid: subjectUuid })
+              }
+              onRemove={(index) => scheduleFields.remove(index)}
+            />
+          ) : null}
         </div>
 
         <div className="widget mb-4">
@@ -637,7 +699,7 @@ export function GuardianStudyPlannerView({
                   {...register(`exams.${index}.subject_uuid`)}
                 >
                   <option value="">Escolha</option>
-                  {catalog.subjects.map((subject) => (
+                  {subjects.map((subject) => (
                     <option key={subject.uuid} value={subject.uuid}>
                       {subject.name}
                     </option>
@@ -664,7 +726,7 @@ export function GuardianStudyPlannerView({
                 subject_uuid: "",
               })
             }
-            disabled={catalog.subjects.length === 0}
+            disabled={subjects.length === 0}
           >
             Adicionar prova
           </button>
@@ -687,30 +749,13 @@ export function GuardianStudyPlannerView({
                   <strong>{topic.name}</strong>
                 </label>
                 {topic.selected ? (
-                  <div className="row">
-                    <div className="col-md-6 form-group mb-0">
-                      <label htmlFor={`topic-${index}-level`}>Dificuldade</label>
-                      <select
-                        id={`topic-${index}-level`}
-                        {...register(`topics.${index}.difficulty_level`)}
-                      >
-                        {Object.entries(DIFFICULTY_LABELS).map(([value, label]) => (
-                          <option key={value} value={value}>
-                            {label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="col-md-6 form-group mb-0 d-flex align-items-end">
-                      <label className="d-flex align-items-center gap-2 mb-3">
-                        <input
-                          type="checkbox"
-                          {...register(`topics.${index}.needs_reinforcement`)}
-                        />
-                        Precisa de reforço
-                      </label>
-                    </div>
-                  </div>
+                  <label className="d-flex align-items-center gap-2 mb-0">
+                    <input
+                      type="checkbox"
+                      {...register(`topics.${index}.needs_reinforcement`)}
+                    />
+                    Precisa de reforço
+                  </label>
                 ) : null}
               </div>
             ))
