@@ -26,6 +26,7 @@ export function StudyKanbanTaskDialog({
   const closeRef = useRef<HTMLButtonElement>(null);
   const [mounted, setMounted] = useState(false);
   const log = buildStudyTaskLog(task);
+  const schedule = formatStudyTaskSchedule(task);
 
   useEffect(() => {
     setMounted(true);
@@ -90,7 +91,7 @@ export function StudyKanbanTaskDialog({
             ) : null}
           </div>
 
-          <p className="mb-3">{formatStudyTaskSchedule(task)}</p>
+          {schedule ? <p className="mb-3">{schedule}</p> : null}
 
           <h3 className="study-kanban-dialog__log-title">Histórico</h3>
           <ol className="study-kanban-log">

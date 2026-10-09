@@ -14,13 +14,13 @@ import {
   jsonSuccess,
   validationError,
 } from "@/lib/api/response";
-import { loginSchema } from "@/features/auth/schemas/auth.schema";
+import { studentLoginSchema } from "@/features/auth/schemas/auth.schema";
 import type { LoginSuccessPayload } from "@/types/auth-login";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const parsed = loginSchema.safeParse(body);
+    const parsed = studentLoginSchema.safeParse(body);
 
     if (!parsed.success) {
       const errors = Object.fromEntries(
@@ -32,10 +32,10 @@ export async function POST(request: NextRequest) {
       return validationError(errors);
     }
 
-    const response = await authenticateStudentWithLaravel(
-      parsed.data.email,
-      parsed.data.password
-    );
+    const response = await authenticateStudentWithLaravel({
+      login: parsed.data.login,
+      password: parsed.data.password,
+    });
 
     const destination = resolvePortalDestination(response.user);
 

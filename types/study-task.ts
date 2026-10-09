@@ -11,7 +11,7 @@ export interface StudyTask {
   name: string;
   status: StudyTaskStatus;
   position: number;
-  scheduled_on: string;
+  scheduled_on: string | null;
   scheduled_start: string | null;
   scheduled_end: string | null;
   duration_minutes: number;

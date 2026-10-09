@@ -23,7 +23,9 @@ function formatTimeRange(task: StudyTask): string | null {
 }
 
 export function formatStudyTaskSchedule(task: StudyTask): string {
-  const date = formatStudyCalendarDate(task.scheduled_on);
+  const date = task.scheduled_on
+    ? formatStudyCalendarDate(task.scheduled_on)
+    : null;
   const timeRange = formatTimeRange(task);
   const duration =
     task.duration_minutes > 0 ? `${task.duration_minutes} min` : null;
@@ -35,7 +37,9 @@ export function buildStudyTaskLog(task: StudyTask): StudyTaskLogItem[] {
   const items: StudyTaskLogItem[] = [
     {
       title: "Entrou no roteiro",
-      detail: formatStudyTaskSchedule(task),
+      detail:
+        formatStudyTaskSchedule(task) ||
+        (task.scheduled_on ? "" : "O aluno escolhe quando estudar."),
     },
   ];
 
@@ -64,7 +68,9 @@ export function buildStudyTaskLog(task: StudyTask): StudyTaskLogItem[] {
   } else if (task.status === "backlog") {
     items.push({
       title: `Na coluna ${KANBAN_COLUMN_LABELS[task.status]}`,
-      detail: "Ainda não chegou o dia combinado.",
+      detail: task.scheduled_on
+        ? "Ainda não chegou o dia combinado."
+        : "O aluno escolhe quando estudar.",
     });
   }
 

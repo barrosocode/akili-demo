@@ -85,12 +85,19 @@ function mapPurchase(item: unknown): GuardianPurchase | null {
     typeof studentRecord?.name === "string" ? studentRecord.name.trim() : "";
   const studentUuid =
     typeof studentRecord?.uuid === "string" ? studentRecord.uuid : "";
+  const studentUser =
+    typeof studentRecord?.user === "object" && studentRecord.user !== null
+      ? (studentRecord.user as Record<string, unknown>)
+      : null;
+  const rawLogin = studentRecord?.login ?? studentUser?.login;
+  const studentLogin =
+    typeof rawLogin === "string" && rawLogin.trim() ? rawLogin.trim() : null;
 
   const student =
     studentName && studentUuid
-      ? { ref: toRef(studentUuid), name: studentName }
+      ? { ref: toRef(studentUuid), name: studentName, login: studentLogin }
       : studentName
-        ? { ref: "", name: studentName }
+        ? { ref: "", name: studentName, login: studentLogin }
         : null;
 
   return {

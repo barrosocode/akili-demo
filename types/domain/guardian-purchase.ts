@@ -1,6 +1,7 @@
 export interface GuardianPurchaseStudent {
   ref: string;
   name: string;
+  login: string | null;
 }
 
 export interface GuardianPurchasePagination {
@@ -28,6 +29,7 @@ export interface GuardianPurchasesPage {
 
 export interface CreatedGuardianChild {
   name: string;
+  login: string | null;
   preferredName: string | null;
   birthdate: string | null;
   relationship: string | null;

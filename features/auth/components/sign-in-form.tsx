@@ -11,6 +11,7 @@ import { DevQuickAccessPanel } from "@/features/auth/components/dev-quick-access
 import { loginSchema } from "@/features/auth/schemas/auth.schema";
 import {
   DEV_LOGIN_PROFILES,
+  devProfileIdentifier,
   type DevLoginProfile,
 } from "@/lib/auth/dev-login-profiles";
 import { resolveUnifiedLoginRedirect } from "@/lib/auth/post-login-path";
@@ -43,7 +44,10 @@ export function SignInForm({ showDevQuickAccess = false }: SignInFormProps) {
   });
 
   function applyDevLoginProfile(profile: DevLoginProfile) {
-    setValue("email", profile.email, { shouldDirty: true, shouldTouch: true });
+    setValue("email", devProfileIdentifier(profile), {
+      shouldDirty: true,
+      shouldTouch: true,
+    });
     setValue("password", profile.password, { shouldDirty: true, shouldTouch: true });
     clearErrors();
   }
@@ -58,11 +62,22 @@ export function SignInForm({ showDevQuickAccess = false }: SignInFormProps) {
       window.location.assign(destination);
     } catch (error) {
       if (error instanceof BffClientError && error.status === 422) {
-        const detail = `${error.detail ?? ""} ${error.errors?.email ?? ""}`.toLowerCase();
-        if (detail.includes("primeiro acesso")) {
+        const detail =
+          `${error.detail ?? ""} ${error.errors?.email ?? ""} ${error.errors?.login ?? ""}`.toLowerCase();
+        if (detail.includes("primeiro acesso") && values.email.includes("@")) {
           window.location.assign(
             `/first-access?email=${encodeURIComponent(values.email)}`
           );
+          return;
+        }
+        const identifierError = error.errors?.login ?? error.errors?.email;
+        if (identifierError) {
+          setError("email", { message: identifierError });
+        }
+        if (error.errors?.password) {
+          setError("password", { message: error.errors.password });
+        }
+        if (identifierError || error.errors?.password) {
           return;
         }
       }

@@ -19,6 +19,19 @@ function tokenExpiry(expiresIn?: number): number | undefined {
   return expiresIn ? Date.now() + expiresIn * 1000 : undefined;
 }
 
+export type AuthCredential =
+  | { email: string; password: string }
+  | { login: string; password: string };
+
+/** E-mail e login são mutuamente exclusivos no contrato de autenticação. */
+export function toAuthCredential(identifier: string, password: string): AuthCredential {
+  const value = identifier.trim();
+  if (value.includes("@")) {
+    return { email: value, password };
+  }
+  return { login: value, password };
+}
+
 export async function establishGuardianSession(
   response: LoginResponse
 ): Promise<SessionUser> {
@@ -80,13 +93,12 @@ export async function establishSupportSession(
 }
 
 export async function authenticateWithLaravel(
-  email: string,
-  password: string,
+  credential: AuthCredential,
   deviceName: string
 ): Promise<LoginResponse> {
   return laravelRequest<LoginResponse>("/client/auth/login", {
     method: "POST",
-    data: { email, password, device_name: deviceName },
+    data: { ...credential, device_name: deviceName },
     skipAuth: true,
     skipUnauthorizedRetry: true,
   });
@@ -94,12 +106,11 @@ export async function authenticateWithLaravel(
 
 /** Canal mobile — o portal do aluno só aceita PAT de `/mobile/auth/*`. */
 export async function authenticateStudentWithLaravel(
-  email: string,
-  password: string
+  credential: AuthCredential
 ): Promise<LoginResponse> {
   return studentLaravelRequest<LoginResponse>("/mobile/auth/login", {
     method: "POST",
-    data: { email, password, device_name: "student-web" },
+    data: { ...credential, device_name: "student-web" },
     skipAuth: true,
     skipUnauthorizedRetry: true,
   });
