@@ -19,11 +19,12 @@ export function StudyKanbanCard({
   onOpenDetails,
   actionLabel,
 }: StudyKanbanCardProps) {
+  const schedule = formatStudyTaskSchedule(task);
   const body = (
     <div className="study-kanban-card__body">
       <span className="portal-chip portal-chip--muted">{STUDY_TASK_KIND_LABELS[task.kind]}</span>
       <strong className="study-kanban-card__title">{task.name}</strong>
-      <p className="small mb-0">{formatStudyTaskSchedule(task)}</p>
+      {schedule ? <p className="small mb-0">{schedule}</p> : null}
       {task.compacted_review ? (
         <p className="small mb-0">Revisão compactada</p>
       ) : null}

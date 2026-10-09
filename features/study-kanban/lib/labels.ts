@@ -25,11 +25,11 @@ export function parseStudyTaskParam(value: string | null | undefined): string | 
 export function canStartStudyTask(task: {
   content_uuid: string | null;
   status: StudyTaskStatus;
+  scheduled_on: string | null;
 }): boolean {
-  return (
-    Boolean(task.content_uuid) &&
-    (task.status === "todo" || task.status === "doing")
-  );
+  if (!task.content_uuid) return false;
+  if (task.status === "todo" || task.status === "doing") return true;
+  return task.status === "backlog" && task.scheduled_on == null;
 }
 
 export function studentTaskHref(

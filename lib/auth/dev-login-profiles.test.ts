@@ -37,14 +37,13 @@ describe("DEV_LOGIN_PROFILES", () => {
     }
   });
 
-  it("uses only documented *.dev seed emails", () => {
-    for (const profile of DEV_LOGIN_PROFILES) {
-      assert.match(profile.email, /@[\w.-]+\.dev$/);
-      assert.doesNotMatch(profile.email, /gmail\.com/i);
-      assert.doesNotMatch(profile.email, /demo\.akili\.dev/i);
-    }
+  it("uses the documented guardian email and student login", () => {
+    assert.match(DEV_LOGIN_GUARDIAN.email ?? "", /@[\w.-]+\.dev$/);
+    assert.doesNotMatch(DEV_LOGIN_GUARDIAN.email ?? "", /gmail\.com/i);
+    assert.doesNotMatch(DEV_LOGIN_GUARDIAN.email ?? "", /demo\.akili\.dev/i);
     assert.equal(DEV_LOGIN_GUARDIAN.email, "responsavel@escola-exemplo.dev");
-    assert.equal(DEV_LOGIN_STUDENT.email, "aluno@escola-exemplo.dev");
+    assert.equal(DEV_LOGIN_STUDENT.login, "aluno");
+    assert.equal(DEV_LOGIN_STUDENT.email, undefined);
   });
 
   it("uses documented seed passwords", () => {

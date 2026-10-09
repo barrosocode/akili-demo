@@ -1,11 +1,19 @@
 import type { StudyPlanStatus } from "@/types/student-study-board";
-import type { OmittedTopicReason } from "@/types/guardian-study-planner";
+import type {
+  OmittedTopicReason,
+  ReviewModel,
+} from "@/types/guardian-study-planner";
 
 export const REVIEW_MODEL_LABELS = {
   dehaene: "Revisões espaçadas (Dehaene)",
-  leitner: "Leitner",
   custom: "Personalizado",
+  livre: "Livre",
 } as const;
+
+export function reviewModelForForm(value: string): ReviewModel {
+  if (value === "custom" || value === "livre") return value;
+  return "dehaene";
+}
 
 export const DIFFICULTY_LABELS = {
   N1: "N1 — mais leve",

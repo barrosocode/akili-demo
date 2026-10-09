@@ -1,6 +1,7 @@
 import { bffClient } from "@/services/bff/client";
 import type {
   AvailabilitySlot,
+  CatalogSubject,
   GuardianStudySetting,
   PaginatedList,
   SchoolScheduleSlot,
@@ -83,6 +84,10 @@ export const guardianStudyPlannerBff = {
 
   learning(ref: string) {
     return bffClient<StudentDashboard>(`/api/guardian/children/${ref}/learning`);
+  },
+
+  subjects() {
+    return bffClient<CatalogSubject[]>("/api/guardian/subjects");
   },
 
   tasks(ref: string, status: string, page: number) {

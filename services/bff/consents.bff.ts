@@ -21,7 +21,22 @@ export interface AcceptConsentPayload {
   clientMetadata: ConsentClientMetadata;
 }
 
+export interface ChildRegistrationConsent {
+  ref: string;
+  key: string;
+  title: string;
+  version: string;
+  contentHtml: string;
+  isRequired: boolean;
+}
+
 export const consentsBff = {
+  childRegistration() {
+    return bffClient<ChildRegistrationConsent[]>(
+      "/api/guardian/child-registration/consents"
+    );
+  },
+
   pending() {
     return bffClient<PendingConsent[]>("/api/consents/pending");
   },

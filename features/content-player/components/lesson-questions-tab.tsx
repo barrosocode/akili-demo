@@ -143,13 +143,9 @@ function QuestionBlock({
       </div>
 
       {question.image ? (
-        <figure className="lesson-player__figure">
+        <figure className="lesson-player__figure lesson-player__figure--question">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={question.image}
-            alt=""
-            style={{ maxHeight: 192, objectFit: "contain" }}
-          />
+          <img src={question.image} alt="" />
         </figure>
       ) : null}
 

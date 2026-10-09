@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { DevQuickAccessPanel } from "@/features/auth/components/dev-quick-access-panel";
-import { loginSchema } from "@/features/auth/schemas/auth.schema";
+import { studentLoginSchema } from "@/features/auth/schemas/auth.schema";
 import { getUserFacingApiMessage } from "@/lib/api/errors";
 import {
   DEV_LOGIN_STUDENT_PROFILES,
@@ -23,13 +23,13 @@ export function StudentLoginForm({
 }: StudentLoginFormProps) {
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
-  const [email, setEmail] = useState("");
+  const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   function applyDevLoginProfile(profile: DevLoginProfile) {
-    setEmail(profile.email);
+    setLogin(profile.login ?? "");
     setPassword(profile.password);
     setError(null);
   }
@@ -38,9 +38,9 @@ export function StudentLoginForm({
     event.preventDefault();
     setError(null);
 
-    const parsed = loginSchema.safeParse({ email, password });
+    const parsed = studentLoginSchema.safeParse({ login, password });
     if (!parsed.success) {
-      setError("Informe e-mail e senha válidos.");
+      setError(parsed.error.issues[0]?.message ?? "Informe usuário e senha.");
       return;
     }
 
@@ -59,7 +59,7 @@ export function StudentLoginForm({
     } catch (err) {
       setError(
         err instanceof BffClientError
-          ? (err.detail ?? err.title)
+          ? (err.errors?.login ?? err.errors?.password ?? err.detail ?? err.title)
           : getUserFacingApiMessage(err)
       );
     } finally {
@@ -71,7 +71,7 @@ export function StudentLoginForm({
     <>
       <form className="form-style3" onSubmit={handleSubmit}>
         <h2 className="blog-title">Área do aluno</h2>
-        <p>Entre com sua conta de estudante para acessar os materiais.</p>
+        <p>Entre com o usuário criado pelo responsável e a sua senha.</p>
 
         {error ? (
           <p className="text-danger" role="alert">
@@ -80,14 +80,14 @@ export function StudentLoginForm({
         ) : null}
 
         <div className="form-group mb-3">
-          <label htmlFor="student-email">E-mail</label>
+          <label htmlFor="student-login">Usuário</label>
           <input
-            id="student-email"
-            type="email"
+            id="student-login"
+            type="text"
             className="form-control"
-            autoComplete="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            autoComplete="username"
+            value={login}
+            onChange={(event) => setLogin(event.target.value)}
             required
           />
         </div>

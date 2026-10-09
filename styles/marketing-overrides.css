@@ -556,9 +556,17 @@
 
 .marketing-root .lesson-player__figure img {
   max-width: 100%;
+  height: auto;
   border-radius: 12px;
   border: 1px solid #e8e8e8;
   box-shadow: 0 4px 16px rgba(6, 10, 57, 0.08);
+}
+
+.marketing-root .lesson-player__figure--question img {
+  width: auto;
+  max-width: 100%;
+  max-height: min(36rem, 72vh);
+  object-fit: contain;
 }
 
 .marketing-root .lesson-player__action-row {
@@ -911,12 +919,14 @@
   flex-direction: column;
   gap: 0.75rem;
   min-width: 0;
-  max-height: 32rem;
+  max-height: min(32rem, 70vh);
   overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .marketing-root .study-kanban-card {
+  flex: 0 0 auto;
   min-width: 0;
   max-width: 100%;
   padding: 0.85rem 0.9rem;
@@ -1073,6 +1083,66 @@
 
 @media (min-width: 768px) {
   .marketing-root .study-kanban-dialog-backdrop {
+    align-items: center;
+  }
+}
+
+.marketing-root .child-consent-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10070;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(16, 24, 40, 0.45);
+}
+
+.marketing-root .child-consent-dialog {
+  --widget-padding-y: 24px;
+  --widget-padding-x: 20px;
+  display: flex;
+  flex-direction: column;
+  width: min(40rem, 100%);
+  max-height: min(90vh, 44rem);
+  margin: 0;
+  overflow: hidden;
+}
+
+.marketing-root .child-consent-dialog__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.marketing-root .child-consent-dialog__header .widget_title {
+  margin: 0;
+  padding: 0 0 10px 0;
+  font-size: 1.35rem;
+}
+
+.marketing-root .child-consent-dialog__body {
+  overflow: auto;
+  max-height: 50vh;
+  border: 1px solid #eee;
+  padding: 1.25rem;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.marketing-root .child-consent-dialog__body:focus-visible {
+  outline: 2px solid var(--theme-color, #1a73e8);
+  outline-offset: 2px;
+}
+
+.marketing-root .child-consent-dialog__footer {
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .marketing-root .child-consent-dialog-backdrop {
     align-items: center;
   }
 }
@@ -1772,5 +1842,150 @@ html[data-assistance-banner="true"] .will-sticky .sticky-active.active {
     width: 100%;
     text-align: center;
   }
+}
+
+/* Portal — horário da escola (dia na linha, disciplinas na segunda coluna) */
+.marketing-root .school-schedule-scroll {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.marketing-root .school-schedule-table {
+  width: 100%;
+  min-width: 36rem;
+  border: none;
+  border-collapse: separate;
+  border-spacing: 0 0.85rem;
+}
+
+.marketing-root .school-schedule-table th,
+.marketing-root .school-schedule-table td {
+  border: none;
+  background: transparent;
+  vertical-align: middle;
+}
+
+.marketing-root .school-schedule-table thead th {
+  padding: 0 0.75rem 0.35rem 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.marketing-root .school-schedule-table tbody th {
+  width: 8.5rem;
+  padding: 0.85rem 1rem 0.85rem 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.marketing-root .school-schedule-table td {
+  padding: 0.35rem 0;
+}
+
+.marketing-root .school-schedule-subjects {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.marketing-root .school-schedule-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.marketing-root .school-schedule-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0.35rem 0.35rem 0.35rem 0.9rem;
+  border: 1px solid rgba(30, 58, 95, 0.12);
+  border-radius: 14px;
+  background: #f7f8fb;
+  font-size: 1rem;
+}
+
+.marketing-root .school-schedule-chip span {
+  min-width: 0;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.marketing-root .school-schedule-chip button {
+  flex: 0 0 auto;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #1e3a5f;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.marketing-root .school-schedule-chip button:hover,
+.marketing-root .school-schedule-chip button:focus-visible {
+  background: #fff;
+  outline: 2px solid var(--theme-color, #ff6b00);
+  outline-offset: 1px;
+}
+
+.marketing-root .school-schedule-combo {
+  flex: 1 1 16rem;
+  min-width: 14rem;
+  max-width: 24rem;
+}
+
+.marketing-root .form-style3 .school-schedule-combo input {
+  width: 100%;
+  min-height: 3rem;
+  padding-left: 0.9rem;
+  padding-right: 0.9rem;
+  font-size: 1rem;
+}
+
+.marketing-root .school-schedule-suggest {
+  list-style: none;
+  margin: 0.35rem 0 0;
+  padding: 0.25rem;
+  max-height: 12rem;
+  overflow: auto;
+  border: 1px solid rgba(30, 58, 95, 0.12);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(30, 58, 95, 0.08);
+}
+
+.marketing-root .school-schedule-suggest__item {
+  display: block;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.75rem;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  font-weight: 600;
+}
+
+.marketing-root .school-schedule-suggest__item.is-active,
+.marketing-root .school-schedule-suggest__item:hover,
+.marketing-root .school-schedule-suggest__item:focus-visible {
+  background: #f3f6fb;
+  outline: none;
+}
+
+.marketing-root .school-schedule-suggest__empty {
+  margin: 0.35rem 0 0;
+  font-size: 0.875rem;
 }
 

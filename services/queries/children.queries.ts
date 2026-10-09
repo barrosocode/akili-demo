@@ -2,12 +2,23 @@
 
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { childrenBff, learningSearchParams } from "@/services/bff/children.bff";
+import { consentsBff } from "@/services/bff/consents.bff";
 import { queryKeys } from "@/services/queries/query-keys";
 import { queryConfig } from "@/lib/cache/query-config";
 import {
   LEARNING_CHART_SERIES,
   type LearningQueryFilters,
 } from "@/types/domain/learning";
+
+export function useChildRegistrationConsentsQuery(enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.children.registrationConsents(),
+    queryFn: () => consentsBff.childRegistration(),
+    enabled,
+    staleTime: 0,
+    retry: false,
+  });
+}
 
 export function useChildrenQuery() {
   return useQuery({

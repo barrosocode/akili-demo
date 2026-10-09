@@ -8,16 +8,21 @@ import { AddChildForm } from "@/features/children/components/add-child-form";
 import { getUserFacingApiMessage } from "@/lib/api/errors";
 import { formatDate } from "@/lib/utils/format";
 import { BffClientError } from "@/services/bff/client";
+import { useChildRegistrationConsentsQuery } from "@/services/queries/children.queries";
 import { usePurchasesQuery } from "@/services/queries/purchases.queries";
 import type { GuardianPurchase } from "@/types/domain/guardian-purchase";
 
 export function AddChildPage() {
   const router = useRouter();
   const [page, setPage] = useState(1);
-  const [createdNames, setCreatedNames] = useState<Record<string, string>>({});
+  const [createdChildren, setCreatedChildren] = useState<
+    Record<string, { name: string; login: string | null }>
+  >({});
   const [closed, setClosed] = useState<Record<string, string>>({});
   const [forbidden, setForbidden] = useState(false);
+  const [consentsResetKey, setConsentsResetKey] = useState(0);
   const { data, isLoading, isError, error, refetch } = usePurchasesQuery(page);
+  const consentsQuery = useChildRegistrationConsentsQuery(!forbidden);
 
   useEffect(() => {
     if (!(error instanceof BffClientError)) return;
@@ -33,8 +38,27 @@ export function AddChildPage() {
   const unauthorized = error instanceof BffClientError && error.status === 401;
 
   function childName(purchase: GuardianPurchase): string | null {
-    return purchase.student?.name || createdNames[purchase.ref] || null;
+    return purchase.student?.name || createdChildren[purchase.ref]?.name || null;
   }
+
+  function childLogin(purchase: GuardianPurchase): string | null {
+    return purchase.student?.login || createdChildren[purchase.ref]?.login || null;
+  }
+
+  const documents = consentsQuery.data ?? [];
+  const consentsStatus = consentsQuery.isLoading
+    ? "loading"
+    : consentsQuery.isError
+      ? "error"
+      : documents.length === 0
+        ? "empty"
+        : "ready";
+  const consentsError =
+    consentsQuery.error instanceof BffClientError
+      ? (consentsQuery.error.detail ?? consentsQuery.error.title)
+      : consentsQuery.isError
+        ? getUserFacingApiMessage(consentsQuery.error)
+        : null;
 
   const everyChildLinked =
     purchases.length > 0 &&
@@ -103,6 +127,7 @@ export function AddChildPage() {
         <div className="row">
           {purchases.map((purchase) => {
             const name = childName(purchase);
+            const login = childLogin(purchase);
             const showForm =
               !forbidden &&
               !closed[purchase.ref] &&
@@ -130,6 +155,11 @@ export function AddChildPage() {
                       <p className="mb-2">
                         Filho cadastrado: <strong>{name}</strong>
                       </p>
+                      {login ? (
+                        <p className="mb-2">
+                          Usuário: <strong>{login}</strong>
+                        </p>
+                      ) : null}
                       {purchase.student?.ref ? (
                         <Link href={`/children/${purchase.student.ref}`} className="vs-btn">
                           Ver detalhes
@@ -141,10 +171,19 @@ export function AddChildPage() {
                   {showForm ? (
                     <AddChildForm
                       purchaseRef={purchase.ref}
-                      onCreated={(createdName) =>
-                        setCreatedNames((current) => ({
+                      documents={documents}
+                      consentsStatus={consentsStatus}
+                      consentsError={consentsError}
+                      consentsResetKey={consentsResetKey}
+                      onRetryConsents={() => void consentsQuery.refetch()}
+                      onConsentsRejected={() => {
+                        setConsentsResetKey((current) => current + 1);
+                        void consentsQuery.refetch();
+                      }}
+                      onCreated={(created) =>
+                        setCreatedChildren((current) => ({
                           ...current,
-                          [purchase.ref]: createdName,
+                          [purchase.ref]: created,
                         }))
                       }
                       onForbidden={() => setForbidden(true)}

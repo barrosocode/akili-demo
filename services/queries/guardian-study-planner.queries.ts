@@ -64,6 +64,15 @@ export function useGuardianStudyPlansQuery(
   });
 }
 
+export function useGuardianSubjectsQuery(enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.guardianStudyPlanner.subjects(),
+    queryFn: () => guardianStudyPlannerBff.subjects(),
+    enabled,
+    staleTime: queryConfig.staleTime,
+  });
+}
+
 export function useGuardianChildLearningCatalogQuery(
   ref: string,
   enabled = true
