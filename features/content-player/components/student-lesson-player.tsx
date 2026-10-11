@@ -289,18 +289,31 @@ export function StudentLessonPlayer({
   );
 
   const visibleTabs = useMemo(() => {
+    let tabs;
     if (readOnly) {
       const aulaTabs = resolveTabsFromIds(AULA_TAB_IDS);
-      return aulaTabs.filter((tab) => {
+      tabs = aulaTabs.filter((tab) => {
         if (tab.id === "treino") return true;
         return distribution[tab.id].length > 0;
       });
+    } else if (!session) {
+      return [];
+    } else if (!Array.isArray(session.visible_tabs)) {
+      tabs = resolveTabsFromIds(AULA_TAB_IDS);
+    } else {
+      tabs = resolveTabsFromIds(session.visible_tabs);
     }
-    if (!session) return [];
-    if (!Array.isArray(session.visible_tabs)) {
-      return resolveTabsFromIds(AULA_TAB_IDS);
+
+    const includeDesafio =
+      distribution.desafio.length > 0 &&
+      !tabs.some((tab) => tab.id === "desafio") &&
+      (readOnly || isLessonSession(session));
+
+    if (includeDesafio) {
+      tabs = [...tabs, ...resolveTabsFromIds(["desafio"])];
     }
-    return resolveTabsFromIds(session.visible_tabs);
+
+    return tabs;
   }, [readOnly, session, distribution]);
 
   const allowedQuestionTabs = useMemo(() => {
