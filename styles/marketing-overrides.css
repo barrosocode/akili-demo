@@ -325,49 +325,118 @@
   min-width: 0;
 }
 
-/* ── Player da lição (abas pedagógicas + tema Kiddino) ── */
+/* ── Player da lição (prévia editorial: azul, Lora, Nunito) ── */
+
+.marketing-root .lesson-stage {
+  min-height: 100dvh;
+  background: #eef2f7;
+}
 
 .marketing-root .lesson-player {
-  font-family: var(--body-font, "Jost", system-ui, sans-serif);
-  color: #444;
-  background: #f7f7f9;
-  border-radius: 24px;
-  overflow: hidden;
-  min-height: 60vh;
+  font-family: "Nunito", system-ui, sans-serif;
+  color: #20303f;
+  background: #eef2f7;
+  min-height: 100dvh;
 }
 
 .marketing-root .lesson-player__card {
   margin: 0 auto;
   max-width: 900px;
-  min-height: 100%;
+  min-height: 100dvh;
+  padding-bottom: 6.5rem;
   background: #fff;
-  box-shadow: 0 0 40px rgba(6, 10, 57, 0.08);
+  box-shadow: 0 0 40px rgba(14, 58, 107, 0.08);
 }
 
 .marketing-root .lesson-player__header {
-  padding: 28px 28px 22px;
+  padding: 30px 34px 26px;
   color: #fff;
-  background: linear-gradient(
-    135deg,
-    #c24e12 0%,
-    var(--theme-color, #df5c16) 55%,
-    #f07a35 100%
-  );
+  background: linear-gradient(135deg, #0e3a6b 0%, #1a5fad 100%);
+}
+
+.marketing-root .lesson-player__header p,
+.marketing-root .lesson-player__header h1,
+.marketing-root .lesson-player__kicker,
+.marketing-root .lesson-player__subtitle {
+  color: #fff;
+}
+
+.marketing-root .lesson-player__header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.marketing-root .lesson-player__header-copy {
+  min-width: 0;
+}
+
+.marketing-root .lesson-player__exit {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  border-radius: 999px;
+  background: #1a5fad;
+  color: #fff;
+  padding: 8px 16px;
+  font-family: "Nunito", system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(14, 58, 107, 0.22);
+}
+
+.marketing-root .lesson-player__exit--dock {
+  position: fixed;
+  z-index: 40;
+  left: 1.5rem;
+  bottom: 1.5rem;
+}
+
+.marketing-root .lesson-player__exit:hover,
+.marketing-root .lesson-player__exit:focus-visible {
+  color: #fff;
+  background: #0e3a6b;
+  text-decoration: none;
+}
+
+.marketing-root .lesson-player__exit--solid {
+  background: #1a5fad;
+}
+
+.marketing-root .lesson-player__exit--solid:hover,
+.marketing-root .lesson-player__exit--solid:focus-visible {
+  background: #0e3a6b;
+  color: #fff;
+}
+
+.marketing-root .lesson-player__status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 28px 34px;
+}
+
+.marketing-root .lesson-player__notice {
+  padding: 16px 34px 0;
 }
 
 .marketing-root .lesson-player__kicker {
   margin: 0;
-  font-size: 0.8125rem;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  opacity: 0.9;
+  letter-spacing: 0.14em;
 }
 
 .marketing-root .lesson-player__title {
   margin: 0.5rem 0 0.25rem;
-  font-family: var(--title-font, "Fredoka", system-ui, sans-serif);
-  font-size: clamp(1.5rem, 5vw, 1.875rem);
+  font-family: "Lora", Georgia, serif;
+  font-size: clamp(24px, 5vw, 30px);
   font-weight: 700;
   line-height: 1.15;
   color: #fff;
@@ -375,13 +444,13 @@
 
 .marketing-root .lesson-player__subtitle {
   margin: 0;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  opacity: 0.92;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
 }
 
 .marketing-root .lesson-player__progress-wrap {
-  padding: 14px 28px 0;
+  padding: 14px 34px 0;
 }
 
 .marketing-root .lesson-player__progress-meta {
@@ -390,11 +459,19 @@
   gap: 0.75rem;
   margin-bottom: 0.4rem;
   font-size: 0.875rem;
-  color: #6c757d;
+  color: #5b6b78;
 }
 
 .marketing-root .lesson-player__progress-meta strong {
-  color: var(--title-color, #060a39);
+  color: #0e3a6b;
+}
+
+.marketing-root .lesson-player .progress {
+  background-color: #eaf1fa;
+}
+
+.marketing-root .lesson-player .progress-bar {
+  background-color: #1a5fad;
 }
 
 .marketing-root .lesson-player__tabs {
@@ -404,7 +481,7 @@
   display: flex;
   gap: 2px;
   overflow-x: auto;
-  border-bottom: 2px solid #e8e8e8;
+  border-bottom: 2px solid #dbe4ee;
   background: #fff;
   padding: 0 12px;
   -webkit-overflow-scrolling: touch;
@@ -417,9 +494,9 @@
   border-bottom: 3px solid transparent;
   margin-bottom: -2px;
   padding: 14px 14px;
-  font-size: 0.9rem;
+  font-size: 14.5px;
   font-weight: 800;
-  color: #6c757d;
+  color: #5b6b78;
   background: transparent;
   cursor: pointer;
   font-family: inherit;
@@ -427,13 +504,13 @@
 
 .marketing-root .lesson-player__tab:hover,
 .marketing-root .lesson-player__tab:focus-visible {
-  color: var(--theme-color, #df5c16);
+  color: #1a5fad;
   outline: none;
 }
 
 .marketing-root .lesson-player__tab.is-active {
-  color: var(--theme-color, #df5c16);
-  border-bottom-color: var(--theme-color, #df5c16);
+  color: #1a5fad;
+  border-bottom-color: #1a5fad;
 }
 
 .marketing-root .lesson-player__tab:disabled {
@@ -442,29 +519,39 @@
 }
 
 .marketing-root .lesson-player__main {
-  padding: 24px 28px 24px;
+  padding: 24px 34px 60px;
 }
 
 .marketing-root .lesson-player__footer {
-  border-top: 1px solid #e8e8e8;
-  padding: 14px 28px 18px;
-  font-size: 0.78rem;
+  border-top: 1px solid #dbe4ee;
+  padding: 18px 34px 30px;
+  font-size: 12.5px;
   color: #93a2b0;
 }
 
 .marketing-root .lesson-player__nav {
-  position: sticky;
+  position: fixed;
   bottom: 0;
-  z-index: 20;
+  left: 50%;
+  z-index: 30;
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 28px 22px;
-  border-top: 1px solid #e8e8e8;
+  width: min(900px, 100%);
+  transform: translateX(-50%);
+  padding: 16px 34px 22px;
+  border-top: 1px solid #dbe4ee;
   background: #fff;
-  box-shadow: 0 -8px 24px rgba(6, 10, 57, 0.06);
+  box-shadow: 0 -8px 24px rgba(14, 58, 107, 0.06);
+}
+
+.marketing-root .lesson-player__nav-leading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
 }
 
 .marketing-root .lesson-player__nav-actions {
@@ -477,42 +564,84 @@
 .marketing-root .lesson-player__hint {
   margin: 0 0 12px;
   font-size: 0.9rem;
-  color: #6c757d;
+  color: #5b6b78;
 }
 
 .marketing-root .lesson-player__empty {
   margin: 0;
-  color: #6c757d;
+  color: #5b6b78;
   font-size: 0.9rem;
+}
+
+.marketing-root .lesson-player .vs-btn,
+.marketing-root .lesson-player .vs-btn.style3 {
+  font-family: "Nunito", system-ui, sans-serif;
+  font-weight: 800;
+  min-height: 48px;
+  padding: 14px 28px;
+  background-color: #1a5fad;
+  color: #fff;
+  border: none;
+}
+
+.marketing-root .lesson-player .vs-btn.style3 {
+  background-color: transparent;
+  color: #1a5fad;
+  border: 2px solid #1a5fad;
+}
+
+.marketing-root .lesson-player .vs-btn::before,
+.marketing-root .lesson-player .vs-btn::after,
+.marketing-root .lesson-player .vs-btn.style3::before,
+.marketing-root .lesson-player .vs-btn.style3::after {
+  display: none;
+}
+
+.marketing-root .lesson-player .vs-btn:hover,
+.marketing-root .lesson-player .vs-btn:focus-visible {
+  background-color: #0e3a6b;
+  color: #fff;
+}
+
+.marketing-root .lesson-player .vs-btn.style3:hover,
+.marketing-root .lesson-player .vs-btn.style3:focus-visible {
+  background-color: #1a5fad;
+  color: #fff;
+}
+
+.marketing-root .lesson-player .vs-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
 }
 
 /* Conteúdo da aba treino */
 .marketing-root .lesson-material p {
   margin: 0 0 12px;
-  font-size: 1.05rem;
+  font-size: 16.5px;
   text-align: justify;
   line-height: 1.62;
+  hyphens: auto;
 }
 
 .marketing-root .lesson-material strong {
-  color: var(--title-color, #060a39);
+  color: #0e3a6b;
   font-weight: 800;
 }
 
 .marketing-root .lesson-material h2 {
-  font-family: var(--title-font, "Fredoka", system-ui, sans-serif);
-  color: var(--theme-color, #df5c16);
-  font-size: 1.35rem;
+  font-family: "Lora", Georgia, serif;
+  color: #1a5fad;
+  font-size: 22px;
   font-weight: 700;
   margin: 0 0 10px;
 }
 
 .marketing-root .lesson-material h3,
 .marketing-root .lesson-material .subh {
-  font-family: var(--body-font, "Jost", system-ui, sans-serif);
-  color: var(--theme-color, #df5c16);
+  font-family: "Nunito", system-ui, sans-serif;
+  color: #1a5fad;
   font-weight: 800;
-  font-size: 1rem;
+  font-size: 16px;
   margin: 14px 0 2px;
 }
 
@@ -524,26 +653,26 @@
 .marketing-root .lesson-material img {
   max-width: 100%;
   height: auto;
-  border: 1px solid #e8e8e8;
+  border: 1px solid #dbe4ee;
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(6, 10, 57, 0.08);
+  box-shadow: 0 4px 16px rgba(14, 58, 107, 0.08);
 }
 
 .marketing-root .lesson-material .clue,
 .marketing-root .lesson-material .pegadinha {
-  background: #fff7f0;
-  border-left: 5px solid var(--theme-color, #df5c16);
+  background: #fbf6ee;
+  border-left: 5px solid #1a5fad;
   border-radius: 8px;
   padding: 12px 16px;
   margin: 14px 0 4px;
-  font-size: 1rem;
+  font-size: 16px;
   text-align: justify;
 }
 
 .marketing-root .lesson-player__section-title {
-  font-family: var(--title-font, "Fredoka", system-ui, sans-serif);
-  color: var(--theme-color, #df5c16);
-  font-size: 1.35rem;
+  font-family: "Lora", Georgia, serif;
+  color: #1a5fad;
+  font-size: 22px;
   font-weight: 700;
   margin: 0 0 10px;
   line-height: 1.2;
@@ -558,8 +687,8 @@
   max-width: 100%;
   height: auto;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
-  box-shadow: 0 4px 16px rgba(6, 10, 57, 0.08);
+  border: 1px solid #dbe4ee;
+  box-shadow: 0 4px 16px rgba(14, 58, 107, 0.08);
 }
 
 .marketing-root .lesson-player__figure--question img {
@@ -584,20 +713,20 @@
   gap: 8px;
   border-radius: 8px;
   padding: 8px 16px;
-  background: #fff7f0;
+  background: #eaf1fa;
 }
 
 .marketing-root .lesson-player__tier-name {
   font-size: 1.125rem;
   font-weight: 700;
-  font-family: var(--title-font, "Fredoka", system-ui, sans-serif);
-  color: var(--title-color, #060a39);
+  font-family: "Lora", Georgia, serif;
+  color: #0e3a6b;
 }
 
 .marketing-root .lesson-player__tier-sub {
-  font-size: 0.85rem;
+  font-size: 13.5px;
   font-style: italic;
-  color: #6c757d;
+  color: #5b6b78;
 }
 
 .marketing-root .lesson-player__stats {
@@ -606,17 +735,17 @@
   align-items: center;
   gap: 14px;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid #dbe4ee;
   padding: 10px 16px;
-  font-size: 0.9rem;
+  font-size: 14.5px;
   font-weight: 600;
-  color: #6c757d;
+  color: #5b6b78;
   background: #fff;
   margin-bottom: 16px;
 }
 
 .marketing-root .lesson-player__stats b {
-  color: var(--title-color, #060a39);
+  color: #0e3a6b;
 }
 
 .marketing-root .lesson-player__stats-pct {
@@ -625,21 +754,21 @@
   border-radius: 999px;
   padding: 2px 16px;
   text-align: center;
-  font-size: 1.15rem;
+  font-size: 19px;
   font-weight: 700;
-  font-family: var(--title-font, "Fredoka", system-ui, sans-serif);
-  background: #fff7f0;
-  color: var(--theme-color, #df5c16);
+  font-family: "Lora", Georgia, serif;
+  background: #eaf1fa;
+  color: #1a5fad;
 }
 
 .marketing-root .lesson-player__stats-pct.is-done {
-  background: #eaf5e4;
-  color: var(--vs-secondary-color, #47892f);
+  background: #e7f3ec;
+  color: #1e7a46;
 }
 
 .marketing-root .lesson-player__question {
   border-radius: 14px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid #dbe4ee;
   padding: 18px 18px 6px;
   background: #fff;
   margin-bottom: 16px;
@@ -647,17 +776,17 @@
 
 .marketing-root .lesson-player__question-text {
   margin-bottom: 12px;
-  font-size: 1.05rem;
+  font-size: 16.5px;
   font-weight: 600;
   line-height: 1.62;
-  color: var(--title-color, #060a39);
+  color: #20303f;
   text-align: justify;
 }
 
 .marketing-root .lesson-player__question-num {
   margin-right: 4px;
   font-weight: 800;
-  color: var(--theme-color, #df5c16);
+  color: #1a5fad;
 }
 
 .marketing-root .lesson-player__options {
@@ -672,19 +801,19 @@
   align-items: flex-start;
   gap: 10px;
   border-radius: 10px;
-  border: 1.5px solid #e8e8e8;
+  border: 1.5px solid #dbe4ee;
   padding: 10px 12px;
   text-align: left;
-  font-size: 0.975rem;
+  font-size: 15.5px;
   background: #fff;
-  color: #444;
+  color: #20303f;
   cursor: pointer;
   font-family: inherit;
 }
 
 .marketing-root .lesson-player__option:hover:not(:disabled),
 .marketing-root .lesson-player__option:focus-visible:not(:disabled) {
-  border-color: var(--theme-color, #df5c16);
+  border-color: #1a5fad;
   outline: none;
 }
 
@@ -693,9 +822,9 @@
 }
 
 .marketing-root .lesson-player__option.is-correct {
-  border-color: var(--vs-secondary-color, #47892f);
-  background: #eaf5e4;
-  color: var(--vs-secondary-color, #47892f);
+  border-color: #1e7a46;
+  background: #e7f3ec;
+  color: #1e7a46;
   font-weight: 700;
 }
 
@@ -715,14 +844,14 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  font-size: 0.8125rem;
+  font-size: 13px;
   font-weight: 800;
-  background: #f0f0f0;
-  color: #6c757d;
+  background: #eef2f7;
+  color: #5b6b78;
 }
 
 .marketing-root .lesson-player__option.is-correct .lesson-player__option-mark {
-  background: var(--vs-secondary-color, #47892f);
+  background: #1e7a46;
   color: #fff;
 }
 
@@ -734,11 +863,11 @@
 .marketing-root .lesson-player__explanation {
   margin: 6px 0 12px;
   border-radius: 6px;
-  border-left: 4px solid var(--vs-secondary-color, #47892f);
+  border-left: 4px solid #1e7a46;
   padding: 10px 14px;
-  font-size: 0.9rem;
+  font-size: 14.5px;
   line-height: 1.62;
-  background: #eaf5e4;
+  background: #e7f3ec;
   color: #234;
   text-align: justify;
 }
@@ -746,7 +875,7 @@
 .marketing-root .lesson-player__explanation strong {
   font-weight: 800;
   font-style: italic;
-  color: var(--vs-secondary-color, #47892f);
+  color: #1e7a46;
 }
 
 @media (max-width: 575.98px) {
@@ -754,7 +883,9 @@
   .marketing-root .lesson-player__main,
   .marketing-root .lesson-player__footer,
   .marketing-root .lesson-player__nav,
-  .marketing-root .lesson-player__progress-wrap {
+  .marketing-root .lesson-player__progress-wrap,
+  .marketing-root .lesson-player__notice,
+  .marketing-root .lesson-player__status {
     padding-left: 16px;
     padding-right: 16px;
   }
@@ -765,6 +896,10 @@
 
   .marketing-root .lesson-player__nav-actions .vs-btn {
     flex: 1 1 auto;
+  }
+
+  .marketing-root .lesson-player__card {
+    padding-bottom: 9rem;
   }
 }
 
