@@ -179,15 +179,14 @@ export function isQuestionTabId(
 }
 
 /**
- * Abas do player vêm da sessão (`visible_tabs`).
- * `desafio` fica fora deste recorte mesmo se a API ainda enviar.
+ * Abas do player vêm da sessão (`visible_tabs`), inclusive Desafio.
  */
 export function resolveTabsFromIds(tabIds: readonly string[]): LessonTabMeta[] {
   const seen = new Set<LessonTabId>();
   const tabs: LessonTabMeta[] = [];
 
   tabIds.forEach((raw) => {
-    if (raw === "desafio" || !isLessonTabId(raw) || seen.has(raw)) return;
+    if (!isLessonTabId(raw) || seen.has(raw)) return;
     seen.add(raw);
     tabs.push(LESSON_TAB_META[raw]);
   });
