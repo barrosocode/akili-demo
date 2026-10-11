@@ -17,6 +17,7 @@ type AlunoDashboardShellProps = {
   children: ReactNode;
   activeHref?: string;
   fullBleed?: boolean;
+  immersive?: boolean;
   homeHref?: string;
   footerHomeHref?: string;
   showSupportFab?: boolean;
@@ -31,11 +32,22 @@ export function AlunoDashboardShell({
   children,
   activeHref,
   fullBleed = false,
+  immersive = false,
   homeHref = STUDENT_HOME_PATH,
   footerHomeHref = STUDENT_HOME_PATH,
   showSupportFab = false,
   scrollToTopOffsetClassName,
 }: AlunoDashboardShellProps) {
+  if (immersive) {
+    return (
+      <KiddinoRoot>
+        <AssistanceBanner />
+        <AssistanceExpiryWatcher />
+        <div className="lesson-stage">{children}</div>
+      </KiddinoRoot>
+    );
+  }
+
   return (
     <KiddinoRoot>
       <AssistanceBanner />

@@ -28,11 +28,13 @@ function isHelpCenterPath(pathname: string): boolean {
  */
 export function AlunoRouteShell({ children }: { children: ReactNode }) {
   const pathname = usePathname() ?? "";
-  const fullBleed = isImmersiveLessonPath(pathname) || isHelpCenterPath(pathname);
+  const immersive = isImmersiveLessonPath(pathname);
+  const fullBleed = isHelpCenterPath(pathname);
   const supervision = isSupervisionPath(pathname);
 
   return (
     <AlunoDashboardShell
+      immersive={immersive}
       fullBleed={fullBleed}
       activeHref={resolveStudentShellActiveHref(pathname)}
       homeHref={supervision ? GUARDIAN_HOME_PATH : STUDENT_HOME_PATH}

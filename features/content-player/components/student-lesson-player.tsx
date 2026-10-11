@@ -10,6 +10,7 @@ import {
   formatSessionDuration,
   StudentSessionCompleteDialog,
 } from "@/features/content-player/components/student-session-complete-dialog";
+import { LESSON_PREVIEW_FONTS_HREF } from "@/features/content-player/lib/lesson-theme";
 import {
   AULA_TAB_IDS,
   buildQuestionTabDistribution,
@@ -211,6 +212,7 @@ export function StudentLessonPlayer({
   const [progressError, setProgressError] = useState<string | null>(null);
   const [sessionError, setSessionError] = useState<string | null>(null);
   const [completedSuccess, setCompletedSuccess] = useState(false);
+  const [openedAlreadyComplete, setOpenedAlreadyComplete] = useState(false);
   const [completeSummary, setCompleteSummary] = useState<{
     durationSeconds: number;
     percent: number;
@@ -230,6 +232,7 @@ export function StudentLessonPlayer({
   const eventUuidByKey = useRef<Record<string, string>>({});
   const sessionResponseCount = useRef(0);
   const answersRef = useRef(answersByTab);
+  const entryCompletionLatchedFor = useRef<string | null>(null);
   answersRef.current = answersByTab;
 
   useEffect(() => {
@@ -241,7 +244,9 @@ export function StudentLessonPlayer({
     setProgressError(null);
     setSessionError(null);
     setCompletedSuccess(false);
+    setOpenedAlreadyComplete(false);
     setCompleteSummary(null);
+    entryCompletionLatchedFor.current = null;
     setRunningActionId(null);
     setPendingQuestionKey(null);
     setQuestionErrors({});
@@ -262,6 +267,16 @@ export function StudentLessonPlayer({
         window.speechSynthesis.cancel();
       }
     };
+  }, []);
+
+  useEffect(() => {
+    const id = "lesson-preview-fonts";
+    if (document.getElementById(id)) return;
+    const link = document.createElement("link");
+    link.id = id;
+    link.rel = "stylesheet";
+    link.href = LESSON_PREVIEW_FONTS_HREF;
+    document.head.appendChild(link);
   }, []);
 
   const pages = playback?.version.pages ?? [];
@@ -301,15 +316,19 @@ export function StudentLessonPlayer({
 
   useEffect(() => {
     if (!readOnly && !session) return;
-    if (!lessonSession) return;
-    const saved = playback?.material?.progress.percent_complete ?? 0;
+    if (!lessonSession || !playback) return;
+    const saved = playback.material?.progress.percent_complete ?? 0;
     setDisplayPercent((current) => Math.max(current, saved));
-    if (playback?.material?.progress.status === "completed" || saved >= 100) {
-      setCompletedSuccess(true);
+    if (entryCompletionLatchedFor.current === contentUuid) return;
+    entryCompletionLatchedFor.current = contentUuid;
+    if (playback.material?.progress.status === "completed" || saved >= 100) {
+      setOpenedAlreadyComplete(true);
       setViewedContent(true);
     }
   }, [
+    contentUuid,
     lessonSession,
+    playback,
     readOnly,
     session,
     playback?.material?.progress.percent_complete,
@@ -735,6 +754,10 @@ export function StudentLessonPlayer({
     setNavHint(null);
   }
 
+  function leaveLesson() {
+    router.push(backHref);
+  }
+
   function handlePrevious() {
     if (isSavingProgress || isFirstTab) return;
     const prevTab = visibleTabIds[activeTabIndex - 1];
@@ -747,27 +770,48 @@ export function StudentLessonPlayer({
     setActionError(null);
   }
 
+  const exitLabel = studyTaskUuid ? "Voltar ao quadro" : "Voltar aos materiais";
+
   if (query.isLoading) {
     return (
-      <div className="blog-content" role="status">
-        <p>Carregando conteúdo...</p>
+      <div className="lesson-player" role="status">
+        <div className="lesson-player__card">
+          <div className="lesson-player__status">
+            <Link
+              href={backHref}
+              className="lesson-player__exit lesson-player__exit--solid"
+            >
+              {exitLabel}
+            </Link>
+            <p>Carregando conteúdo...</p>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (query.error || !playback) {
     return (
-      <div className="blog-content">
-        <div className="alert alert-danger" role="alert">
-          {errorMessage(query.error)}
+      <div className="lesson-player">
+        <div className="lesson-player__card">
+          <div className="lesson-player__status">
+            <Link
+              href={backHref}
+              className="lesson-player__exit lesson-player__exit--solid"
+            >
+              {exitLabel}
+            </Link>
+            <div className="alert alert-danger" role="alert">
+              {errorMessage(query.error)}
+            </div>
+          </div>
         </div>
-        <Link href={backHref} className="vs-btn">
-          Voltar
-        </Link>
       </div>
     );
   }
 
+  const showCompletedNotice =
+    (openedAlreadyComplete || completedSuccess) && !completeSummary;
   const hasLesson =
     pages.length > 0 || questions.length > 0 || visibleTabs.length > 0;
   const waitingForSession =
@@ -777,13 +821,7 @@ export function StudentLessonPlayer({
     (isQuestionTabId(activeTab) || visibleTabs.length === 0);
 
   return (
-    <div className="blog-content">
-      {readOnly ? (
-        <div className="alert alert-info mb-4" role="status">
-          Visualização somente leitura — atividades desabilitadas.
-        </div>
-      ) : null}
-
+    <div className="lesson-player">
       {completeSummary ? (
         <StudentSessionCompleteDialog
           title="Parabéns!"
@@ -798,64 +836,89 @@ export function StudentLessonPlayer({
         />
       ) : null}
 
-      <div className="mb-3">
-        <Link href={backHref} className="vs-btn style3">
-          {studyTaskUuid ? "Voltar ao quadro" : "Voltar aos materiais"}
-        </Link>
-      </div>
-
-      {completedSuccess && !completeSummary ? (
-        <div className="alert alert-success mb-4" role="status">
-          {lessonSession
-            ? "Material concluído! Seu progresso foi registrado."
-            : "Etapa concluída! Seu progresso foi registrado."}
-        </div>
-      ) : null}
-
       {sessionTabsMissing ? (
-        <div className="alert alert-danger mb-4" role="alert">
-          Esta etapa de estudo não está disponível no momento. Tente de novo
-          mais tarde.
+        <div className="lesson-player__card">
+          <div className="lesson-player__status">
+            <Link
+              href={backHref}
+              className="lesson-player__exit lesson-player__exit--solid"
+            >
+              {exitLabel}
+            </Link>
+            <div className="alert alert-danger mb-0" role="alert">
+              Esta etapa de estudo não está disponível no momento. Tente de novo
+              mais tarde.
+            </div>
+          </div>
         </div>
-      ) : null}
-
-      {sessionError && !sessionTabsMissing ? (
-        <div className="alert alert-warning mb-4" role="status">
-          Não foi possível iniciar o registro das respostas. {sessionError}
-        </div>
-      ) : null}
-
-      {progressError ? (
-        <div className="alert alert-danger mb-4" role="alert">
-          {progressError}
-        </div>
-      ) : null}
-
-      {sessionTabsMissing ? (
-        <Link href={backHref} className="vs-btn">
-          Voltar
-        </Link>
       ) : !hasLesson && !waitingForSession ? (
-        <p className="lesson-player__empty">
-          Nenhum conteúdo pedagógico disponível. Preencha o material ou as
-          questões.
-        </p>
+        <div className="lesson-player__card">
+          <div className="lesson-player__status">
+            <Link
+              href={backHref}
+              className="lesson-player__exit lesson-player__exit--solid"
+            >
+              {exitLabel}
+            </Link>
+            <p className="lesson-player__empty">
+              Nenhum conteúdo pedagógico disponível. Preencha o material ou as
+              questões.
+            </p>
+          </div>
+        </div>
       ) : (
-        <div className="lesson-player">
-          <div className="lesson-player__card">
+        <div className="lesson-player__card">
             <header className="lesson-player__header">
-              {kicker ? (
-                <p className="lesson-player__kicker">{kicker}</p>
-              ) : null}
-              <h1 className="lesson-player__title">
-                {primaryPage?.title || playback.content.name}
-              </h1>
-              {primaryPage?.text ? (
-                <p className="lesson-player__subtitle">
-                  {primaryPage.text.replace(/<[^>]+>/g, "").slice(0, 160)}
-                </p>
-              ) : null}
+              <div className="lesson-player__header-row">
+                <div className="lesson-player__header-copy">
+                  {kicker ? (
+                    <p className="lesson-player__kicker">{kicker}</p>
+                  ) : null}
+                  <h1 className="lesson-player__title">
+                    {primaryPage?.title || playback.content.name}
+                  </h1>
+                  {primaryPage?.text ? (
+                    <p className="lesson-player__subtitle">
+                      {primaryPage.text.replace(/<[^>]+>/g, "").slice(0, 160)}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
             </header>
+
+            {readOnly ? (
+              <div className="lesson-player__notice">
+                <div className="alert alert-info mb-0" role="status">
+                  Visualização somente leitura — atividades desabilitadas.
+                </div>
+              </div>
+            ) : null}
+
+            {showCompletedNotice ? (
+              <div className="lesson-player__notice">
+                <div className="alert alert-success mb-0" role="status">
+                  {lessonSession
+                    ? "Material concluído! Seu progresso foi registrado."
+                    : "Etapa concluída! Seu progresso foi registrado."}
+                </div>
+              </div>
+            ) : null}
+
+            {sessionError ? (
+              <div className="lesson-player__notice">
+                <div className="alert alert-warning mb-0" role="status">
+                  Não foi possível iniciar o registro das respostas. {sessionError}
+                </div>
+              </div>
+            ) : null}
+
+            {progressError ? (
+              <div className="lesson-player__notice">
+                <div className="alert alert-danger mb-0" role="alert">
+                  {progressError}
+                </div>
+              </div>
+            ) : null}
 
             <div className="lesson-player__progress-wrap">
               <div className="lesson-player__progress-meta">
@@ -946,14 +1009,19 @@ export function StudentLessonPlayer({
             </main>
 
             <div className="lesson-player__nav">
-              <button
-                type="button"
-                className="vs-btn style3"
-                onClick={handlePrevious}
-                disabled={isFirstTab || isSavingProgress || waitingForSession}
-              >
-                Anterior
-              </button>
+              <div className="lesson-player__nav-leading">
+                <Link href={backHref} className="lesson-player__exit">
+                  {exitLabel}
+                </Link>
+                <button
+                  type="button"
+                  className="vs-btn style3"
+                  onClick={handlePrevious}
+                  disabled={isFirstTab || isSavingProgress || waitingForSession}
+                >
+                  Anterior
+                </button>
+              </div>
 
               <div className="lesson-player__nav-actions">
                 {!isLastTab ? (
@@ -967,28 +1035,35 @@ export function StudentLessonPlayer({
                   </button>
                 ) : null}
 
-                {isLastTab && !readOnly ? (
+                {isLastTab && openedAlreadyComplete ? (
+                  <button
+                    type="button"
+                    className="vs-btn"
+                    onClick={leaveLesson}
+                    disabled={isSavingProgress}
+                  >
+                    Continuar
+                  </button>
+                ) : null}
+
+                {isLastTab && !openedAlreadyComplete && !readOnly ? (
                   <button
                     type="button"
                     className="vs-btn"
                     onClick={() => void handleComplete()}
-                    disabled={
-                      isSavingProgress || completedSuccess || waitingForSession
-                    }
+                    disabled={isSavingProgress || waitingForSession}
                   >
                     {isSavingProgress
                       ? "Salvando..."
-                      : completedSuccess
-                        ? "Concluído"
-                        : lessonSession
-                          ? "Concluir material"
-                          : "Concluir etapa"}
+                      : lessonSession
+                        ? "Concluir material"
+                        : "Concluir etapa"}
                   </button>
                 ) : null}
 
-                {isLastTab && readOnly ? (
+                {isLastTab && !openedAlreadyComplete && readOnly ? (
                   <Link href={backHref} className="vs-btn">
-                    Voltar aos materiais
+                    Continuar
                   </Link>
                 ) : null}
               </div>
@@ -996,16 +1071,7 @@ export function StudentLessonPlayer({
 
             <footer className="lesson-player__footer">{footerTrace}</footer>
           </div>
-        </div>
       )}
-
-      {completedSuccess && !completeSummary ? (
-        <div className="mt-4">
-          <Link href={backHref} className="vs-btn">
-            {studyTaskUuid ? "Voltar ao quadro" : "Voltar aos materiais"}
-          </Link>
-        </div>
-      ) : null}
     </div>
   );
 }
