@@ -1,7 +1,8 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { resolveStudentMaterialsSearch } from "@/features/student/lib/student-materials-search";
 import type {
   ContentPlayback,
   StudentMaterial,
@@ -10,11 +11,18 @@ import type {
 } from "@/types/student-learning";
 import { bffClient } from "@/services/bff/client";
 
-export function useStudentMaterialsQuery(enabled = true) {
+export function useStudentMaterialsQuery(
+  enabled = true,
+  search?: string,
+  subjectUuid?: string
+) {
+  const resolved = resolveStudentMaterialsSearch(search, subjectUuid);
+
   return useQuery({
-    queryKey: ["student", "materials"],
-    queryFn: () => bffClient<StudentMaterial[]>("/api/student/materials"),
+    queryKey: ["student", "materials", resolved.term, resolved.subjectUuid],
+    queryFn: () => bffClient<StudentMaterial[]>(resolved.path),
     enabled,
+    placeholderData: keepPreviousData,
   });
 }
 

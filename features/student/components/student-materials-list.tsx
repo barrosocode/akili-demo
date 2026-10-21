@@ -10,48 +10,57 @@ import type { StudentMaterial } from "@/types/student-learning";
 
 type StudentMaterialsListProps = {
   materials?: StudentMaterial[];
+  isLoading?: boolean;
+  error?: unknown;
   readOnly?: boolean;
   childRef?: string;
 };
 
+export function studentMaterialsErrorMessage(error: unknown): string {
+  if (error instanceof BffClientError) {
+    const subjectMessage = error.errors?.subject_uuid?.trim();
+    if (subjectMessage) return subjectMessage;
+    return error.detail ?? error.title;
+  }
+
+  return getUserFacingApiMessage(error);
+}
+
 export function StudentMaterialsList({
   materials: materialsProp,
+  isLoading = false,
+  error: errorProp = null,
   readOnly = false,
   childRef,
 }: StudentMaterialsListProps) {
-  const ownQuery = useStudentMaterialsQuery(!materialsProp && !readOnly);
-  const frequencyQuery = useStudentFrequencyQuery(!readOnly);
+  const external = materialsProp !== undefined;
+  const ownQuery = useStudentMaterialsQuery(!external && !readOnly);
+  const frequencyQuery = useStudentFrequencyQuery(!readOnly && !external);
   const materials = materialsProp ?? ownQuery.data ?? [];
-  const loading = !materialsProp && !readOnly && ownQuery.isLoading;
-  const error = !materialsProp && !readOnly ? ownQuery.error : null;
+  const loading = external ? isLoading : !readOnly && ownQuery.isLoading;
+  const error = external ? errorProp : !readOnly ? ownQuery.error : null;
   const base = readOnly && childRef ? `/aluno/supervisao/${childRef}/materiais` : "/aluno/materiais";
   const frequency = frequencyQuery.data;
 
   if (loading) {
-    return <p role="status">Carregando materiais...</p>;
+    return <p role="status">Carregando conteúdos...</p>;
   }
 
   if (error) {
-    return (
-      <p style={{ color: "red" }}>
-        {error instanceof BffClientError
-          ? (error.detail ?? error.title)
-          : getUserFacingApiMessage(error)}
-      </p>
-    );
+    return <p style={{ color: "red" }}>{studentMaterialsErrorMessage(error)}</p>;
   }
 
   if (!materials.length) {
     return (
       <div className="alert alert-info" role="status">
-        Nenhum material liberado para este aluno no momento.
+        Nenhum material encontrado.
       </div>
     );
   }
 
   return (
     <>
-      {!readOnly && frequency ? (
+      {!external && !readOnly && frequency ? (
         <p className="mb-3">
           {frequency.available_count === 0
             ? "Não há aulas disponíveis na sua matrícula."

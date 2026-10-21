@@ -122,7 +122,7 @@ type StudentLaravelConfig = AxiosRequestConfig & {
   skipUnauthorizedRetry?: boolean;
 };
 
-async function studentLaravelEnvelope(
+export async function studentLaravelEnvelope(
   path: string,
   config?: StudentLaravelConfig
 ): Promise<unknown> {
