@@ -16,6 +16,7 @@ import {
   buildQuestionTabDistribution,
   isPersistedQuestionUuid,
   isQuestionTabId,
+  omitEmptyQuestionTabs,
   questionAnswerKey,
   resolveTabsFromIds,
   type LessonQuestionTabId,
@@ -160,6 +161,15 @@ function isTabComplete(
   return tabAnswerCount(distribution, answersByTab, tabId) >= questions.length;
 }
 
+function missingAnswersMessage(labels: string[]): string {
+  if (labels.length === 1) {
+    return `Falta responder a aba ${labels[0]}.`;
+  }
+  const previous = labels.slice(0, -1).join(", ");
+  const last = labels[labels.length - 1];
+  return `Falta responder as abas ${previous} e ${last}.`;
+}
+
 function errorMessage(error: unknown): string {
   return error instanceof BffClientError
     ? (error.detail ?? error.title)
@@ -289,31 +299,17 @@ export function StudentLessonPlayer({
   );
 
   const visibleTabs = useMemo(() => {
-    let tabs;
     if (readOnly) {
-      const aulaTabs = resolveTabsFromIds(AULA_TAB_IDS);
-      tabs = aulaTabs.filter((tab) => {
-        if (tab.id === "treino") return true;
-        return distribution[tab.id].length > 0;
-      });
-    } else if (!session) {
-      return [];
-    } else if (!Array.isArray(session.visible_tabs)) {
-      tabs = resolveTabsFromIds(AULA_TAB_IDS);
-    } else {
-      tabs = resolveTabsFromIds(session.visible_tabs);
+      return omitEmptyQuestionTabs(
+        resolveTabsFromIds(AULA_TAB_IDS),
+        distribution
+      );
     }
-
-    const includeDesafio =
-      distribution.desafio.length > 0 &&
-      !tabs.some((tab) => tab.id === "desafio") &&
-      (readOnly || isLessonSession(session));
-
-    if (includeDesafio) {
-      tabs = [...tabs, ...resolveTabsFromIds(["desafio"])];
-    }
-
-    return tabs;
+    if (!session) return [];
+    const tabIds = Array.isArray(session.visible_tabs)
+      ? session.visible_tabs
+      : AULA_TAB_IDS;
+    return omitEmptyQuestionTabs(resolveTabsFromIds(tabIds), distribution);
   }, [readOnly, session, distribution]);
 
   const allowedQuestionTabs = useMemo(() => {
@@ -679,8 +675,11 @@ export function StudentLessonPlayer({
       );
 
     if (!canAdvance) {
+      const label = visibleTabs.find((tab) => tab.id === activeTab)?.label;
       setNavHint(
-        "Responda todas as questões desta etapa antes de continuar."
+        label
+          ? `Falta responder a aba ${label}.`
+          : "Responda todas as questões desta etapa antes de continuar."
       );
       return;
     }
@@ -715,22 +714,21 @@ export function StudentLessonPlayer({
     }
 
     const contentViewed = true;
-    const canComplete = visibleTabIds.every((tabId) =>
-      isTabComplete(
-        tabId,
-        distribution,
-        answersByTab,
-        pages.length,
-        contentViewed
+    const pendingLabels = visibleTabs
+      .filter(
+        (tab) =>
+          !isTabComplete(
+            tab.id,
+            distribution,
+            answersByTab,
+            pages.length,
+            contentViewed
+          )
       )
-    );
+      .map((tab) => tab.label);
 
-    if (!canComplete) {
-      setNavHint(
-        lessonSession
-          ? "Conclua o conteúdo e responda as questões das etapas antes de finalizar."
-          : "Responda as questões desta etapa antes de finalizar."
-      );
+    if (pendingLabels.length > 0) {
+      setNavHint(missingAnswersMessage(pendingLabels));
       return;
     }
 
@@ -972,12 +970,6 @@ export function StudentLessonPlayer({
             </nav>
 
             <main className="lesson-player__main">
-              {navHint ? (
-                <p className="lesson-player__hint" role="status">
-                  {navHint}
-                </p>
-              ) : null}
-
               {activeTab === "treino" ? (
                 <LessonContentTab
                   pages={pages}
@@ -1022,6 +1014,14 @@ export function StudentLessonPlayer({
             </main>
 
             <div className="lesson-player__nav">
+              {navHint ? (
+                <div
+                  className="alert alert-warning lesson-player__nav-alert mb-0"
+                  role="alert"
+                >
+                  {navHint}
+                </div>
+              ) : null}
               <div className="lesson-player__nav-leading">
                 <Link href={backHref} className="lesson-player__exit">
                   {exitLabel}

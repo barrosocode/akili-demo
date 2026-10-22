@@ -1,4 +1,4 @@
-import { Fredoka, Jost } from "next/font/google";
+import { Caveat, Fredoka, Jost } from "next/font/google";
 
 /**
  * Tipografia do site institucional (SPEC-005 / SPEC-009).
@@ -18,4 +18,11 @@ export const jost = Jost({
   variable: "--font-jost",
 });
 
-export const marketingFontVariables = `${fredoka.variable} ${jost.variable}`;
+export const caveat = Caveat({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  display: "swap",
+  variable: "--font-caveat",
+});
+
+export const marketingFontVariables = `${fredoka.variable} ${jost.variable} ${caveat.variable}`;

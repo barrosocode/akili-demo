@@ -1,5 +1,5 @@
-import { StudentStudyBoardView } from "@/features/study-board/components/student-study-board-view";
+import { StudentHomeView } from "@/features/student/components/student-home-view";
 
 export default function StudentHomePage() {
-  return <StudentStudyBoardView />;
+  return <StudentHomeView />;
 }

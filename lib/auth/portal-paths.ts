@@ -6,6 +6,8 @@ export const GUARDIAN_HOME_PATH = "/";
 export const STUDENT_HOME_PATH = "/aluno";
 export const STUDENT_STUDIES_PATH = "/aluno/estudos";
 export const STUDENT_PROGRESS_PATH = "/aluno/progresso";
+export const STUDENT_MATERIALS_PATH = "/aluno/materiais";
+export const STUDENT_HELP_PATH = "/aluno/ajuda";
 export const STUDENT_LOGIN_PATH = "/aluno/entrar";
 export const GUARDIAN_LOGIN_PATH = "/signin";
 
@@ -34,6 +36,17 @@ export function supervisionHomePath(childRef: string): string {
 
 export function supervisionMaterialsPath(childRef: string): string {
   return `${SUPERVISION_PREFIX}${childRef}/materiais`;
+}
+
+export function studentProgressSubjectPath(subjectUuid: string): string {
+  return `${STUDENT_PROGRESS_PATH}/disciplina/${subjectUuid}`;
+}
+
+export function supervisionProgressSubjectPath(
+  childRef: string,
+  subjectUuid: string
+): string {
+  return `${supervisionHomePath(childRef)}/progresso/disciplina/${subjectUuid}`;
 }
 
 /**
@@ -68,7 +81,7 @@ export function resolveGuardianPostLoginPath(
 export type StudentShellNavItem = {
   label: string;
   href: string;
-  key: "home" | "environment" | "progress" | "studies" | "materials";
+  key: "home" | "environment" | "progress" | "studies" | "materials" | "courses" | "help";
 };
 
 /**
@@ -100,7 +113,8 @@ export function resolveStudentShellNav(pathname: string): StudentShellNavItem[] 
       label: "Meu progresso",
       href: STUDENT_PROGRESS_PATH,
     },
-    { key: "materials", label: "Materiais", href: `${STUDENT_HOME_PATH}/materiais` },
+    { key: "materials", label: "Materiais", href: STUDENT_MATERIALS_PATH },
+    { key: "help", label: "Ajuda", href: STUDENT_HELP_PATH },
   ];
 }
 
@@ -118,8 +132,11 @@ export function resolveStudentShellActiveHref(pathname: string): string | undefi
     return base;
   }
 
-  if (pathname.startsWith(`${STUDENT_HOME_PATH}/materiais`)) {
-    return `${STUDENT_HOME_PATH}/materiais`;
+  if (pathname === STUDENT_HELP_PATH || pathname.startsWith(`${STUDENT_HELP_PATH}/`)) {
+    return STUDENT_HELP_PATH;
+  }
+  if (pathname.startsWith(STUDENT_MATERIALS_PATH)) {
+    return STUDENT_MATERIALS_PATH;
   }
   if (
     pathname === STUDENT_PROGRESS_PATH ||

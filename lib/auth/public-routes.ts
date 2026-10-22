@@ -13,6 +13,7 @@ const PUBLIC_PATHS = [
   "/cadastro",
   "/contato",
   "/newsletter",
+  "/preview-busca",
   "/assistance/adopt",
   "/assistance/entrar",
   "/suporte/entrar",

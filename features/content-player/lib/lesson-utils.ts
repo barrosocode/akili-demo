@@ -179,7 +179,9 @@ export function isQuestionTabId(
 }
 
 /**
- * Abas do player vêm da sessão (`visible_tabs`), inclusive Desafio.
+ * Abas do player vêm da sessão (`visible_tabs`).
+ * Ids conhecidos entram na ordem recebida; repetido não entra de novo;
+ * id fora de `LessonTabId` fica de fora.
  */
 export function resolveTabsFromIds(tabIds: readonly string[]): LessonTabMeta[] {
   const seen = new Set<LessonTabId>();
@@ -192,4 +194,15 @@ export function resolveTabsFromIds(tabIds: readonly string[]): LessonTabMeta[] {
   });
 
   return tabs;
+}
+
+/** Esconde aba de questões com bucket vazio. Conteúdo permanece. */
+export function omitEmptyQuestionTabs(
+  tabs: readonly LessonTabMeta[],
+  distribution: QuestionTabDistribution
+): LessonTabMeta[] {
+  return tabs.filter((tab) => {
+    if (!isQuestionTabId(tab.id)) return true;
+    return distribution[tab.id].length > 0;
+  });
 }

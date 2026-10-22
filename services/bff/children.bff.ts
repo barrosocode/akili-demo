@@ -1,4 +1,6 @@
+import { studentProgressScopeQuery } from "@/features/student/lib/student-progress-scope";
 import { bffClient } from "@/services/bff/client";
+import { learningSearchParams } from "@/services/bff/learning-search-params";
 import type {
   LearningChart,
   LearningChartSeries,
@@ -8,20 +10,6 @@ import type {
 import type { ChildProgress, ChildSummary } from "@/types/domain/child";
 import type { StudentDashboard } from "@/types/student-learning";
 
-function learningSearchParams(
-  filters: LearningQueryFilters,
-  series?: LearningChartSeries
-): string {
-  const params = new URLSearchParams({
-    date_from: filters.date_from,
-    date_to: filters.date_to,
-    outcome: filters.outcome,
-    session_position: filters.session_position,
-  });
-  if (series) params.set("series", series);
-  return params.toString();
-}
-
 export const childrenBff = {
   list() {
     return bffClient<ChildSummary[]>("/api/guardian/children");
@@ -30,8 +18,10 @@ export const childrenBff = {
   progress(ref: string) {
     return bffClient<ChildProgress>(`/api/guardian/children/${ref}/progress`);
   },
-  learning(ref: string) {
-    return bffClient<StudentDashboard>(`/api/guardian/children/${ref}/learning`);
+  learning(ref: string, subjectUuid?: string) {
+    return bffClient<StudentDashboard>(
+      `/api/guardian/children/${ref}/learning${studentProgressScopeQuery(subjectUuid)}`
+    );
   },
 
   learningKpi(ref: string, filters: LearningQueryFilters) {
