@@ -53,8 +53,8 @@ export function AlunoDashboardShell({
       <AssistanceBanner />
       <AssistanceExpiryWatcher />
       <AlunoHeader homeHref={homeHref} />
-      <section className="vs-blog-wrapper blog-details space-top space-extra-bottom">
-        <div className="container">
+      <section className="vs-blog-wrapper blog-details space-top space-extra-bottom aluno-shell">
+        <div className="aluno-frame">
           {fullBleed ? (
             <div className="portal-dashboard portal-dashboard--bleed">{children}</div>
           ) : (

@@ -33,38 +33,49 @@ type LearningOverviewProps = {
   source?: "guardian" | "student";
   childRef?: string;
   enabled?: boolean;
+  subjectUuid?: string;
 };
 
 type PeriodPreset = "7" | "30" | "90";
 
 const CHART_META: Record<
   LearningChartSeries,
-  { title: string; studentTitle: string; format: "ratio" | "percent" }
+  {
+    title: string;
+    studentTitle: string;
+    format: "ratio" | "percent";
+    variant: "bar" | "line" | "cards";
+  }
 > = {
   time_ratio_over_time: {
     title: "Evolução da razão de tempo",
     studentTitle: "Tempo de resposta ao longo dos dias",
     format: "ratio",
+    variant: "line",
   },
   time_ratio_by_order: {
     title: "Razão de tempo por ordem da questão",
     studentTitle: "Tempo de resposta em cada questão",
     format: "ratio",
+    variant: "line",
   },
   accuracy_over_time: {
     title: "Evolução do acerto",
     studentTitle: "Porcentagem de acerto ao longo dos dias",
     format: "percent",
+    variant: "line",
   },
   accuracy_by_order: {
     title: "Acerto por ordem da questão",
     studentTitle: "Porcentagem de acerto em cada questão",
     format: "percent",
+    variant: "line",
   },
   accuracy_by_time_ratio: {
     title: "Acerto por faixa de razão de tempo",
     studentTitle: "Acerto conforme o tempo de resposta",
     format: "percent",
+    variant: "cards",
   },
 };
 
@@ -75,15 +86,18 @@ function isoDate(date: Date): string {
 function filtersFromPreset(
   preset: PeriodPreset,
   outcome: LearningKpiOutcome,
-  sessionPosition: LearningSessionPosition
+  sessionPosition: LearningSessionPosition,
+  subjectUuid?: string
 ): LearningQueryFilters {
   const to = new Date();
   const from = subDays(to, Number(preset) - 1);
+  const subject = subjectUuid?.trim() ?? "";
   return {
     date_from: isoDate(from),
     date_to: isoDate(to),
     outcome,
     session_position: sessionPosition,
+    ...(subject ? { subject_uuid: subject } : {}),
   };
 }
 
@@ -148,6 +162,7 @@ export function LearningOverview({
   childRef,
   source = childRef ? "guardian" : "student",
   enabled = true,
+  subjectUuid,
 }: LearningOverviewProps) {
   const isStudent = source === "student";
   const [preset, setPreset] = useState<PeriodPreset>("30");
@@ -156,8 +171,8 @@ export function LearningOverview({
     useState<LearningSessionPosition>("all");
 
   const filters = useMemo(
-    () => filtersFromPreset(preset, outcome, sessionPosition),
-    [preset, outcome, sessionPosition]
+    () => filtersFromPreset(preset, outcome, sessionPosition, subjectUuid),
+    [preset, outcome, sessionPosition, subjectUuid]
   );
 
   const studentKpiQuery = useStudentLearningKpiQuery(
@@ -372,6 +387,8 @@ export function LearningOverview({
             title={title}
             points={query?.data?.points ?? []}
             formatY={formatY}
+            variant={meta.variant}
+            yScale={meta.format === "percent" ? "percent" : "auto"}
           />
         );
       })}

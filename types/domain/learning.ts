@@ -22,6 +22,7 @@ export type LearningQueryFilters = {
   date_to: string;
   outcome: LearningKpiOutcome;
   session_position: LearningSessionPosition;
+  subject_uuid?: string;
 };
 
 export type LearningKpi = {

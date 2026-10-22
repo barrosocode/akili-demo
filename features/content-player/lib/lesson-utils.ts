@@ -180,17 +180,29 @@ export function isQuestionTabId(
 
 /**
  * Abas do player vêm da sessão (`visible_tabs`).
- * `desafio` fica fora deste recorte mesmo se a API ainda enviar.
+ * Ids conhecidos entram na ordem recebida; repetido não entra de novo;
+ * id fora de `LessonTabId` fica de fora.
  */
 export function resolveTabsFromIds(tabIds: readonly string[]): LessonTabMeta[] {
   const seen = new Set<LessonTabId>();
   const tabs: LessonTabMeta[] = [];
 
   tabIds.forEach((raw) => {
-    if (raw === "desafio" || !isLessonTabId(raw) || seen.has(raw)) return;
+    if (!isLessonTabId(raw) || seen.has(raw)) return;
     seen.add(raw);
     tabs.push(LESSON_TAB_META[raw]);
   });
 
   return tabs;
+}
+
+/** Esconde aba de questões com bucket vazio. Conteúdo permanece. */
+export function omitEmptyQuestionTabs(
+  tabs: readonly LessonTabMeta[],
+  distribution: QuestionTabDistribution
+): LessonTabMeta[] {
+  return tabs.filter((tab) => {
+    if (!isQuestionTabId(tab.id)) return true;
+    return distribution[tab.id].length > 0;
+  });
 }

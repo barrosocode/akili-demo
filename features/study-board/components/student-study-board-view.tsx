@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { StudentWelcomeCard } from "@/features/student/components/student-welcome-card";
 import { StudyKanbanBoard } from "@/features/study-kanban/components/study-kanban-board";
 import { useStudentStudyBoardQuery } from "@/features/study-board/hooks/use-student-study-board";
 import {
@@ -16,8 +17,9 @@ export function StudentStudyBoardView() {
 
   if (isLoading && !board) {
     return (
-      <div className="blog-content" role="status">
-        <p>Carregando seu quadro de estudos...</p>
+      <div className="blog-content">
+        <StudentWelcomeCard />
+        <p role="status">Carregando seu quadro de estudos...</p>
       </div>
     );
   }
@@ -25,6 +27,7 @@ export function StudentStudyBoardView() {
   if (error && !board) {
     return (
       <div className="blog-content">
+        <StudentWelcomeCard />
         <h2 className="blog-title">Estudos</h2>
         <p style={{ color: "red" }} role="alert">
           {error instanceof BffClientError
@@ -42,6 +45,7 @@ export function StudentStudyBoardView() {
   return (
     <div className="portal-dashboard-page">
       <div className="blog-content">
+        <StudentWelcomeCard />
         <div className="portal-page-header">
           <h2 className="blog-title">{board.name}</h2>
         </div>

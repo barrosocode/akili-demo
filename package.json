@@ -12,9 +12,11 @@
     "test:assistance": "node --experimental-strip-types --test features/assistance/assistance.test.ts",
     "test:dev-login": "node --experimental-strip-types --test lib/auth/*.test.ts",
     "test:support-faq": "node --experimental-strip-types --test features/support/lib/map-route-target.test.ts features/support/lib/paths.test.ts",
-    "test:subjects": "node --experimental-strip-types --test features/subjects/lib/resolve-student-subjects.test.ts features/subjects/lib/subject-color.test.ts",
+    "test:subjects": "node --experimental-strip-types --test features/subjects/lib/resolve-student-subjects.test.ts features/subjects/lib/subject-color.test.ts features/subjects/lib/select-subject-progress.test.ts",
     "test:student-materials": "node --experimental-strip-types --test features/student/lib/student-materials-search.test.ts",
-    "test": "npm run test:tawk && npm run test:assistance && npm run test:dev-login && npm run test:support-faq && npm run test:subjects && npm run test:student-materials"
+    "test:student-progress": "node --experimental-strip-types --test features/student/lib/student-progress-scope.test.ts services/bff/learning-search-params.test.ts",
+    "test:content-player": "node --experimental-strip-types --test features/content-player/lib/lesson-utils.test.ts",
+    "test": "npm run test:tawk && npm run test:assistance && npm run test:dev-login && npm run test:support-faq && npm run test:subjects && npm run test:student-materials && npm run test:student-progress && npm run test:content-player"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

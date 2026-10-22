@@ -4,8 +4,18 @@ import { requireAuth } from "@/lib/auth/session";
 import { laravelRequest } from "@/lib/api/laravel-client";
 import type { StudentDashboard } from "@/types/student-learning";
 
+function learningPath(uuid: string, requestUrl: string): string {
+  const subjectUuid = new URL(requestUrl).searchParams.get("subject_uuid")?.trim() ?? "";
+  const base = `/guardian/students/${uuid}/learning`;
+  if (!subjectUuid) return base;
+
+  const query = new URLSearchParams();
+  query.set("subject_uuid", subjectUuid);
+  return `${base}?${query.toString()}`;
+}
+
 export async function GET(
-  _request: Request,
+  request: Request,
   context: { params: Promise<{ ref: string }> }
 ) {
   try {
@@ -18,7 +28,7 @@ export async function GET(
     }
 
     const learning = await laravelRequest<StudentDashboard>(
-      `/guardian/students/${uuid}/learning`
+      learningPath(uuid, request.url)
     );
 
     return jsonSuccess(learning);

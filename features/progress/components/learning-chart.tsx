@@ -1,3 +1,4 @@
+import { LearningLineChart } from "@/features/progress/components/learning-line-chart";
 import type { LearningChartPoint } from "@/types/domain/learning";
 
 type LearningChartProps = {
@@ -5,13 +6,61 @@ type LearningChartProps = {
   points: LearningChartPoint[];
   formatY?: (value: number) => string;
   emptyLabel?: string;
+  variant?: "bar" | "line" | "cards";
+  yScale?: "auto" | "percent";
 };
+
+function formatBandNumber(raw: string): string {
+  const value = Number(raw);
+  if (!Number.isFinite(value)) return raw;
+  return value.toLocaleString("pt-BR", {
+    minimumFractionDigits: value % 1 === 0 ? 0 : 1,
+    maximumFractionDigits: 1,
+  });
+}
+
+function formatTimeRatioBand(value: string | number): string {
+  const raw = String(value).trim();
+  const openEnded = /^(\d+(?:\.\d+)?)\+$/.exec(raw);
+  if (openEnded?.[1]) return `${formatBandNumber(openEnded[1])} ou mais`;
+  const range = /^(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)$/.exec(raw);
+  if (range?.[1] && range[2]) {
+    return `${formatBandNumber(range[1])} a ${formatBandNumber(range[2])}`;
+  }
+  return raw;
+}
+
+function LearningBandCards({
+  points,
+  formatY,
+}: {
+  points: LearningChartPoint[];
+  formatY: (value: number) => string;
+}) {
+  return (
+    <ul className="learning-band-cards">
+      {points.map((point, index) => {
+        const range = formatTimeRatioBand(point.x);
+        const percent =
+          point.y === null || !Number.isFinite(point.y) ? "—" : formatY(point.y);
+        return (
+          <li className="learning-band-card" key={`${point.x}-${index}`}>
+            <p className="learning-band-card__range">{range}</p>
+            <p className="learning-band-card__value">{percent}</p>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
 
 export function LearningChart({
   title,
   points,
   formatY = (value) => String(value),
   emptyLabel = "Ainda não há respostas neste período.",
+  variant = "bar",
+  yScale = "auto",
 }: LearningChartProps) {
   const numericPoints = points.filter(
     (point) => point.y !== null && Number.isFinite(point.y)
@@ -26,6 +75,15 @@ export function LearningChart({
       <h3 className="widget_title">{title}</h3>
       {!numericPoints.length ? (
         <p className="mb-0">{emptyLabel}</p>
+      ) : variant === "line" ? (
+        <LearningLineChart
+          title={title}
+          points={points}
+          formatY={formatY}
+          yScale={yScale}
+        />
+      ) : variant === "cards" ? (
+        <LearningBandCards points={points} formatY={formatY} />
       ) : (
         <div
           className="d-flex align-items-end gap-2 overflow-auto"

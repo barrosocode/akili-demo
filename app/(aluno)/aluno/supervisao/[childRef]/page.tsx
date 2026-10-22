@@ -1,4 +1,4 @@
-import { SupervisionDashboardPage } from "@/features/student/components/supervision-dashboard-page";
+import { SupervisionProgressSubjects } from "@/features/student/components/supervision-progress-subjects";
 
 type PageProps = {
   params: Promise<{ childRef: string }>;
@@ -6,5 +6,5 @@ type PageProps = {
 
 export default async function GuardianSupervisionPage({ params }: PageProps) {
   const { childRef } = await params;
-  return <SupervisionDashboardPage childRef={childRef} />;
+  return <SupervisionProgressSubjects childRef={childRef} />;
 }

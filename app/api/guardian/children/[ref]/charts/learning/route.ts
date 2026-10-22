@@ -21,6 +21,9 @@ function forwardedQuery(url: string): string {
     if (value) outgoing.set(key, value);
   });
 
+  const subjectUuid = incoming.get("subject_uuid")?.trim() ?? "";
+  if (subjectUuid) outgoing.set("subject_uuid", subjectUuid);
+
   const query = outgoing.toString();
   return query ? `?${query}` : "";
 }

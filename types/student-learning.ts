@@ -201,6 +201,18 @@ export type StudentPortalSession = {
   materials_count: number;
 };
 
+export type SubjectProgressItem = {
+  subject: {
+    uuid: string;
+    name: string;
+    color: string;
+    icon: string;
+  };
+  materials_total: number;
+  materials_completed: number;
+  percent: number;
+};
+
 export type StudentDashboard = {
   kpis: {
     overall_percent: number;
@@ -216,6 +228,7 @@ export type StudentDashboard = {
   classroom: { uuid: string; name: string } | null;
   teacher: { name: string | null; specialty: string | null } | null;
   materials: StudentMaterial[];
+  subject_progress?: SubjectProgressItem[];
   read_only?: boolean;
   supervision_mode?: boolean;
   student?: { uuid: string; name: string };
